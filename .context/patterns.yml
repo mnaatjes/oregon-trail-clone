@@ -1,0 +1,23 @@
+pattern_enforcement:
+  name: "Domain Service Pattern"
+  status: "Mandatory"
+  description: "Enforce the separation of state (Dataclasses) from behavior (Services) to maintain Hexagonal Architecture integrity."
+
+rules:
+  entities:
+    - "Entities (e.g., Person, Wagon, Item) must be Python dataclasses or Pydantic models."
+    - "Entities should remain 'Anemic' or 'Slim'—holding data and basic validation only."
+    - "Limit 'basic validation' to structural integrity (e.g., health cannot be negative). Validation requiring game state knowledge (e.g., 'can eat food') must remain in Domain Services."
+    - "Prohibit complex game logic, external dependencies, or temporal calculations within Entity classes."
+    - "Use `frozen=True` for Entities where possible to ensure immutability during calculation cycles."
+
+  domain_services:
+    - "All game mechanics (Age calculation, Movement physics, Health decay) must reside in Domain Services."
+    - "Services should be stateless; they receive Entities as arguments and return values or new State objects."
+    - "Naming convention: Services must be suffixed with `Service` (e.g., `ChronologyService`, `TravelService`)."
+    - "Logic involving multiple Entities (e.g., Wagon + Party) must be handled by a Service."
+
+  interface_contracts:
+    - "Define Service methods using type hints to satisfy 'Contract-First' development."
+    - "Prefer pure functions within services to facilitate easier TDD in the Linux environment."
+    - "Example: `calculate_stamina(person: Person, weather: Weather) -> int`"
