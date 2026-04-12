@@ -1,0 +1,32 @@
+# --- Python ---
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# --- Testing ---
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Linux / OS ---
+# General OS metadata
+.DS_Store
+.directory
+Thumbs.db
+
+# --- IDEs ---
+# VS Code
+.vscode/
+# PyCharm / IntelliJ
+.idea/
