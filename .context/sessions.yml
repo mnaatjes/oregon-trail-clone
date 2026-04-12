@@ -1,0 +1,21 @@
+sessions:
+  - session_id: "2c447bfc-d658-4e0e-aec9-24e8648d53de" # Provided by gemini-cli
+    timestamp: "2026-04-12T14:45:00Z"
+    tasks:
+      accomplished:
+        - "Defined multi-pillar architecture (Domain, Core, Engine, Storage, UI, Gateway)"
+        - "Updated architecture.yml with strict MVC and Clean Domain rules"
+        - "Scaffolded src/ directory with sub-packages and __init__.py files"
+        - "Configured pytest and passed initial integration test for main.py"
+        - "Created historical documentation for Apple II version (Domains, Mechanics, Menus, Story)"
+        - "Initialized project-root README.md with new structure"
+      todo:
+        - "Teach user how to use asciimatics for UI development with simple examples"
+        - "Teach user how to use rich and textual with simple examples and best practices"
+        - "Implement domain models (Wagon, PartyMember, Inventory, etc.) in src/domain/models/"
+        - "Implement domain services (TravelCalculator, HuntingLogic) in src/domain/services/"
+        - "Create asset_loader in src/core/ for ASCII resources"
+        - "Build initial UI screens using Textual"
+    git:
+      branches_affected: ["main"]
+      commit_uuids: ["beacc01"]

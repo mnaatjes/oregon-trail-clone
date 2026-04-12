@@ -13,10 +13,14 @@ updated_at: 2026-04-12
 ├── assets/             # ASCII art text files
 ├── docs/            
 ├── src/
-│   ├── __init__.py
-│   ├── engine.py       # Game logic (math, random events)
-│   └── ui.py           # Textual/Asciimatics code
+│   ├── core/           # Technical engine (asset loading, events)
+│   ├── domain/         # Pure logic (models, services, interfaces)
+│   ├── engine/         # MVC Controller / Orchestrator
+│   ├── storage/        # Data persistence (JSON/File system)
+│   ├── ui/             # MVC View (Textual/Asciimatics)
+│   └── main.py         # Gateway entry point
 ├── tests/              # Pytest files
-├── venv/               # Your virtual environment
+├── .venv/              # Virtual environment
+├── pyproject.toml
 └── requirements.txt
 ```

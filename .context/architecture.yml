@@ -1,0 +1,61 @@
+project_metadata:
+  name: "Oregon Trail"
+  remote_repository: "https://github.com/mnaatjes/oregon-trail-clone.git"
+  description: "A text-based adventure game where players navigate the challenges of the Oregon Trail."
+  version: "0.1.0"
+  author: "Michael Naatjes"
+  updated_at: 2026-04-12
+
+guidelines:
+  architecture:
+    - "Follow MVC (Model-View-Controller) patterns"
+    - "Strict separation of concerns"
+    - "Consistent naming conventions (snake_case for Python logic)"
+
+  domain:
+    - "This package has zero dependencies on any other package"
+    - "Contains Dataclasses, Enums, Contracts/ABC, Constants"
+    - "Represents the foundation of the project"
+    - "Implement 'Clean Domain Approach' of models, services, types, and exceptions"
+
+  core:
+    - "Technical Engine"
+    - "Houses technical utilities that interact with the system (file system, OS)"
+    - "Components: asset_loader.py, events.py (cross-pillar communication)"
+
+  ui:
+    - "Functional Pillar"
+    - "The View in MVC"
+    - "Interface for user interaction (Textual/Asciimatics)"
+
+  storage:
+    - "Functional Pillar"
+    - "Handles data persistence and retrieval"
+    - "Holds specific code that talks to the file system"
+
+  engine:
+    - "Functional Pillar"
+    - "The Controller/Orchestrator in MVC"
+    - "Implementation of game rules and logic using domain services"
+  
+  gateway:
+    - "main.py entry point"
+    - "Responsible for initializing and wiring all pillars together"
+
+  assets:
+    - "Contains ASCII art and other static resources"
+    
+
+  documentation:
+    structure:
+      root: "docs/"
+      categories:
+        - "guides"
+        - "how-to"
+        - "reference"
+        - "explanation"
+        - "tutorials"
+    standards:
+      - "Content must align with the Diátaxis framework (Guides/How-to/Reference/Explanation)"
+      - "Every subdirectory must contain a README.md"
+      - "Maintain internal cross-linking integrity within README files"
