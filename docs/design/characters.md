@@ -133,8 +133,8 @@ classDiagram
 
 ```mermaid
 classDiagram
-    class Registry
-    class CompanionRegistry
+    class Registry {<<Abstract>>}
+    class CharacterRegistry
     class MaladyRegistry
 ```
 

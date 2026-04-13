@@ -1,0 +1,31 @@
+architectural_governance:
+  enforcement_level: "Strict"
+  design_pattern: "Universal Domain Blueprint (UDB)"
+
+  flow_constraints:
+    - "All functional logic MUST originate from a Domain Package."
+    - "Cross-Domain interaction MUST be brokered by the Engine/ServiceContainer."
+    - "No Domain Package shall import another Domain Package directly (Zero-Dependency Leaf Policy)."
+
+  component_contracts:
+    provider:
+      contract: "BaseServiceProvider (ABC)"
+      directive: "Must implement 'boot(container, loader)' to wire Assets, Registries, and Services."
+    registry:
+      contract: "BaseRegistry (ABC)"
+      directive: "Must hydrate raw JSON Dicts into Immutable Domain Templates."
+    service:
+      contract: "Protocol-based Interface"
+      directive: "Must maintain pure domain logic; state changes must be requested via Models."
+
+  structural_typing_policy:
+    - "Use 'typing.Protocol' for cross-system interaction (e.g., Infectable, Transportable)."
+    - "Prefer 'Static Duck Typing' over inheritance to keep domain packages uncoupled."
+
+  bootstrap_lifecycle:
+    sequence:
+      1: "Asset Loading (Core/Storage)"
+      2: "Registry Hydration (Domain/Package)"
+      3: "Service Injection (Engine/Providers)"
+      4: "Global Registration (ServiceContainer)"
+    enforcement: "Any domain failing to satisfy the sequence must prevent application start."
