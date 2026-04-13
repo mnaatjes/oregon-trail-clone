@@ -29,6 +29,10 @@ class ServiceContainer:
         """
         self._services[key] = service
 
+    def bind(self, key: Union[str, Type[T]], service: Any) -> None:
+        """Alias for register, for more intuitive access."""
+        self.register(key, service)
+
     def resolve(self, key: Union[str, Type[T]]) -> T:
         """
         Retrieve a service from the container. 
@@ -58,6 +62,10 @@ class ServiceContainer:
         # 4. Cache as a singleton and return
         self._instances[key] = instance
         return cast(T, self._instances[key])
+
+    def get(self, key: Union[str, Type[T]]) -> T:
+        """Alias for resolve, for more intuitive access."""
+        return self.resolve(key)
 
     def has(self, key: Union[str, Type]) -> bool:
         """Check if a service is registered in the container."""

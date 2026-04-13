@@ -28,3 +28,11 @@ class BaseServiceProvider(ABC):
         Called only after all providers have finished register().
         """
         pass
+
+    @abstractmethod
+    def provides(self) -> list:
+        """
+        Optional: Return a list of service keys that this provider registers.
+        Useful for testing and introspection.
+        """
+        return []
