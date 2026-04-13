@@ -21,3 +21,18 @@ rules:
     - "Define Service methods using type hints to satisfy 'Contract-First' development."
     - "Prefer pure functions within services to facilitate easier TDD in the Linux environment."
     - "Example: `calculate_stamina(person: Person, weather: Weather) -> int`"
+
+  dependency_injection:
+    name: "Service Container"
+    status: "Mandatory"
+    description: "The central hub for all service resolution, ensuring singletons and managing dependencies."
+    rules:
+      registration:
+        - "Use ServiceProviders to register bindings (classes or factory lambdas) into the container."
+        - "Bindings can use either string keys or Class types."
+      resolution:
+        - "Use `container.resolve(Key)` to retrieve services."
+        - "Services are resolved as singletons; the first call instantiates and caches the instance."
+        - "Factory lambdas receive the container as their first argument, allowing for nested resolution."
+      type_safety:
+        - "Use `typing.cast(T, ...)` within the container to maintain static type safety for generic resolution."

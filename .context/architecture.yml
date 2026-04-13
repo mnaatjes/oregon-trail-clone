@@ -33,7 +33,10 @@ guidelines:
   core:
     - "Technical Engine"
     - "Houses technical utilities that interact with the system (file system, OS)"
-    - "Components: asset_loader.py, events.py (cross-pillar communication)"
+    - "Components:"
+      - "container.py: The ServiceContainer (Dependency Injection Hub)"
+      - "asset_loader.py: Manages static resource loading"
+      - "events.py: Cross-pillar communication"
 
   ui:
     - "Functional Pillar"
@@ -52,7 +55,8 @@ guidelines:
   
   gateway:
     - "main.py entry point"
-    - "Responsible for initializing and wiring all pillars together"
+    - "Responsible for initializing the ServiceContainer"
+    - "Orchestrates the two-phase lifecycle (Register -> Boot) via ServiceProviders"
 
   assets:
     - "Contains ASCII art and other static resources"

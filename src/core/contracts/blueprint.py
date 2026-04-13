@@ -9,3 +9,4 @@ class DomainBlueprint:
     Ensures every blueprint has at least a unique identifier.
     """
     slug: str  # e.g., 'cholera', 'blizzard', 'farmer'
+    

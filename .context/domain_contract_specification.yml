@@ -8,12 +8,15 @@ architectural_governance:
     - "No Domain Package shall import another Domain Package directly (Zero-Dependency Leaf Policy)."
 
   component_contracts:
+    blueprint:
+      contract: "DomainBlueprint (Dataclass)"
+      directive: "Immutable template for domain data. Must contain a unique 'slug'."
     provider:
       contract: "BaseServiceProvider (ABC)"
-      directive: "Must implement 'boot(container, loader)' to wire Assets, Registries, and Services."
+      directive: "Handles domain wiring in two phases: register() for bindings and boot() for cross-service logic."
     registry:
       contract: "BaseRegistry (ABC)"
-      directive: "Must hydrate raw JSON Dicts into Immutable Domain Templates."
+      directive: "Generic container for DomainBlueprints. Responsible for hydrating domain templates from raw data."
     service:
       contract: "Protocol-based Interface"
       directive: "Must maintain pure domain logic; state changes must be requested via Models."
@@ -24,8 +27,6 @@ architectural_governance:
 
   bootstrap_lifecycle:
     sequence:
-      1: "Asset Loading (Core/Storage)"
-      2: "Registry Hydration (Domain/Package)"
-      3: "Service Injection (Engine/Providers)"
-      4: "Global Registration (ServiceContainer)"
-    enforcement: "Any domain failing to satisfy the sequence must prevent application start."
+      Phase 1: "Registration. All ServiceProviders call register() to bind factories and singletons to the ServiceContainer."
+      Phase 2: "Bootstrapping. All ServiceProviders call boot() to perform logic requiring other services or asset loading."
+    enforcement: "The ServiceContainer ensures that boot() is only called after all providers have completed register()."

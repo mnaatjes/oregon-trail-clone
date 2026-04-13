@@ -106,6 +106,7 @@ classDiagram
 
     class Injury {
         +bool requires_splint
+        +int immobility_period_days
     }
 
     CharacterHealth "1" *-- "many" Malady

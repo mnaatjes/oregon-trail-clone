@@ -22,10 +22,11 @@ class BaseRegistry(ABC, Generic[T]):
         """Retrieves a blueprint by its slug."""
         return self._items.get(slug)
 
+    def all(self) -> Dict[str, T]:
+        """Returns all registered blueprints."""
+        return self._items
+
     @abstractmethod
     def hydrate(self, raw_data: dict) -> None:
-        """
-        Logic to transform raw JSON/Dict into concrete Blueprints.
-        Must be implemented by the specific Domain Registry.
-        """
+        """Abstract method to populate the registry from raw data."""
         pass
