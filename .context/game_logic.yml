@@ -1,0 +1,10 @@
+game_logic:
+  character:
+    - name: Stats
+      directives:
+        - "Logical role: Constraints"
+        - "Only changes at major milestones or evolutionary moments"
+    - name: Health
+      directives:
+        - "Variable: Stateful"
+        - "Changes based on triggers"
