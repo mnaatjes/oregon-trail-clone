@@ -6,28 +6,31 @@ This document provides deep dives into the architectural concepts used in the Or
 
 In software engineering, these terms are often used interchangeably, but they have precise roles within a modular system. In this project, we use them to define how the **Engine (The Kernel)** talks to the **Domain (The Plugins)**.
 
-| Term | Analogy | Project Context | Classification |
-| :--- | :--- | :--- | :--- |
-| **The Protocol** | The **Plug-Shape** (The physical pins on a cord). | `src/core/contracts/domain/binding.py` | **Structural Pattern** |
-| **The Port** | The **Socket** (The hole in the wall). | The `DomainBinding` interface defined by the Engine. | **Hexagonal Architecture** |
-| **The Adapter** | The **Plug** (The specific device you insert). | Your **Domain Packages** (e.g., `health`, `character`). | **Hexagonal Architecture** |
+| Term | Analogy | Project Context | Classification | Role |
+| :--- | :--- | :--- | :--- | :--- |
+| **The Protocol** | The **Plug-Shape** (Physical pins). | `src/core/contracts/domain/binding.py` | **Structural Pattern** | **Definition**: The technical blueprint for the connection. |
+| **The Port** | The **Socket** (Hole in the wall). | The `DomainBinding` type hint in `src/engine/`. | **Hexagonal Architecture** | **Usage**: The functional entry point in the Engine. |
+| **The Adapter** | The **Plug** (The specific device). | Your **Domain Packages** (e.g., `health`, `character`). | **Hexagonal Architecture** | **Implementation**: The concrete logic that fills the Port. |
 
 ### Visualizing the Connection
 
 ```mermaid
 graph LR
-    subgraph "The Engine (The Core)"
-        Port[Port: DomainBinding]
+    subgraph "Engine Kernel (src/engine/)"
+        Port[Port: TypeHinted Interface]
     end
 
-    subgraph "The Domain (The Plugin)"
-        Adapter[Adapter: HealthService]
+    subgraph "Domain Module (src/domain/)"
+        Adapter[Adapter: Concrete Logic]
     end
 
+    subgraph "Core Contracts (src/core/)"
+        Protocol[Protocol: DomainBinding]
+    end
+
+    Protocol -.->|Defines Shape Of| Port
+    Protocol -.->|Defines Shape Of| Adapter
     Adapter -- "Plugs Into" --> Port
-    Note["The 'Protocol' defines the SHAPE of the connection"]
-    Note -.-> Adapter
-    Note -.-> Port
 ```
 
 ---
