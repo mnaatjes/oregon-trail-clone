@@ -8,7 +8,7 @@ Architectural decisions are governed by **Architectural Decision Records (ADRs)*
 
 ## 2. Core Domain Contracts
 
-The protocol is built on four fundamental contracts, each with a distinct role and constraint set. These contracts are defined in `src/core/contracts/domain/`.
+The protocol is built on five fundamental contracts, each with a distinct role and constraint set. These contracts are defined in `src/core/contracts/domain/`.
 
 | Contract | Role | Constraint |
 | :--- | :--- | :--- |
@@ -16,6 +16,7 @@ The protocol is built on four fundamental contracts, each with a distinct role a
 | **DomainState** | Mutable Data | Owned by an Entity; represents current status; "Anemic". |
 | **DomainEntity** | Identity Holder | The only component with a UID; root for state and value objects. |
 | **DomainValueObject** | Property Container | Identitiless; immutable; replaced entirely when updated. |
+| **DomainBinding** | Functional Wiring | **1:1 with Domain Package**; satisfies the engine's orchestrator. |
 
 ## 3. Interaction Model (The "Plugs")
 
@@ -36,9 +37,15 @@ The **Registry** is the exclusive provider of **Blueprints**.
 - **Rule**: Services coordinate the flow: fetch Entity -> fetch Blueprint -> call Logic -> update Entity.
 - **Benefit**: Keeps high-level "Game Rules" separate from low-level "Math."
 
+### D. The Engine ↔ Domain Plug (The Binding)
+The **Domain Binding** acts as the functional gateway for the domain.
+- **Rule**: Every domain must provide exactly one `binding.py` that implements the `DomainBinding` protocol.
+- **Benefit**: Allows the Engine to run any domain polymorphically via a single entry point.
+
 ```mermaid
 graph TD
     subgraph "Domain Package"
+        Binding[Domain Binding]
         Service[Domain Service]
         Logic[Domain Logic]
         State[Domain State]
@@ -49,6 +56,7 @@ graph TD
     Blueprint[Domain Blueprint]
 
     Registry -->|Provides| Blueprint
+    Binding -->|Uses| Service
     Service -->|Orchestrates| Entity
     Service -->|Uses| Logic
     Logic -->|Transforms| State
@@ -95,25 +103,30 @@ class DomainBinding(Protocol[E, S, B]):
 - **Generics**: Bound `TypeVars` ensure that a `HealthService` can only accept `CharacterState`, preventing "cross-wiring" of unrelated domains.
 - **Immutability**: `frozen=True` on Blueprints and Value Objects ensures that data sources remain pristine and prevents accidental side effects.
 
+### D. Package Integrity (1:1 Binding)
+The **Universal Domain Blueprint (UDB)** mandates that each domain package contains exactly one binding implementation. This ensures that the engine coordinates with a single "expert representative" for each bounded context.
+
 ## 5. Architectural Lifecycle
 
 Every game interaction follows a standardized "Plug" flow:
 
 1. **Trigger**: The Engine (Controller) calls `process_tick()`.
-2. **Resolution**: The `ServiceContainer` resolves the appropriate `DomainService`.
-3. **Fetch**: The Service retrieves the target `Entity` and required `Blueprint` (from the Registry).
-4. **Execution**: The Service passes the Entity's `State` and the `Blueprint` into the `Logic`.
+2. **Resolution**: The `ServiceContainer` resolves the appropriate `DomainBinding`.
+3. **Fetch**: The Binding retrieves the target `Entity` and required `Blueprint`.
+4. **Execution**: The Binding passes the Entity's `State` and the `Blueprint` into the `Logic` (via the Service).
 5. **Update**: The Logic returns the transformed `State`, which the Service applies back to the `Entity`.
 
 ```mermaid
 sequenceDiagram
     participant E as Engine
+    participant B as DomainBinding
     participant S as DomainService
     participant R as DomainRegistry
     participant L as DomainLogic
     participant T as Entity/State
 
-    E->>S: orchestrate(entity)
+    E->>B: orchestrate(entity)
+    B->>S: process(entity)
     S->>R: get_blueprint(slug)
     R-->>S: blueprint
     S->>L: transform(state, blueprint)

@@ -23,12 +23,14 @@ graph TD
         D[provider.py]
         E[registry.py]
         F[exceptions.py]
+        G[binding.py]
     end
 
     A -->|State Data| C
     B -->|Rules| C
     D -->|Wires| C
     E -->|Loads| C
+    G -->|Plugs into Engine| C
 ```
 
 ## Benefits
@@ -41,26 +43,10 @@ graph TD
 
 The template is often realized as a set of base classes that every new module must inherit from.
 
+### 1. The Service Provider (Technical Wiring)
+The `provider.py` handles the construction of the domain's services and their registration with the `ServiceContainer`.
+
 ```python
-# The Template provides the "Shell" (src/core/contracts/provider.py)
-class BaseServiceProvider(ABC):
-    """
-    The Structural Shell for every domain provider.
-    """
-    def __init__(self, container: ServiceContainer):
-        self.container = container
-
-    @abstractmethod
-    def register(self) -> None:
-        """Mandatory registration phase."""
-        pass
-
-    @abstractmethod
-    def boot(self) -> None:
-        """Mandatory bootstrapping phase."""
-        pass
-
-# The specific implementation (src/domain/health/provider.py)
 class HealthServiceProvider(BaseServiceProvider):
     def register(self):
         # Implementation of the registration phase
@@ -69,4 +55,15 @@ class HealthServiceProvider(BaseServiceProvider):
     def boot(self):
         # Implementation of the bootstrapping phase
         pass
+```
+
+### 2. The Domain Binding (Functional Wiring)
+The `binding.py` handles the runtime orchestration by the `Engine`.
+
+```python
+class HealthBinding(DomainBinding[Healthable, HealthState, MaladyBlueprint]):
+    def orchestrate(self, entity: Healthable):
+        # The Binding 'glues' the Engine to the Domain Service
+        service = self.container.resolve("health_service")
+        service.process_health(entity)
 ```

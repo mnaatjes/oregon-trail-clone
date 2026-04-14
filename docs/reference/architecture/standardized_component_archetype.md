@@ -53,7 +53,7 @@ The archetype is often implemented using Python's `Protocol` or `ABC` (Abstract 
 from typing import Protocol, runtime_checkable
 
 @runtime_checkable
-class DomainArchetype(Protocol):
+class DomainBinding(Protocol):
     """
     The 'Law' for all Domain Packages in Oregon Trail.
     Every domain MUST provide an Orchestrator and a Transformer.
@@ -68,6 +68,6 @@ class DomainArchetype(Protocol):
 
 # The Architecture then mandates that all sub-systems follow this Archetype:
 def validate_domain(domain: object):
-    if not isinstance(domain, DomainArchetype):
+    if not isinstance(domain, DomainBinding):
         raise TypeError("Module does not follow the Standardized Component Archetype!")
 ```
