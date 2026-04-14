@@ -2,111 +2,105 @@
 
 The Domain Service pattern is a cornerstone of Domain-Driven Design (DDD). It is used when an operation or calculation doesn't naturally belong to a single "thing" (Entity), or when it involves complex business rules that would clutter your data-focused classes.
 
-In your Hexagonal architecture, the Entities are your "dumb" data buckets (Dataclasses), and the Domain Service acts as the "referee" or "calculator" that understands the rules of the Oregon Trail.
+In this architecture, we further divide domain logic into two distinct roles: **Pure Logic** and **Coordinating Services**.
 
-## 1. The Relationship Structure
+## 1. The Service-Logic Distinction
 
-In this pattern, your Entities hold the identity and raw data, while the Service holds the verbs and logic.
+| Role | Responsibility | Location | Characteristics |
+| :--- | :--- | :--- | :--- |
+| **Logic (The "Rules")** | Pure math, stateless rules, and physics. | `logic.py` | Functional, No side effects, Zero dependencies. |
+| **Service (The "Hand")** | State management, cross-service coordination. | `service.py` | Stateful, Modifies models, Injected dependencies. |
+
+### Logic: The "Rules of Physics" (`logic.py`)
+These are pure functions. They take data in, perform a calculation, and return a result. They do not care about the ServiceContainer or other domains.
+
+```python
+# src/domain/health/logic.py
+
+def calculate_damage_after_resistance(base_damage: int, resistance: float) -> int:
+    """Pure math: calculates damage reduction."""
+    reduction = int(base_damage * resistance)
+    return max(0, base_damage - reduction)
+
+def is_critically_low(current_hp: int, max_hp: int) -> bool:
+    """Pure rule: determines if state is critical."""
+    return (current_hp / max_hp) < 0.2
+```
+
+### Service: The "Orchestrator" (`service.py`)
+The Service is the entry point for the Engine. It coordinates state changes and uses the pure functions from `logic.py` to apply the rules of the game.
+
+```python
+# src/domain/health/service.py
+from .models import HealthRecord
+from . import logic
+
+class HealthService:
+    def apply_injury(self, record: HealthRecord, base_damage: int):
+        """Coordinates a state change using pure logic."""
+        # 1. Use pure logic for the math
+        final_damage = logic.calculate_damage_after_resistance(
+            base_damage, 
+            record.resistance_modifier
+        )
+        
+        # 2. Perform the state change (Side effect)
+        record.current_hp -= final_damage
+        
+        # 3. Coordinate further actions if needed
+        if logic.is_critically_low(record.current_hp, record.max_hp):
+            self._notify_critical_status(record)
+```
+
+## 2. Implementation: The Relationship Structure
+
+In this pattern, your Entities hold the identity and raw data, while the Service holds the verbs and coordination.
 
 ```mermaid
 classDiagram
     direction LR
-    class Person {
-        +String name
-        +date birth_date
-        +int base_health
+    class HealthRecord {
+        +int current_hp
+        +int max_hp
+        +float resistance_modifier
     }
-    class Wagon {
-        +int food_pounds
-        +float axle_wear
-    }
-    class GameMechanicsService {
+    class HealthService {
         <<service>>
-        +calculate_age(Person, current_date) int
-        +calculate_starvation_risk(Wagon, List~Person~) float
+        +apply_injury(HealthRecord, int)
+    }
+    class HealthLogic {
+        <<module>>
+        +calculate_damage(int, float) int
     }
 
-    GameMechanicsService ..> Person : calculates for
-    GameMechanicsService ..> Wagon : inspects
-```
-
-## 2. Implementation: The Service and Its Entities
-
-Here is how you would separate the "What" (Data) from the "How" (Logic) using two examples: Age and Starvation Risk.
-
-### The Entities (The "What")
-
-These stay clean, immutable, and easy to validate with Pydantic or standard dataclasses.
-
-```python
-from dataclasses import dataclass
-from datetime import date
-from typing import List
-
-@dataclass(frozen=True)
-class Person:
-    name: str
-    birth_date: date
-    health_score: int  # 0 to 100
-
-@dataclass(frozen=True)
-class Wagon:
-    food_lbs: int
-    oxen_count: int
-```
-
-### The Domain Service (The "How")
-
-This class contains pure functions. It doesn't store the current date or the wagon; it just takes them as arguments and returns a result.
-
-```python
-class GameMechanicsService:
-    @staticmethod
-    def calculate_age(person: Person, current_date: date) -> int:
-        """Standardizes age calculation across the whole game."""
-        return (current_date - person.birth_date).days // 365
-
-    @staticmethod
-    def calculate_daily_ration_shortfall(wagon: Wagon, party: List[Person]) -> int:
-        """
-        Example of complex logic: 
-        Calculates how much food is missing based on party size.
-        15 lbs needed per day, but if you have < 20 lbs, the 'risk' increases.
-        """
-        required_food = len(party) * 3  # 3 lbs per person
-        shortfall = required_food - wagon.food_lbs
-        return max(0, shortfall)
+    HealthService ..> HealthRecord : modifies
+    HealthService ..> HealthLogic : uses rules from
 ```
 
 ## 3. Why this fits your "Contract-First" and TDD approach
 
-By using a Domain Service, your "Contract" is the function signature. You can test the entire physics of your game without ever launching the game loop or a UI.
+By separating logic from services, you gain two levels of testing:
+1.  **Unit Tests for Logic:** Extremely fast, zero-setup tests for the "physics" of your game.
+2.  **Integration Tests for Services:** Verifies that state changes and coordination happen correctly.
 
-Example TDD Test (Linux environment):
+Example TDD Test for Logic:
 
 ```python
-def test_starvation_logic():
-    service = GameMechanicsService()
-    wagon = Wagon(food_lbs=10, oxen_count=2)
-    party = [Person("Gabe", date(1820, 1, 1), 100), Person("Jane", date(1822, 1, 1), 100)]
-    
-    # We expect 2 people to need 6 lbs. We have 10. Shortfall should be 0.
-    assert service.calculate_daily_ration_shortfall(wagon, party) == 0
+def test_damage_calculation():
+    # No mocks, no setup, just pure math
+    assert logic.calculate_damage_after_resistance(10, 0.5) == 5
 ```
 
-## 4. Strategies for Centralization
+## 4. Hierarchy and Dependency Injection
 
-As your project grows, you can split your Domain Service into specialized units:
+To avoid "Service Locator" anti-patterns, Services must never access the `ServiceContainer` directly. Instead, dependencies (like other services) are injected via the constructor by the **ServiceProvider**.
 
-*   **HealthService**: Calculates disease contraction, healing rates, and death probabilities.
-*   **MovementService**: Calculates how many miles the wagon moves based on oxen health, weather, and terrain.
-*   **TimeService**: Handles the calendar, seasons, and leap years.
+*   **Logic**: Zero dependencies.
+*   **Service**: Injected dependencies (Protocols).
+*   **ServiceProvider**: The "Glue" that resolves dependencies from the container.
 
-## Summary of Relationships
+## Summary
 
-1.  The **Controller** asks the **Service** for a calculation.
-2.  The **Service** requests the necessary **Entities** (Wagon, Person) as inputs.
-3.  The **Service** returns a value (int, float, or even a new "Status" object).
-4.  The **Controller** then decides what to do with that value (e.g., update the Model or trigger a View update).
-
-This keeps your "Person" class from becoming a 500-line monster file full of math!
+1.  **Logic** defines the *rules*.
+2.  **Models** store the *state*.
+3.  **Services** apply the *rules* to the *state*.
