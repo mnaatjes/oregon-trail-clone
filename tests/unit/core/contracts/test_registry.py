@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 import pytest
 from rich import inspect
-from src.core.contracts.registry import BaseRegistry
-from src.core.contracts.blueprint import DomainBlueprint
+from core.contracts.domain.registry import BaseRegistry
+from core.contracts.domain.blueprint import DomainBlueprint
 
 @dataclass(frozen=True)
 class MaladyBlueprint(DomainBlueprint):

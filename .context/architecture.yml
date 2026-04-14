@@ -23,6 +23,8 @@ guidelines:
       - "Internal Consistency: Every domain package should internally maintain a consistent structure of models, logic, and exceptions."
       - "The 'Character' package acts as an Aggregate Root, composing instances from 'leaf' packages like 'health'."
       - "Prohibit Circular Imports: Hierarchy must be strictly unidirectional (Character -> Health)."
+      - "Registries manage Blueprints"
+      - "Services manage Entities"
 
     internal_package_blueprint:
       models: "State containers and Entities (the 'What')."
@@ -33,7 +35,7 @@ guidelines:
   core:
     - "Technical Engine"
     - "Houses technical utilities that interact with the system (file system, OS)"
-    - "Components:"
+    - Components:
       - "container.py: The ServiceContainer (Dependency Injection Hub)"
       - "asset_loader.py: Manages static resource loading"
       - "events.py: Cross-pillar communication"
