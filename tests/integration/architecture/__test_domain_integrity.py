@@ -5,11 +5,11 @@ from rich import inspect, print
 
 DOMAIN_PATH = "src/domain"
 PROVIDER_PATH = "src/engine/providers"
-DOMAIN_NAMES = ["character", "health"]
+DOMAIN_PACKAGES = ["character", "health"]
 DOMAIN_COMPONENTS = ["registry", "services", "models"]
 DOMAINS = [d for d in os.listdir(DOMAIN_PATH) if os.path.isdir(os.path.join(DOMAIN_PATH, d))]
 
-@pytest.mark.parametrize("domain_name", DOMAIN_NAMES)
+@pytest.mark.parametrize("domain_name", DOMAIN_PACKAGES)
 def test_domain_dir_exists(domain_name):
     # Check if the domain exists in the DOMAINS list
     if domain_name not in DOMAINS:
@@ -21,7 +21,7 @@ def test_domain_dir_exists(domain_name):
     except AssertionError as e:
         pytest.fail(str(e))
 
-@pytest.mark.parametrize("domain_name", DOMAIN_NAMES)
+@pytest.mark.parametrize("domain_name", DOMAIN_PACKAGES)
 def test_provider_class_exists(domain_name):
     provider_file = os.path.join(PROVIDER_PATH, f"{domain_name}_provider.py")
     # Capture with pytest.raises
@@ -34,7 +34,7 @@ def test_provider_class_exists(domain_name):
     except AssertionError as e:
         pytest.fail(str(e))
 
-@pytest.mark.parametrize("domain_name", DOMAIN_NAMES)
+@pytest.mark.parametrize("domain_name", DOMAIN_PACKAGES)
 def test_domain_components_exist(domain_name):
     domain_dir = os.path.join(DOMAIN_PATH, domain_name)
     for component in DOMAIN_COMPONENTS:

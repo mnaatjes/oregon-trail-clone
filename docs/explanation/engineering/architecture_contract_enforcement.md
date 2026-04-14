@@ -66,15 +66,16 @@ display(Book()) # Works!
 display(Note()) # Works!
 ```
 
-## 4. Testing Regime
+## 4. Testing Regime: Fitness Functions
 
-Test that all Domain Packages have providers
+The most robust way to ensure architecture doesn't drift over time is through **Architecture-as-Code** tests, also known as **Fitness Functions**.
 
-Since you have a tests/ directory, you can write a Meta-Test. This is a test that doesn't test game logic, but tests the Architecture itself.
+These tests automatically discover every domain package and verify it against our Universal Domain Blueprint (UDB).
 
-```py
-def test_all_domain_packages_have_providers():
-    # Loop through src/domain/ folders
-    # Check if a corresponding Provider exists in src/engine/providers/
-    # If not, fail the test.
-```
+For a detailed guide on how this is implemented, see:
+[Architecture Testing Regime: Fitness Functions](./architecture_testing_regime.md)
+
+### Key Enforcements:
+- **Structural Integrity**: Does every domain have the required files (`models.py`, `services.py`, etc.)?
+- **Contractual Compliance**: Do Services use the correct naming suffix? Are Models immutable?
+- **Dependency Isolation**: Are "Leaf" domains strictly decoupled from their siblings?
