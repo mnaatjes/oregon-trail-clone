@@ -2,7 +2,11 @@
 
 The **Domain Protocol** is the architectural specification that dictates how domain objects interact within the Oregon Trail engine. It ensures a strict separation of concerns by defining "plug shapes" for every component, preventing leakage between state, logic, and orchestration.
 
-## 1. Core Domain Contracts
+## 1. Governance & Documentation
+
+Architectural decisions are governed by **Architectural Decision Records (ADRs)** and enforced through a combination of static typing and automated testing. This ensures that the system evolves predictably and maintains its structural integrity over time.
+
+## 2. Core Domain Contracts
 
 The protocol is built on four fundamental contracts, each with a distinct role and constraint set. These contracts are defined in `src/core/contracts/domain/`.
 
@@ -13,7 +17,7 @@ The protocol is built on four fundamental contracts, each with a distinct role a
 | **DomainEntity** | Identity Holder | The only component with a UID; root for state and value objects. |
 | **DomainValueObject** | Property Container | Identitiless; immutable; replaced entirely when updated. |
 
-## 2. Interaction Model (The "Plugs")
+## 3. Interaction Model (The "Plugs")
 
 The "Protocol" defines how these contracts connect. By standardizing these "plugs," we ensure that the Engine can interact with any domain (Health, Character, Wagon) through a uniform interface.
 
@@ -52,34 +56,46 @@ graph TD
     Logic -.->|Inputs| Blueprint
 ```
 
-## 3. The DomainBinding Meta-Contract
+## 4. Enforcement Mechanisms
 
-To ensure every domain package "fits" the Oregon Trail engine, we use the `DomainBinding` protocol (`src/core/contracts/domain/binding.py`). This is a structural type that defines the "Recipe" for a valid domain pillar.
+The protocol is enforced through multiple layers of "Code Contracts" to prevent architectural drift.
+
+### A. Abstract Contracts (ABCs)
+We use **Abstract Base Classes (ABCs)** to define mandatory interfaces for core components like Service Providers and Registries. This ensures that any new domain implementation satisfies the basic requirements of the engine lifecycle.
+
+```python
+from abc import ABC, abstractmethod
+
+class BaseServiceProvider(ABC):
+    @abstractmethod
+    def register(self) -> None:
+        """Every provider MUST implement a registration phase."""
+        pass
+
+    @abstractmethod
+    def boot(self) -> None:
+        """Every provider MUST implement a bootstrapping phase."""
+        pass
+```
+
+### B. Structural Typing (Protocols)
+Using `typing.Protocol`, we define the "plug shapes" for domain interaction. This is **Static Duck Typing**: if an object "walks and quacks" like a domain service, the type-checker accepts it, even without formal inheritance.
 
 ```python
 @runtime_checkable
 class DomainBinding(Protocol[E, S, B]):
     """
     The Protocol defining the structural interface for a Domain Pillar.
-    It binds the Orchestrator (Service) to the Transformer (Logic).
     """
-    def orchestrate(self, entity: E) -> None: 
-        """Implementation found in the Domain Service."""
-        ...
-
-    def transform(self, state: S, blueprint: B) -> S:
-        """Implementation found in the Domain Logic."""
-        ...
+    def orchestrate(self, entity: E) -> None: ...
+    def transform(self, state: S, blueprint: B) -> S: ...
 ```
 
-### Relationship Lexicon
+### C. Generics & Immutability
+- **Generics**: Bound `TypeVars` ensure that a `HealthService` can only accept `CharacterState`, preventing "cross-wiring" of unrelated domains.
+- **Immutability**: `frozen=True` on Blueprints and Value Objects ensures that data sources remain pristine and prevents accidental side effects.
 
-| Interaction | Nature | Semantic Clarity |
-| :--- | :--- | :--- |
-| **Service ↔ Entity** | Managerial (External) | "The HealthService manages the character's recovery process." |
-| **Logic ↔ State** | Mathematical (Internal) | "The Logic calculates the result of the infection on the health state." |
-
-## 4. Architectural Lifecycle
+## 5. Architectural Lifecycle
 
 Every game interaction follows a standardized "Plug" flow:
 
@@ -105,30 +121,9 @@ sequenceDiagram
     S->>T: update_state(new_state)
 ```
 
-## 5. Enforcement Mechanisms
+## 6. Testing Regime: Fitness Functions
 
-The protocol is enforced through Python's type system to prevent architectural drift.
+The most robust layer of enforcement is the **Architecture-as-Code** suite. These tests automatically discover every domain package and verify it against our Universal Domain Blueprint (UDB).
 
-- **Generics**: Bound `TypeVars` ensure that a `HealthService` can only accept `CharacterState`, preventing "cross-wiring" of unrelated domains.
-- **Protocols**: `runtime_checkable` protocols allow for dynamic discovery and validation of domain packages during initialization.
-- **Immutability**: `frozen=True` on Blueprints and Value Objects ensures that data sources remain pristine and prevents accidental side effects.
-
-### Example Implementation Structure
-
-```python
-# logic.py (Pure Domain Logic)
-def calculate_starvation(state: CharacterState, blueprint: MaladyBlueprint) -> CharacterState:
-    # Pure transformation: State + Blueprint -> State
-    return state.clone(hp=state.hp - blueprint.tick_damage)
-
-# services.py (The Orchestrator)
-class HealthService(BaseDomainService[CharacterEntity]):
-    def orchestrate(self, character: CharacterEntity) -> None:
-        # The Service manages the ENTITY and coordinates the flow
-        blueprint = self.registry.get("starvation")
-        
-        # The LOGIC manages the STATE
-        character.state = calculate_starvation(character.state, blueprint)
-```
-
-By following this protocol, you aren't just writing code; you are building a platform where new mechanics can be "plugged in" without modifying the core engine.
+For details on the automated enforcement suite, see:
+[Domain Testing Regime: Fitness Functions](./domain_testing_regime.md)
