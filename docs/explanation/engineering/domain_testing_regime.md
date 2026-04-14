@@ -1,4 +1,4 @@
-# Architecture Testing Regime: Fitness Functions
+# Domain Testing Regime: Fitness Functions
 
 To maintain the **Universal Domain Blueprint (UDB)** and **Zero-Dependency Leaf Policy**, the project employs "Architecture-as-Code" (Fitness Functions). These tests don't verify game behavior; they verify that the code *itself* follows the prescribed structural rules.
 
