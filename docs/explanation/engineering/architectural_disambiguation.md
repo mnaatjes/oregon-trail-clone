@@ -35,27 +35,72 @@ graph LR
 
 ---
 
-## 2. MVC vs. Hexagonal (Ports & Adapters)
+## 2. MVC vs. Hexagonal (Hybrid Architecture)
 
-The Oregon Trail engine uses **Hexagonal Patterns** *inside* an **MVC Structure**. Understanding the difference is key to maintaining the system's strict boundaries.
+The Oregon Trail engine uses **Hexagonal Patterns** *inside* an **MVC Structure**. They are not mutually exclusive; instead, they work together to protect the internal layers of the application.
 
 ### MVC: The "Hierarchy" Pattern
-MVC is about **internal layers**. It tells us *what* a component is (Model, View, or Controller) and how they are stacked.
+MVC organizes code by **Internal Responsibility**. It tells us *what* a component is and how the layers are stacked.
 - **The Engine (Controller)**: Sits "on top" and coordinates the flow.
 - **The Domain (Model)**: Sits "below" and holds the data and logic.
+- **The UI (View)**: Handles the presentation of the game state.
+
+```mermaid
+graph TD
+    subgraph "MVC Hierarchy"
+        Controller[Controller: Engine Orchestrator]
+        View[View: Textual UI]
+        Model[Model: Domain Packages]
+    end
+
+    Controller -->|Updates| View
+    Controller -->|Manages| Model
+```
 
 ### Hexagonal: The "Perimeter" Pattern
-Hexagonal is about **external boundaries**. It tells us *how* components talk to each other through the system's "perimeter."
+Hexagonal (Ports & Adapters) organizes code by **External Boundary**. It tells us *how* components talk to each other through the system's "perimeter," ensuring that the **Core** remains isolated from its **Dependencies**.
 - **The Core (Engine)**: Sits in the "middle" and defines **Ports** (Protocols).
-- **The World (Domains)**: Sits "outside" the core and provides **Adapters** (Plugins).
+- **The World (Domains/UI)**: Sits "outside" the core and provides **Adapters** (Plugins).
 
-### The "Hybrid" implementation in Oregon Trail
+```mermaid
+graph LR
+    subgraph "Hexagonal Perimeter"
+        Adapter1[Domain Adapter]
+        Adapter2[UI Adapter]
+        Adapter3[Storage Adapter]
+    end
 
-| Concept | MVC Role | Hexagonal Role |
-| :--- | :--- | :--- |
-| **Engine Kernel** | **Controller** | **The Core** |
-| **Domain Packages** | **Model** | **Adapters** |
-| **Service Container** | **Mediator** | **The Switchboard** |
+    Core[Engine Core]
+
+    Adapter1 --- Core
+    Adapter2 --- Core
+    Adapter3 --- Core
+    
+    style Core fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+### The "Hybrid" Mapping in Oregon Trail
+
+In this project, the layers map to each other to provide the clarity of MVC with the isolation of Hexagonal.
+
+| Component | MVC Role | Hexagonal Role | Why this combination? |
+| :--- | :--- | :--- | :--- |
+| **Engine Kernel** | **Controller** | **The Core** | Orchestrates flow without knowing domain secrets. |
+| **Domain Packages** | **Model** | **Adapters** | Holds logic (Health, Wagon) as pluggable modules. |
+| **UI Components** | **View** | **Adapter** | Decouples the presentation layer from the core math. |
+| **Protocols (UDB)** | **Contract** | **The Port** | The "Socket" that connects the two. |
+
+```mermaid
+graph TD
+    subgraph "Hybrid Architecture"
+        Kernel[Engine Kernel / Core]
+        Binding[Domain Binding / Port]
+        Domain[Domain Module / Adapter]
+    end
+
+    Kernel -->|Orchestrates| Binding
+    Binding <|--| Domain
+```
 
 ---
 
