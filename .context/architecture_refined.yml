@@ -1,0 +1,27 @@
+project_metadata:
+  name: "Oregon Trail"
+  remote_repository: "https://github.com/mnaatjes/oregon-trail-clone.git"
+  description: "A text-based adventure game where players navigate the challenges of the Oregon Trail."
+  version: "0.1.1"
+  author: "Michael Naatjes"
+  updated_at: 2026-04-14
+
+
+  structural_patterns:
+    implementation: "Model View Controller (MVC)"
+      attributes:
+        - ""
+
+  organizational_patterns:
+    implementation: "Screaming Architecture"
+    src_directory_map: 
+      domain:
+        - "Acts as the Model in MVC"
+        - "Businessrule / Entity name is the top level parent, e.g. domain/health or domain/animal"
+        - "Contains Data (models, value objects, blueprints)"
+        - "Businessrules and logic"
+        - "Orchestration services for how each model-entity performs a task"
+      engine:
+        - "Fulfills role as the Controller in MVC"
+      ui:
+        - "Performs role of the View in MVC"

@@ -1,31 +1,80 @@
-# Glossary
+# MVC vs. Hexagonal Architecture
 
-This document defines the architectural terms and design patterns used in the Oregon Trail engine. Using industry-standard terminology ensures consistency and clarity for developers.
+This project employs a **Hybrid Architecture** that combines the organizational strengths of **MVC** with the isolation and decoupling of **Hexagonal Architecture (Ports & Adapters)**.
 
-## A
-### Architecture Contract (Service Contract)
-A formal definition of the "plug shape" that a module or domain must take to be compatible with the engine. It dictates the required interfaces (Protocols) that a component must implement to "sign the contract" with the system.
+## 1. MVC: The Organizational Hierarchy
 
-## C
-### Component Template
-A reusable structural pattern that defines the mandatory files, classes, or interfaces that a module must implement. It acts as a "scaffold" for new features, ensuring consistency across a large codebase.
+MVC (Model-View-Controller) focuses on the **internal responsibility** of components. It answers the question: "What is this component's role in the system?"
 
-### Contract-First Design
-A development methodology where the interfaces and interaction rules (the "contracts") are defined before writing any implementation logic. This ensures that different systems (e.g., Health and Character domains) can integrate seamlessly.
+-   **Model**: The Domain (Data and Logic).
+-   **View**: The UI (Presentation).
+-   **Controller**: The Engine (Orchestration).
 
-## D
-### Dependency Injection (DI) Container
-A central object (often called a `ServiceContainer`) that manages the instantiation and lifecycle of services. Instead of components creating their own dependencies, the container "injects" them, allowing for easier testing and modularity.
+### Best Use-Cases for MVC:
+-   Standard web applications.
+-   Clear hierarchical structures.
+-   When the relationship between data, logic, and UI is direct and straightforward.
 
-### Domain Archetype (System Archetype)
-A structural template or "recipe" that mandates every functional sub-system must implement a specific set of components (e.g., Blueprint, State, Logic, Service). This ensures that all domains are structurally identical from the engine's perspective.
+---
 
-### Domain-Driven Design (DDD)
-An approach to software development that centers the design on the "Domain" (the core logic of the Oregon Trail). It uses concepts like **Entities**, **Value Objects**, and **Bounded Contexts** to organize complex logic.
+## 2. Hexagonal: The Boundary Pattern
 
-## I
-### Inversion of Control (IoC)
-An architectural principle where the flow of the program is inverted: instead of the domain logic calling the framework, the framework (the engine) calls the domain logic via predefined contracts (the Domain Protocol).
+Hexagonal Architecture focuses on the **external boundaries** and decoupling the **Core** from its dependencies. It answers the question: "How does the system talk to the outside world?"
+
+-   **The Core (Inside)**: The Engine Kernel. It defines **Ports** (Protocols).
+-   **The Adapters (Outside)**: Domain Packages, UI, Storage. They plug into the Ports.
+
+### Best Use-Cases for Hexagonal:
+-   Systems requiring high testability (can mock any adapter).
+-   Plugin-based architectures (like a game engine with many domains).
+-   When the technology (DB, UI) is likely to change or needs to be swapped.
+
+---
+
+## 3. How They Work Together (The Hybrid Approach)
+
+In Oregon Trail, the two architectures are mapped together to create a robust system:
+
+| Layer | MVC Role | Hexagonal Role | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **Engine Kernel** | **Controller** | **The Core** | Orchestrates the flow and defines the Protocols (Ports). |
+| **Domain Packages** | **Model** | **Adapters** | Implements the game logic and "plugs into" the Engine. |
+| **UI Components** | **View** | **Adapters** | Handles interaction without knowing the Core logic. |
+
+```mermaid
+graph TD
+    subgraph "Hexagonal Perimeter"
+        Domain[Domain Adapter / Model]
+        UI[UI Adapter / View]
+        Storage[Storage Adapter]
+    end
+
+    subgraph "The Core"
+        Engine[Engine / Controller]
+    end
+
+    Domain --- Engine
+    UI --- Engine
+    Storage --- Engine
+```
+
+---
+
+## 4. When They Should NOT Work Together
+
+Combining these patterns adds complexity. You should avoid the hybrid approach if:
+1.  **The Project is Small**: A simple script or small utility doesn't need the overhead of Hexagonal boundaries.
+2.  **Performance is Absolute**: The extra layers of indirection (Protocols/Adapters) can introduce minor overhead (usually negligible in a text-based game).
+3.  **Tightly Coupled Logic**: If your logic is deeply entwined with your UI or Database, trying to force Hexagonal boundaries will lead to "Over-Engineering" and frustration.
+
+## 5. Summary
+
+-   **MVC** organizes your code by **layer**.
+-   **Hexagonal** protects your code by **boundary**.
+-   **Together**, they ensure that the Oregon Trail engine is both easy to understand and extremely modular.
+of the game (Services).
+ency Leaf Policy)
+An architectural constraint where "leaf" modules (the most granular functional units, like `health` or `wagon`) are prohibited from depending on or importing any sibling modules. All cross-module interaction must be orchestrated by a higher-level layer (the Engine).
 
 ## M
 ### Microkernel Architecture
@@ -35,9 +84,15 @@ An architectural pattern that separates a minimal functional core (the kernel) f
 An industry-standard practice of breaking a system into independent, interchangeable parts with strict boundaries. This enforces the "Zero-Dependency Leaf Policy," ensuring that individual domain packages (like `health`) remain isolated and testable.
 
 ### Modular Kernel (Orchestrator)
-The core "Engine" that coordinates the execution of various domains without knowing their internal details. It interacts only with the **Architecture Contracts** (Ports) to trigger game logic.
+The core "Engine" that coordinates various domains' execution without knowing their internal details. It interacts only with the **Architecture Contracts** (Ports) to trigger game logic.
+
+### Module
+In Python, a single `.py` file containing code. In a larger architectural sense, it refers to a discrete unit of functionality that can be independently developed and tested.
 
 ## P
+### Package
+In Python, a directory containing an `__init__.py` file and one or more modules. It provides a way to structure the project's namespace and group related functionality.
+
 ### Platform-Oriented Architecture
 A design philosophy where the system is built as a reusable "Platform" (the Engine) that provides core services (lifecycle, storage, events), while specific game mechanics are implemented as "Applications" or "Features" that run on top of it.
 
@@ -54,3 +109,7 @@ An architectural pattern that mandates a uniform internal structure and interfac
 ## U
 ### Universal Domain Blueprint (UDB)
 A project-specific internal term for the implementation of a **Standardized Component Archetype**. It mandates that every domain package (e.g., `health`, `character`) follows a specific structural contract (Assets -> Registry -> Service -> Provider) to ensure compatibility with the Oregon Trail engine.
+
+## Z
+### Zero-Dependency
+A design principle where a component is built to have no external dependencies on other functional components of the same level. This maximizes portability, testability, and decoupling within the system.
