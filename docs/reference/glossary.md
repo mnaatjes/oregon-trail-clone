@@ -1,79 +1,46 @@
-# MVC vs. Hexagonal Architecture
+# Glossary
 
-This project employs a **Hybrid Architecture** that combines the organizational strengths of **MVC** with the isolation and decoupling of **Hexagonal Architecture (Ports & Adapters)**.
+This document defines the architectural terms and design patterns used in the Oregon Trail engine. Using industry-standard terminology ensures consistency and clarity for developers.
 
-## 1. MVC: The Organizational Hierarchy
+## A
+### Aggregate Roots
+A concept from Domain-Driven Design (DDD) where a cluster of associated objects is treated as a single unit for data changes. An Aggregate Root is the "entry point" to the cluster, ensuring all internal consistency rules are met.
 
-MVC (Model-View-Controller) focuses on the **internal responsibility** of components. It answers the question: "What is this component's role in the system?"
+### Anemic Domain Model
+A design pattern where domain objects (Entities) contain data but little or no logic (behavior). In this model, the "verbs" or game mechanics are moved into separate Service or Logic classes, leaving the Entities as simple data containers.
 
--   **Model**: The Domain (Data and Logic).
--   **View**: The UI (Presentation).
--   **Controller**: The Engine (Orchestration).
+### Anti-Pattern
+A common response to a recurring problem that is usually ineffective and risks being highly counterproductive. It is a "documented bad habit" that should be avoided to maintain system health.
 
-### Best Use-Cases for MVC:
--   Standard web applications.
--   Clear hierarchical structures.
--   When the relationship between data, logic, and UI is direct and straightforward.
+### Architecture Contract (Service Contract)
+A formal definition of the "plug shape" that a module or domain must take to be compatible with the engine. It dictates the required interfaces (Protocols) that a component must implement to "sign the contract" with the system.
 
----
+## C
+### Component Template
+A reusable structural pattern that defines the mandatory files, classes, or interfaces that a module must implement. It acts as a "scaffold" for new features, ensuring consistency across a large codebase.
 
-## 2. Hexagonal: The Boundary Pattern
+### Contract-First Design
+A development methodology where the interfaces and interaction rules (the "contracts") are defined before writing any implementation logic. This ensures that different systems (e.g., Health and Character domains) can integrate seamlessly.
 
-Hexagonal Architecture focuses on the **external boundaries** and decoupling the **Core** from its dependencies. It answers the question: "How does the system talk to the outside world?"
+## D
+### Dependency Injection (DI) Container
+A central object (often called a `ServiceContainer`) that manages the instantiation and lifecycle of services. Instead of components creating their own dependencies, the container "injects" them, allowing for easier testing and modularity.
 
--   **The Core (Inside)**: The Engine Kernel. It defines **Ports** (Protocols).
--   **The Adapters (Outside)**: Domain Packages, UI, Storage. They plug into the Ports.
+### Domain Archetype (System Archetype)
+A structural template or "recipe" that mandates every functional sub-system must implement a specific set of components (e.g., Blueprint, State, Logic, Service). This ensures that all domains are structurally identical from the engine's perspective.
 
-### Best Use-Cases for Hexagonal:
--   Systems requiring high testability (can mock any adapter).
--   Plugin-based architectures (like a game engine with many domains).
--   When the technology (DB, UI) is likely to change or needs to be swapped.
+### Domain-Driven Design (DDD)
+An approach to software development that centers the design on the "Domain" (the core logic of the Oregon Trail). It uses concepts like **Entities**, **Value Objects**, and **Bounded Contexts** to organize complex logic.
 
----
+### Domain Driven Model (Rich Domain Model)
+An approach where domain objects (Entities) encapsulate both state and the behavior related to that state. This is the opposite of an Anemic Domain Model, as the logic "lives" where the data resides.
 
-## 3. How They Work Together (The Hybrid Approach)
+## I
+### Inversion of Control (IoC)
+An architectural principle where the program's flow is inverted: instead of the domain logic calling the framework, the framework (the engine) calls the domain logic via predefined contracts (the Domain Protocol).
 
-In Oregon Trail, the two architectures are mapped together to create a robust system:
-
-| Layer | MVC Role | Hexagonal Role | Responsibility |
-| :--- | :--- | :--- | :--- |
-| **Engine Kernel** | **Controller** | **The Core** | Orchestrates the flow and defines the Protocols (Ports). |
-| **Domain Packages** | **Model** | **Adapters** | Implements the game logic and "plugs into" the Engine. |
-| **UI Components** | **View** | **Adapters** | Handles interaction without knowing the Core logic. |
-
-```mermaid
-graph TD
-    subgraph "Hexagonal Perimeter"
-        Domain[Domain Adapter / Model]
-        UI[UI Adapter / View]
-        Storage[Storage Adapter]
-    end
-
-    subgraph "The Core"
-        Engine[Engine / Controller]
-    end
-
-    Domain --- Engine
-    UI --- Engine
-    Storage --- Engine
-```
-
----
-
-## 4. When They Should NOT Work Together
-
-Combining these patterns adds complexity. You should avoid the hybrid approach if:
-1.  **The Project is Small**: A simple script or small utility doesn't need the overhead of Hexagonal boundaries.
-2.  **Performance is Absolute**: The extra layers of indirection (Protocols/Adapters) can introduce minor overhead (usually negligible in a text-based game).
-3.  **Tightly Coupled Logic**: If your logic is deeply entwined with your UI or Database, trying to force Hexagonal boundaries will lead to "Over-Engineering" and frustration.
-
-## 5. Summary
-
--   **MVC** organizes your code by **layer**.
--   **Hexagonal** protects your code by **boundary**.
--   **Together**, they ensure that the Oregon Trail engine is both easy to understand and extremely modular.
-of the game (Services).
-ency Leaf Policy)
+## L
+### Leaf-Policy (Zero-Dependency Leaf Policy)
 An architectural constraint where "leaf" modules (the most granular functional units, like `health` or `wagon`) are prohibited from depending on or importing any sibling modules. All cross-module interaction must be orchestrated by a higher-level layer (the Engine).
 
 ## M

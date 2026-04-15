@@ -1,0 +1,24 @@
+screaming_mvc_directives:
+  - id: "DIRECTIONAL_HIERARCHY"
+    rule: "The Folder is the 'What' (Business Rule); the File is the 'How' (Technical Role)."
+    description: "Prioritize functional sub-systems as top-level directories (e.g., domain/health/) over technical groupings (e.g., models/)."
+
+  - id: "PILLAR_ENCAPSULATION"
+    rule: "Respect Pillar Boundaries: Domain, UI, and Engine must remain physically and logically separate."
+    description: "Never colocate Views (UI) or Controllers (Engine) inside a Domain package; the 'Scream' should echo across pillars, not muddle them."
+
+  - id: "PUBLIC_API_FLATTENING"
+    rule: "The __init__.py must flatten the internal technical structure into a domain-centric API."
+    description: "A consumer should call 'character.apply_injury()' (Screaming) rather than 'character.logic.apply_injury()' (Muffled/Technical)."
+
+  - id: "UBIQUITOUS_NOMENCLATURE"
+    rule: "Logic functions and services must be named after player intent and historical context."
+    description: "Avoid generic CRUD naming; use behavioral terms like 'fording_river' or 'contracting_disease' to maintain the narrative 'Scream'."
+
+  - id: "ORTHOGONAL_EVOLUTION"
+    rule: "Ensure changes in one MVC role (e.g., UI) do not require changes in others (e.g., Domain)."
+    description: "The 'Scream' allows the UI to change from Text to Graphic without the Business Rules ever knowing a change occurred."
+
+  - id: "AT_A_GLANCE_ORIENTATION"
+    rule: "A non-technical subject matter expert should be able to navigate the file tree to find a game feature."
+    description: "If a feature like 'Hunting' cannot be found within 3 seconds of looking at the tree, the architecture is muffled and requires refactoring."
