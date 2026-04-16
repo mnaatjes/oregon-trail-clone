@@ -1,62 +1,89 @@
 # Engine Orchestration Design (The Controller)
 
-The Engine is the "Brain" of the game, responsible for movement, sequence, and system-wide signals.
+The Engine is the "Conductor" of the Oregon Trail ecosystem. It manages the lifecycle, movement, and interaction of domain packages while enforcing architectural boundaries (ADR 001, 006, 007).
 
-## 1. Engine Orchestrator
-The Orchestrator coordinates the lifecycle and the interaction between independent Domain Roots.
+## 1. The Domain Orchestrator (The Conductor)
+The Orchestrator is the active component within the System Kernel that oversees the "Movement and Sequence" of the game world.
 
 **Path:** `src/engine/orchestrator.py`
 
 ```mermaid
 flowchart TD
-    Start([Engine Start]) --> Boot[Boot Sequence Priority]
-    Boot --> Loop{Game Loop}
-    Loop --> Tick[System Tick / Event Broadcast]
-    Tick --> Logic[Domain Service Transformations]
-    Logic --> Update[State Registry Update]
-    Update --> View[UI Render]
-    View --> Loop
+    Scan[1. Directory Scan] --> Taxonomy[2. Vet Taxonomy Signatures]
+    Taxonomy --> Ontology[3. Resolve Ontological Metadata]
+    Ontology --> Sort[4. Sort by BOOT_PRIORITY]
+    Sort --> Bootstrap[5. Two-Phase Bootstrap]
+    Bootstrap --> Heartbeat[6. Start System Tick]
 ```
 
-## 2. Event Bus (The Nervous System)
-Facilitates decoupled communication across the ecosystem.
+### Responsibilities
+1. **Awareness:** Scans the `domain/` directory for `__DOMAIN_SPECIES__`.
+2. **Registration:** Invokes `register()` on all `__SERVICE_PROVIDER__` classes.
+3. **Sequencing:** Boots providers in order of their `BOOT_PRIORITY`.
+4. **Mediation:** Facilitates Root-to-Root interaction via Structural Protocols.
+
+---
+
+## 2. The Nervous System (Event Bus)
+The Event Bus allows decoupled interaction between sovereign domains. Siblings react to the "Environment" rather than calling each other directly (ADR 007).
 
 **Path:** `src/core/events.py`
 
-| Rule | Description |
-| :--- | :--- |
-| **Sovereignty** | Only Roots may emit Public Events. |
-| **Silence** | Leaves report to their parent Root; they do not broadcast. |
-| **Decoupling** | The 'Blizzard' Root emits an event; 'Health' listens and reacts. |
+```mermaid
+sequenceDiagram
+    participant Weather as Leaf: Weather
+    participant Character as Root: Character
+    participant Bus as Event Bus
+    participant Orchestrator as Engine Orchestrator
 
-## 3. State Registry (Snapshottability)
-Ensures the entire world state can be serialized at any moment.
+    Orchestrator->>Bus: Emit: TickDay
+    Bus->>Weather: Notify: TickDay
+    Weather->>Weather: Calculate Blizzard
+    Weather->>Bus: Emit: BlizzardStarted (Public)
+    Note over Weather: Rule: Only Roots emit Public Events.
+    Bus->>Character: Notify: BlizzardStarted
+    Character->>Character: Apply Health Penalty
+```
+
+### Event Ownership Rules
+- **Sovereignty:** Only a **Root Service** is allowed to broadcast a Public Event.
+- **Silence:** Leaves must report changes to their parent Root; they remain silent to the outside world.
+
+---
+
+## 3. World State (State Registry)
+The State Registry collects snapshots of every active `DomainRoot` for total serializability and "Save Game" functionality (ADR 003, 007).
 
 **Path:** `src/engine/registry.py`
 
 ```mermaid
 graph TD
-    Registry[State Registry]
-    R1[Character Root]
-    R2[Wagon Root]
-    R3[Weather Root]
+    subgraph Ecosystem [Live Domain Ecosystem]
+        C1[Character: Jedediah]
+        C2[Character: Ezekiel]
+        W1[Wagon: The Bessie]
+    end
 
-    Registry --> R1
-    Registry --> R2
-    Registry --> R3
-    
-    Registry -- "Snapshot()" --> JSON[(SaveGame.json)]
+    subgraph Kernel [System Kernel]
+        Registry[State Registry]
+        Registry -->|Collects Anemic DTOs| C1
+        Registry -->|Collects Anemic DTOs| C2
+        Registry -->|Collects Anemic DTOs| W1
+    end
+
+    Registry -- "Single JSON Snapshot" --> JSON[(SaveGame.json)]
 ```
 
-**Implementation Directive:**
-- The Registry maintains a list of all active `DomainRoot` instances.
-- Since models are anemic DTOs, serialization is a simple recursive dump.
-- **Persistence** is handled by the `Storage Pillar` using data provided by the Registry.
+---
 
-## 4. Heartbeat (The Tick)
-A global broadcast that triggers "Metabolic" changes across all domains.
+## 4. The Heartbeat (System Tick)
+The Ecosystem relies on the progression of time. The Orchestrator emits a **Broadcast Event** to trigger "Metabolic" needs across all Roots.
 
-| Event | Source | Listener Action |
-| :--- | :--- | :--- |
-| `TurnAdvanced` | Engine | Domains consume rations, update health. |
-| `DayStarted` | Engine | Weather shifts, distance calculated. |
+```mermaid
+flowchart LR
+    Tick[Orchestrator Tick] -->|Broadcast| Bus[Event Bus]
+    Bus -->|Notify| Root1[Root: Health]
+    Bus -->|Notify| Root2[Root: Wagon]
+    Bus -->|Notify| Root3[Root: Environment]
+```
+- **Tick Priority:** Ties back to `BOOT_PRIORITY`. Ensures "Weather" is calculated before "Health" is penalized.

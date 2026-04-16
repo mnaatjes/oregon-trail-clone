@@ -1,67 +1,60 @@
 # System Kernel Design (The Spec)
 
-The Kernel is the "Laws of Physics" for the Oregon Trail ecosystem. It provides the contracts and mechanisms for dependency injection and system lifecycle.
+The Kernel is the "Laws of Physics" for the Oregon Trail ecosystem. It provides the contracts and mechanisms for dependency injection, system bootstrapping, and boundary enforcement (ADR 001, 006).
 
-## 1. Core Contracts
-All domain entities must inherit from these contracts to be recognized by the Orchestrator.
+## 1. The Service Container (The Hub)
+The `ServiceContainer` is the central registry for all system and domain services. It enforces a strict "Register-then-Boot" lifecycle.
 
-**Path:** `src/core/contracts/domain/`
-
-```mermaid
-classDiagram
-    class DomainEntity {
-        <<abstract>>
-    }
-    class DomainRoot {
-        +UUID uid
-        +int BOOT_PRIORITY
-        +list REQUIRED_PILLARS
-        +string DOMAIN_SCOPE
-    }
-    class DomainRecord {
-        <<Anemic>>
-    }
-    class DomainBlueprint {
-        +string slug
-    }
-    class DomainValueObject {
-        <<Immutable>>
-    }
-
-    DomainEntity <|-- DomainRoot
-    DomainEntity <|-- DomainRecord
-    DomainEntity <|-- DomainBlueprint
-    DomainEntity <|-- DomainValueObject
-```
-
-## 2. Dependency Injection & Lifecycle
-The `ServiceContainer` manages singletons and factory-based resolution.
-
-**Path:** `src/core/container.py` and `src/core/contracts/provider.py`
+**Path:** `src/core/container.py`
 
 ```mermaid
-sequenceDiagram
-    participant G as Gateway (main.py)
-    participant C as ServiceContainer
-    participant P as ServiceProvider
+graph TD
+    subgraph Container [Service Container]
+        Registry[Factory Registry]
+        Singletons[Singleton Cache]
+    end
 
-    G->>C: Initialize()
-    G->>P: Call register(container)
-    P->>C: Bind factories/singletons
-    Note over G,P: Phase 1: Registration Complete
-    
-    G->>P: Call boot(container)
-    P->>C: Resolve dependencies
-    P->>P: Initialize cross-service logic
-    Note over G,P: Phase 2: Bootstrapping Complete
+    subgraph Phase1 [Phase 1: Registration]
+        P1[Provider A] -->|Bind| Registry
+        P2[Provider B] -->|Bind| Registry
+    end
+
+    subgraph Phase2 [Phase 2: Bootstrapping]
+        Registry -->|Resolve| S1[Service A]
+        S1 -->|Initialize| S2[Service B]
+    end
 ```
 
-## 3. Pillar Isolation
-The Kernel enforces boundaries between functional pillars.
+### Lifecycle Enforcements
+1. **Lazy Registration:** Factories are bound to the container during `register()`. No side effects are allowed.
+2. **Deterministic Boot:** Services are instantiated during `boot()`. Resolution errors (missing dependencies) are caught here.
+3. **Immutability:** Once the `boot` phase begins, no new services can be registered.
 
-| Pillar | Responsibility | Path |
-| :--- | :--- | :--- |
-| **Domain** | Pure Logic & State | `src/domain/` |
-| **Engine** | Orchestration & Rules | `src/engine/` |
-| **UI** | Presentation (View) | `src/ui/` |
-| **Storage** | Persistence Adapters | `src/storage/` |
+---
+
+## 2. Pillar Isolation (Boundary Patterns)
+The Kernel acts as the "Protective Shell" (Ports & Adapters) around the Screaming MVC core.
+
+| Pillar | Role | Analogy | Boundary Rule |
+| :--- | :--- | :--- | :--- |
+| **Core (Spec)** | The Law. | `/etc/` / Kernel Specs | Shared by all; depends on none. |
+| **Domain (Model)**| The Logic. | `/bin/` / Binaries | Pure logic zone. Forbidden from I/O. |
+| **Engine (Controller)** | The Admin. | `init` / `systemd` | Orchestrates pillars. Manages lifecycle. |
+| **UI (View)** | The TTY. | `stdout` / TTY | Agnostic of business math. |
+| **Storage (Adapter)**| The Disk. | Block Device | Persistence mapping. Agnostic of logic. |
+
+---
+
+## 3. Dependency Guarding (Ontology)
+The Kernel uses Ontological metadata defined in `DomainRoot` to ensure the system boots safely (ADR 006).
+
+```mermaid
+flowchart TD
+    Check[Kernel Boot Check] --> Pillars{REQUIRED_PILLARS Healthy?}
+    Pillars -- No --> Fail[Abort: System Error]
+    Pillars -- Yes --> Sequence[Resolve Sequence via BOOT_PRIORITY]
+    Sequence --> Boot[Call boot() on Provider]
+```
+
+### Required Pillars
+If a domain requires `"Persistence"`, the Kernel verifies that the `StorageAdapter` is initialized and reachable before allowing the domain to wake up. This acts as a "Safety Fuse" to prevent the game from running in a corrupted or unstable state.
