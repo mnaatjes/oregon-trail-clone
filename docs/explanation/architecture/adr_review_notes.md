@@ -63,7 +63,25 @@ This document serves as a collaborative space for deep-diving into the project's
 
 ### [ADR-003 Anemic Aggregator]
 
-* **Question:** 
+* **Question:** Given, "An Aggregate Root is a DTO (Data Transfer Object) that acts as a container for a Bounded Context..."
+
+    1. What part of the Aggregate Root in our implementation is the DTO? Is it the `DomainBlueprint` dataclass, or the Package as a whole? 
+
+    2. We need to refine language from "Aggregate Root" (the Concept), Aggregate "Root" (a Root level Package), "Aggregate" Root (any package that is an aggregate of the files that make-it-up), etc. Are all Packages Aggregate Roots? 
+
+    3. What properties or variables (and where) are used to define the Bounded Context of an Aggregate Root / Package?
+
+* **Resolution/Action:**
+    1. **The DTO:** The **`DomainRoot` subclass** found in `models.py` is the DTO. It is the passive data structure that anchors the UUID and aggregates other records. `DomainBlueprint` is a static template (Global Truth), not the stateful instance.
+    2. **Species Distinction:**
+        *   **Root Package:** The physical folder in `src/domain/roots/`.
+        *   **Aggregate Root:** The DDD conceptual role.
+        *   **DomainRoot:** The base class/contract for the Aggregate Root DTO.
+        *   **Constraint:** ONLY Root Packages are Aggregate Roots. Leaf Packages are "Atoms" (Records) that are gathered by Roots.
+    3. **Bounded Context Markers:** The Bounded Context is defined by:
+        *   **Physical Boundary:** The package directory itself.
+        *   **The Facade:** `__init__.py` defines the public API via `__all__`.
+        *   **Behavioral Ontology:** Metadata variables like `__DOMAIN_INTENT__` and `__DOMAIN_SPECIES__` (ROOT vs LEAF) in `__init__.py` inform the Kernel of the context's nature.
 
 
 ### [ADR-00X: Title]

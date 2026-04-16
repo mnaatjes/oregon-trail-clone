@@ -4,7 +4,7 @@ description: "Design pattern for Aggregate Roots as anemic DTOs to ensure 100% s
 type: "explanation"
 status: "adopted"
 created_at: "2026-04-15 00:00:00"
-updated_at: "2026-04-15 00:00:00"
+updated_at: "2026-04-16 10:00:00"
 owner: "Michael Naatjes"
 tags: ["adr", "domain", "anemic-model", "snapshot"]
 version: "0.1.0"
@@ -198,3 +198,21 @@ The "Screaming" nature of the filesystem is preserved. A developer can see the "
 ## Status
 
 **Adopted** 2026-04-16
+## Addendum (2026-04-16)
+
+To resolve ambiguities regarding the physical and logical implementation of Aggregate Roots:
+
+1. **DTO Identification**: The **`DomainRoot` subclass** residing in `models.py` is the primary DTO (instance state). `DomainBlueprint` remains a static template (Global Truth) and is NOT the stateful Aggregate Root instance.
+2. **Structural Terminology**: 
+    - **Root Package**: Refers to the physical directory in `src/domain/roots/`.
+    - **Aggregate Root**: Refers to the conceptual DDD role.
+    - **DomainRoot**: Refers to the base contract/class in `src/core/contracts/domain/`.
+    - **Enforcement**: Only Root Packages function as Aggregate Roots. Leaf Packages are "Atoms" (Records) that are aggregated by Roots.
+3. **Bounded Context Markers**: A Bounded Context is defined by its physical directory, its Facade (`__init__.py`), and its Behavioral Ontology metadata (e.g., `__DOMAIN_INTENT__`, `__DOMAIN_SPECIES__`) which inform the Kernel of the context's boundaries and purpose.
+
+## Addendum (2026-04-16): Unified Context Manifest
+
+To formalize the discovery and validation of Bounded Contexts, the project adopts a **Unified Context Manifest** pattern:
+1. **The Manifest**: All loose behavioral metadata (intent, species, priority) is unified into a single `DomainContext` object.
+2. **Implementation**: Every Bounded Context (Root or Leaf) MUST instantiate this manifest in its `__init__.py` as the reserved variable `__CONTEXT__`.
+3. **Rationale**: This provides a single, type-safe point of entry for the Kernel to identify and bootstrap a package, moving away from fragmented metadata variables.
