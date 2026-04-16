@@ -1,0 +1,8 @@
+metadata: 
+  id: "Documentation Ruleset"
+  purpose: "Defines documentation ruleset in accordance with Diataxis ADR Document."
+  scope: "src/docs/"
+  version: "0.1.0"
+  created_at: "2026-04-16 03:19:00"
+  updated_at: "2026-04-16 3:20:00"
+  permissions: ""

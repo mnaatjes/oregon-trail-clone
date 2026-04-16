@@ -1,7 +1,16 @@
+metadata: 
+  id: "Project Wide Metadata"
+  purpose: "Meta Information about the Project"
+  scope: "Project-Wide"
+  version: "0.1.0"
+  created_at: "2026-04-16 2:00:00"
+  updated_at: "2026-04-16 3:14:00"
+  permissions: "readonly"
+
 project_metadata:
   name: "Oregon Trail"
   description: "A modular, text-based adventure game built with Screaming MVC architecture."
-  version: "0.2.0"
+  version: "0.1.0"
   author: "Michael Naatjes"
   updated_at: 2026-04-16
 

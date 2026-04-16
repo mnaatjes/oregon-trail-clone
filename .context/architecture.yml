@@ -1,3 +1,12 @@
+metadata: 
+  id: "Architecture"
+  purpose: "Core architectural patterns"
+  scope: "Project-Wide"
+  version: "0.1.0"
+  created_at: "2026-04-16 2:00:00"
+  updated_at: "2026-04-16 3:12:04"
+  permissions: "readonly"
+
 architecture_directives:
   pattern: "Screaming MVC"
   description: "MVC serves as the Internal Organization Pattern; Ports & Adapters serves as the Boundary Pattern."
@@ -11,19 +20,15 @@ architecture_directives:
   mvc_mapping:
     model:
       path: "src/domain/"
-      analogy: "The /bin/ / Binaries"
       responsibility: "Screaming business logic and anemic state."
     view:
       path: "src/ui/"
-      analogy: "The stdout / TTY"
       responsibility: "Presentation and User Input (Agnostic of business math)."
     controller:
       path: "src/engine/"
-      analogy: "The init / systemd"
       responsibility: "Orchestration, Events, and Game Lifecycle."
     spec:
       path: "src/core/"
-      analogy: "The /etc/ / Kernel Specs"
       responsibility: "Contracts, Dependency Injection, and Base Classes."
 
   screaming_implementation:

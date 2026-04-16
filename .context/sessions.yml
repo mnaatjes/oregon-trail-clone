@@ -1,111 +1,30 @@
+metadata: 
+  id: "Session Tracking"
+  purpose: "Tracks accomplishments, todos, and git related history."
+  scope: "Project Wide"
+  version: "0.1.0"
+  created_at: "2026-04-16 2:00:00"
+  updated_at: "2026-04-16 3:18:00"
+  permissions: "read, write"
+
+header:
+  created_at: "2026-04-16 02:31:00"
+  updated_at: "2026-04-16 02:"
+  directives:
+    - "Most recent session at top"
+    - "session_id value from Gemini-CLI"
+    - "Track version of project"
+  
 sessions:
-  - session_id: "e66f0c5a-ba93-4fe1-a5dd-83f6b10f5897" # Provided by gemini-cli
-    timestamp: "2026-04-12T14:45:00Z"
+  - session_id: ""
+    metadata:
+      timestamp: ""
+      version: "0.1.0"
     tasks:
       accomplished:
-        - "Defined multi-pillar architecture (Domain, Core, Engine, Storage, UI, Gateway)"
-        - "Updated architecture.yml with strict MVC and Clean Domain rules"
-        - "Scaffolded src/ directory with sub-packages and __init__.py files"
-        - "Configured pytest and passed initial integration test for main.py"
-        - "Created historical documentation for Apple II version (Domains, Mechanics, Menus, Story)"
-        - "Initialized project-root README.md with new structure"
+        - ""
       todo:
-        - "Teach user how to use asciimatics for UI development with simple examples"
-        - "Teach user how to use rich and textual with simple examples and best practices"
-        - "Implement domain models (Wagon, PartyMember, Inventory, etc.) in src/domain/models/"
-        - "Implement domain services (TravelCalculator, HuntingLogic) in src/domain/services/"
-        - "Create asset_loader in src/core/ for ASCII resources"
-        - "Build initial UI screens using Textual"
+        - ""
     git:
-      branches_affected: ["main"]
-      commit_uuids: ["beacc01"]
-
-  - session_id: "6e8f1a2b-3c4d-5e6f-7a8b-9c0d1e2f3a4b" # Continued session
-    timestamp: "2026-04-12T16:30:00Z"
-    tasks:
-      accomplished:
-        - "Documented Domain Service Pattern in docs/explanation/domain_service_pattern.md"
-        - "Reviewed and refined validation directives in .context/patterns.yml"
-        - "Enforced separation of structural vs. stateful validation in Domain Service pattern"
-      todo:
-        - "Implement initial Domain Models (Wagon, Person) following the updated patterns.yml"
-        - "Implement ChronologyService for time management"
-        - "Select UI library (Textual vs. Asciimatics) and build prototype"
-    git:
-      branches_affected: ["main"]
+      branches_affected: []
       commit_uuids: []
-
-  - session_id: "6dbda590-55a4-4499-a60f-a2eccbc63d28"
-    timestamp: "2026-04-13T10:00:00Z"
-    tasks:
-      accomplished:
-        - "Implemented 'ServiceContainer' in src/core/container.py for Dependency Injection."
-        - "Refined 'DomainBlueprint' and 'BaseRegistry' in src/core/contracts/ for universal domain data handling."
-        - "Implemented 'BaseServiceProvider' in src/core/contracts/provider.py with a two-phase (Register -> Boot) lifecycle."
-        - "Simplified DomainBlueprint contract by removing redundant from_dict/to_dict methods."
-        - "Enforced type safety in ServiceContainer using typing.cast(T, ...)."
-        - "Updated .context/ files to reflect the new architecture and patterns."
-      todo:
-        - "Implement concrete Domain Registries (e.g., MaladyRegistry)."
-        - "Implement initial Service Providers for specific domains (e.g., HealthServiceProvider)."
-        - "Hydrate registries from JSON assets in the assets/ directory."
-        - "Begin implementation of Domain Models (Wagon, Person) following the refined contracts."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: []
-
-  - session_id: "50647f31-b540-43ed-b151-8167be3383ba"
-    timestamp: "2026-04-13T22:30:00Z"
-    tasks:
-      accomplished:
-        - "Refactored ServiceContainer and BaseServiceProvider to use a cleaner 'self.container' pattern."
-        - "Fixed factory lambda signatures in ServiceContainer.resolve to correctly pass the container instance."
-        - "Implemented a comprehensive test for the two-phase (Register -> Boot) bootstrapping lifecycle in tests/unit/core/test_container.py."
-        - "Created a new 'Architecture Enforcement' testing regime in tests/integration/architecture/."
-        - "Started test_domain_integrity.py to dynamically enforce domain package structure (Providers, Registries, Models, Services)."
-      todo:
-        - "Complete test_domain_integrity.py to fully enforce the Universal Domain Blueprint."
-        - "Implement test_dependency_rules.py to enforce the Zero-Dependency Leaf Policy."
-        - "Begin creating 'health' and 'character' domain packages to satisfy the new integrity tests."
-        - "Implement ChronologyService for game time management."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: []
-
-  - session_id: "7f8e9a0b-1c2d-3e4f-5a6b-7c8d9e0f1a2b"
-    timestamp: "2026-04-14T09:30:00Z"
-    tasks:
-      accomplished:
-        - "Defined the 'Architecture Testing Regime' (Fitness Functions) strategy for UDB enforcement."
-        - "Created docs/explanation/engineering/architecture_testing_regime.md detailing constants, helpers, and the 'Guard' pattern."
-        - "Updated docs/explanation/engineering/architecture_contract_enforcement.md to integrate the new testing regime."
-        - "Summarized Domain Integrity requirements and established a clear TODO list for architectural tests."
-      todo:
-        - "Scaffold tests/integration/architecture/ constants.py, helpers.py, and conftest.py."
-        - "Refactor test_domain_integrity.py into modular 'test_structure.py' and 'test_contracts.py'."
-        - "Implement dynamic domain discovery via parameterized fixtures in conftest.py."
-        - "Implement 'test_dependencies.py' for Zero-Dependency Leaf Policy and circular import checks."
-        - "Implement concrete domain logic in src/domain/ to pass the new integrity tests."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: []
-
-  - session_id: "9d8c7b6a-5e4d-4c3b-2a1f-0e9d8c7b6a5e"
-    timestamp: "2026-04-14T20:45:00Z"
-    tasks:
-      accomplished:
-        - "Formalized project vocabulary in docs/reference/glossary.md with 15+ architectural terms."
-        - "Consolidated engineering documentation, merging architecture_contract_enforcement.md and architecture_fitness_functions.md into domain_architecture_contract.md."
-        - "Expanded architectural reference docs with Modular, Platform-Oriented, and Microkernel Architecture specifications."
-        - "Defined 'Standardized Component Archetype' and 'Component Template' patterns with taxonomy and diagrams."
-        - "Developed 'Domain Binding Strategy' (Technical vs. Functional Wiring) in docs/explanation/engineering/domain_binding_strategy.md."
-        - "Created architectural disambiguation guide for MVC vs. Hexagonal (Hybrid) architecture."
-        - "Designed 'Engine Orchestrator' prototype as the central Microkernel core."
-      todo:
-        - "Implement concrete Domain Bindings (binding.py) for 'health' and 'character' packages."
-        - "Implement the Engine Orchestrator in src/engine/orchestrator.py following the prototype design."
-        - "Complete the Architecture Testing Regime in tests/integration/architecture/ to enforce the new contracts."
-        - "Update src/main.py to initialize the ServiceContainer and Orchestrator."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: ["9389d29", "d28189f"]

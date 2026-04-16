@@ -1,3 +1,12 @@
+metadata: 
+  id: "Domain Concern Rules"
+  purpose: "Defines structure and behaviors of Domain Concern of MVC"
+  scope: "src/domain/"
+  version: "0.1.0"
+  created_at: "2026-04-16 2:00:00"
+  updated_at: "2026-04-16 3:14:00"
+  permissions: "readonly"
+
 domain_directives:
   taxonomy_species:
     DomainRoot:
