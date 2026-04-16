@@ -1,3 +1,15 @@
+---
+title: "Prototype: Engine Orchestrator"
+description: "Archived design document for the initial Engine Orchestrator prototype."
+type: "explanation"
+status: "depreciated"
+created_at: "2026-04-16 04:00:00"
+updated_at: "2026-04-16 04:00:00"
+owner: "Michael Naatjes"
+tags: [archived, design, legacy, prototype, engine]
+version: "0.1.0"
+---
+
 # Prototype: Engine Orchestrator
 
 The **Engine Orchestrator** is the central "Kernel" of the Oregon Trail engine. It is responsible for the execution flow of the game by coordinating between the `ServiceContainer` and various `Domain Modules` (Plugins).

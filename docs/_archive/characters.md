@@ -1,3 +1,15 @@
+---
+title: "Game Character Domains and Systems"
+description: "Archived design document regarding Character Identity, DataClasses, and Health Infrastructure."
+type: "explanation"
+status: "depreciated"
+created_at: "2026-04-16 04:00:00"
+updated_at: "2026-04-16 04:00:00"
+owner: "Michael Naatjes"
+tags: [archived, design, legacy, character]
+version: "0.1.0"
+---
+
 # Game Character Domains and Systems
 
 

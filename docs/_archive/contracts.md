@@ -1,3 +1,15 @@
+---
+title: "Domain Contracts Design (The Spec)"
+description: "Archived design document detailing Domain Contracts, Taxonomy, and Anatomy."
+type: "explanation"
+status: "depreciated"
+created_at: "2026-04-16 04:00:00"
+updated_at: "2026-04-16 04:00:00"
+owner: "Michael Naatjes"
+tags: [archived, design, legacy, contracts]
+version: "0.1.0"
+---
+
 # Domain Contracts Design (The Spec)
 
 This document defines the core contracts and interfaces that govern the **Taxonomy** and **Anatomy** of the Oregon Trail domain layer, as established in **ADR 001 through 007**.

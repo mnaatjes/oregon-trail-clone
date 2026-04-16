@@ -1,3 +1,15 @@
+---
+title: "System Kernel Design (The Spec)"
+description: "Archived design document detailing the System Kernel, Service Container, and Pillar Isolation."
+type: "explanation"
+status: "depreciated"
+created_at: "2026-04-16 04:00:00"
+updated_at: "2026-04-16 04:00:00"
+owner: "Michael Naatjes"
+tags: [archived, design, legacy, kernel]
+version: "0.1.0"
+---
+
 # System Kernel Design (The Spec)
 
 The Kernel is the "Laws of Physics" for the Oregon Trail ecosystem. It provides the contracts and mechanisms for dependency injection, system bootstrapping, and boundary enforcement (ADR 001, 006).

@@ -1,3 +1,15 @@
+---
+title: "Domain Layer Design (The Model)"
+description: "Archived design document detailing Domain Layer organization, Package Anatomy, and Hierarchy."
+type: "explanation"
+status: "depreciated"
+created_at: "2026-04-16 04:00:00"
+updated_at: "2026-04-16 04:00:00"
+owner: "Michael Naatjes"
+tags: [archived, design, legacy, domain]
+version: "0.1.0"
+---
+
 # Domain Layer Design (The Model)
 
 The Domain layer is the "Screaming" heart of the game, organized into Sovereign Bounded Contexts. It follows the principles of **Anemic Aggregates** and **Structural Sibling** organization (ADR 001, 003, 004).

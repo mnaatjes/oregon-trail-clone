@@ -1,3 +1,15 @@
+---
+title: "Engine Orchestration Design (The Controller)"
+description: "Archived design document detailing the Engine Orchestrator, Event Bus, and System Tick."
+type: "explanation"
+status: "depreciated"
+created_at: "2026-04-16 04:00:00"
+updated_at: "2026-04-16 04:00:00"
+owner: "Michael Naatjes"
+tags: [archived, design, legacy, engine]
+version: "0.1.0"
+---
+
 # Engine Orchestration Design (The Controller)
 
 The Engine is the "Conductor" of the Oregon Trail ecosystem. It manages the lifecycle, movement, and interaction of domain packages while enforcing architectural boundaries (ADR 001, 006, 007).
