@@ -1,0 +1,42 @@
+metadata: 
+  id: "Design Workflow"
+  purpose: "Defines the transition from Architectural Decision to Technical Design and Implementation."
+  scope: "Project-Wide"
+  version: "0.1.0"
+  created_at: "2026-04-16 05:05:00"
+  updated_at: "2026-04-16 05:05:00"
+  permissions: "readonly"
+
+design_lifecycle:
+  phases:
+    1: "ADR Creation: Define 'Why' and 'What' in docs/explanation/reports/adr/."
+    2: "ADR Approval: Reach consensus on the architectural direction."
+    3: "Context Hydration: Integrate ADR rules into .context/ for agent alignment."
+    4: "TDD Drafting: Define 'How' in docs/explanation/design/ using the TDD Template."
+    5: "TDD Approval: Verify edge cases, state transitions, and dependency graphs."
+    6: "Implementation: Execute code based on the approved blueprint."
+
+tdd_blueprint:
+  required_sections:
+    overview: "High-level summary of the problem and proposed solution."
+    goals_and_non_goals: "Clear scope boundaries to prevent feature creep."
+    proposed_design: "Architecture overview with Mermaid C4 or Component diagrams."
+  optional_sections:
+    context_background: "Links to ADRs and historical background."
+    detailed_design: "Class-level details, data structures, and state management."
+    alternatives_considered: "Rationale for the chosen pattern over other candidates."
+    cross_cutting_concerns: "Security, observability, and performance impacts."
+  detailed_design_elements:
+    data_schema: "Definitions of Anemic Models (Records/DTOs)."
+    contracts: "Public method signatures for Services and Providers."
+    logic_flow: "Sequence diagrams illustrating Service -> Logic -> Model interaction."
+    state_management: "State Machine diagrams for complex domain transitions."
+  diagnostic_goals:
+    - "Edge Case Exhaustion: Design for the 'Sad Path' before implementation."
+    - "Circular Dependency Prevention: Map imports to ensure compliance with Screaming MVC."
+    - "Illegal State Exclusion: Ensure atomic and valid state transformations."
+    - "Performance Bounds: Define memory and tick-rate constraints."
+
+documentation_mapping:
+  adr_directory: "docs/explanation/reports/adr/"
+  tdd_directory: "docs/explanation/design/"
