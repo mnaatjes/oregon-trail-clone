@@ -36,6 +36,10 @@ documentation_directives:
     format: "Markdown (.md) using kebab-case naming."
     archiving: "Deprecated documents move to docs/_archive/ with status updated to 'deprecated'."
     enforcement: "Updates required for all architecturally significant changes."
+    adr_addenda_workflow:
+      - "Atomic Appending: Use 'cat >>' via shell to safely append to the end of the file, avoiding replacement errors."
+      - "Historical Integrity: Always use a '## Addendum (YYYY-MM-DD)' header to preserve the original adopted decision."
+      - "Contextual Mapping: Ensure clarifications are appended to the specific ADR document most relevant to the rule."
 
   frontmatter_schema:
     required_keys:
