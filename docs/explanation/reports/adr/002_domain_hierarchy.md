@@ -4,7 +4,7 @@ description: "Rules for defining the relationship between Aggregate Roots and Le
 type: "explanation"
 status: "adopted"
 created_at: "2026-04-15 00:00:00"
-updated_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 05:45:00"
 owner: "Michael Naatjes"
 tags: ["adr", "domain", "hierarchy", "typing"]
 version: "0.1.0"
@@ -125,3 +125,9 @@ The testing suite is promoted to an Architectural Police role:
 To prevent architectural leakage, the following distinction is formalized:
 1. **The Service (services.py):** The business logic Actor. It is a Stateless Singleton registered into the ServiceContainer.
 2. **The ServiceProvider (providers.py):** The Kernel-level Factory. It handles the registration and bootstrapping of the Service. It is NOT part of the Domain Logic.
+
+## Addendum: Structural Protocols & Import Audits (2026-04-16)
+
+To support lateral interaction and automated architectural enforcement:
+1. **Structural Protocols:** Lateral interaction between Roots is enforced via `typing.Protocol`. Consumers define the contract; providers satisfy it via Duck Typing (no inheritance from the Protocol is required).
+2. **Import Audits:** Illegal horizontal imports (Leaf-to-Leaf or Root-to-Root) will be enforced via AST (Abstract Syntax Tree) parsing in the `pytest` suite, ensuring that "Zero-Dependency" and "Isolation" policies are not violated by manual code changes.

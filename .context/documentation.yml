@@ -40,6 +40,8 @@ documentation_directives:
       - "Atomic Appending: Use 'cat >>' via shell to safely append to the end of the file, avoiding replacement errors."
       - "Historical Integrity: Always use a '## Addendum (YYYY-MM-DD)' header to preserve the original adopted decision."
       - "Contextual Mapping: Ensure clarifications are appended to the specific ADR document most relevant to the rule."
+      - "Frontmatter Maintenance: The 'updated_at' field in the ADR's frontmatter MUST be updated to the current timestamp when an addendum is added."
+      - "Strict Scoping: Only modify the specific ADR file(s) explicitly referenced in the review or inquiry."
 
   frontmatter_schema:
     required_keys:
