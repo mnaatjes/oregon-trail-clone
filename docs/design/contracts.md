@@ -14,28 +14,28 @@ classDiagram
     }
     class DomainRoot {
         <<abstract>>
-        +UUID uid (Sovereign)
+        +UUID uid
         +BOOT_PRIORITY int
         +REQUIRED_PILLARS list
         +DOMAIN_SCOPE str
     }
     class DomainRecord {
         <<abstract>>
-        +Identity None (Anonymous)
+        +Identity Identity_None
     }
     class DomainBlueprint {
         <<abstract>>
-        +slug str (Static)
+        +slug str
     }
     class DomainValueObject {
         <<abstract>>
-        +Identity Value-based (Immutable)
+        +Identity Identity_Value
     }
 
-    DomainEntity <|-- DomainRoot : "Taxonomy: ROOT"
-    DomainEntity <|-- DomainRecord : "Taxonomy: LEAF"
-    DomainEntity <|-- DomainBlueprint : "Taxonomy: TEMPLATE"
-    DomainEntity <|-- DomainValueObject : "Taxonomy: TYPE"
+    DomainEntity <|-- DomainRoot : ROOT
+    DomainEntity <|-- DomainRecord : LEAF
+    DomainEntity <|-- DomainBlueprint : TEMPLATE
+    DomainEntity <|-- DomainValueObject : TYPE
 ```
 
 ### Contract Specifications
