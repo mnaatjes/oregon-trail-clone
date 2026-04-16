@@ -1,3 +1,15 @@
+---
+title: "Major Domains, Entities, and Objects (Apple II - 1985)"
+description: "Analysis of the core domain entities and objects from the original 1985 Apple II version of The Oregon Trail."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["historical", "apple-ii", "1985", "entities"]
+version: "0.1.0"
+---
+
 # Major Domains, Entities, and Objects (Apple II - 1985)
 
 This document outlines the core domain entities and objects represented in the 1985 Apple II version of The Oregon Trail.

@@ -1,9 +1,13 @@
 ---
-author: Michael Naatjes
+title: "ADR Process"
+description: "Guidelines for creating, reviewing, and adopting Architectural Decision Records (ADRs)."
+type: "explanation"
+status: "stable"
 created_at: "2026-04-16 02:43:00"
 updated_at: "2026-04-16 02:45:00"
-title: "ADR Process"
-description: "ADR Documentation Creation and Process"
+owner: "Michael Naatjes"
+tags: ["adr", "process", "architecture"]
+version: "0.1.0"
 ---
 
 # Architectural Decision Records (ADR) Process

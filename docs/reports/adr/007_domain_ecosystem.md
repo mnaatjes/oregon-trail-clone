@@ -1,8 +1,13 @@
 ---
 title: "Domain Ecosystem"
-created_at: 2026-04-15
-updated_at: 2026-04-16
-status: pending
+description: "High-level overview of symbiotic interactions between domain packages via the Event Bus and Tick system."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-15 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["adr", "domain", "ecosystem", "events"]
+version: "0.1.0"
 ---
 
 # ADR 007: The Domain Ecosystem

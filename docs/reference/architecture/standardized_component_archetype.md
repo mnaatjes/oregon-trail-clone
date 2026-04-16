@@ -1,3 +1,15 @@
+---
+title: "Standardized Component Archetype"
+description: "Definition of the semantic laws and constraints that govern all system components via the Universal Domain Blueprint."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "archetype", "standards"]
+version: "0.1.0"
+---
+
 # Standardized Component Archetype
 
 A **Standardized Component Archetype** is a high-level, abstract model that defines the essential characteristics, behaviors, and constraints of a specific category of components. It is a "blueprint of a blueprint."

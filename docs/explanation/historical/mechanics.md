@@ -1,3 +1,15 @@
+---
+title: "Game Mechanics (Apple II - 1985)"
+description: "Detailed breakdown of travel, resource management, and mini-game mechanics from the 1985 original."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["historical", "apple-ii", "1985", "mechanics"]
+version: "0.1.0"
+---
+
 # Game Mechanics (Apple II - 1985)
 
 This document details the mechanics of the 1985 Apple II version of The Oregon Trail.

@@ -1,3 +1,15 @@
+---
+title: "Patterns vs. Architecture"
+description: "Clarification of the distinction between local tactical patterns and global strategic architecture."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "patterns", "design"]
+version: "0.1.0"
+---
+
 # Patterns vs. Architecture
 
 Understanding the distinction between **Patterns** and **Architecture** is crucial for maintaining a clean and scalable codebase. While they are related, they operate at different levels of abstraction and scope.

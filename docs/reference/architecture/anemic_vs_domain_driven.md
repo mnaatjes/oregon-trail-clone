@@ -1,3 +1,15 @@
+---
+title: "Anemic vs. Domain Driven Models"
+description: "Comparison of Anemic Domain Models and Rich Domain Models, explaining the project's choice of the anemic approach."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "domain-model", "design-patterns"]
+version: "0.1.0"
+---
+
 # Anemic vs. Domain Driven Models
 
 This document clarifies the difference between **Anemic Domain Models** and **Domain Driven (Rich) Models**, and why this project intentionally chooses the Anemic approach.

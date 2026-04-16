@@ -1,11 +1,12 @@
 ---
-owner: "Michael Naatjes"
-status: "Adopted"
+title: "Adoption of Diataxis Documentation"
+description: "Formal adoption of the Diátaxis framework for project documentation to improve maintainability and onboarding."
+type: "explanation"
+status: "stable"
 created_at: "2026-04-16 02:53:00"
 updated_at: "2026-04-16 03:05:00"
-title: "Adoption of Diataxis Documentation"
-tags: ["adr", "diataxis"]
-type: "design"
+owner: "Michael Naatjes"
+tags: ["adr", "diataxis", "documentation"]
 version: "0.1.0"
 ---
 

@@ -1,3 +1,15 @@
+---
+title: "Component Template"
+description: "Concrete implementation-oriented specification for scaffolding new modules within the established architecture."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["patterns", "template", "scaffolding"]
+version: "0.1.0"
+---
+
 # Component Template
 
 A **Component Template** is a concrete, implementation-oriented specification used to scaffold or generate a specific module. It provides a "starter kit" or "shell" that ensures every implementation follows the structural rules defined by the Architecture.

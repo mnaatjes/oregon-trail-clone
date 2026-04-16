@@ -1,3 +1,15 @@
+---
+title: "Platform-Oriented Architecture"
+description: "Design philosophy treating the engine as a reusable platform for independent pluggable domain applications."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "platform", "extensibility"]
+version: "0.1.0"
+---
+
 # Platform-Oriented Architecture
 
 **Platform-Oriented Architecture** is a design philosophy where the primary system is built as a reusable, extensible "Platform" (the Engine) that provides core capabilities to independent, pluggable "Applications" (the Domains).

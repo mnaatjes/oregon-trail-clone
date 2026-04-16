@@ -1,3 +1,15 @@
+---
+title: "Packages, Modules, and Components"
+description: "Definitions and hierarchy of code organization units within the project structure."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "structure", "terminology"]
+version: "0.1.0"
+---
+
 # Packages, Modules, and Components
 
 In Python development, understanding the hierarchy of code organization is essential for maintaining a clean and professional project structure.

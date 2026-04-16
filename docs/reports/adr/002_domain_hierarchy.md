@@ -1,8 +1,13 @@
 ---
-title: "Domain Heirarchy"
-created_at: 2026-04-15
-updated_at: 2026-04-16
-status: presented
+title: "Domain Hierarchy"
+description: "Rules for defining the relationship between Aggregate Roots and Leaf Records using Normal and Structural typing."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-15 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["adr", "domain", "hierarchy", "typing"]
+version: "0.1.0"
 ---
 
 # ADR 002: Domain Hierarchy

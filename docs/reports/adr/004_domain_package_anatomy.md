@@ -1,8 +1,13 @@
 ---
 title: "Domain Package Anatomy"
-created_at: 2026-04-15
-updated_at: 2026-04-16
-status: pending
+description: "Internal structure of domain packages separating Model (State), Logic (Math), and Service (Orchestration)."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-15 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["adr", "domain", "anatomy", "encapsulation"]
+version: "0.1.0"
 ---
 
 # ADR 004: Domain Package Anatomy

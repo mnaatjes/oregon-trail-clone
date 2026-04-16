@@ -1,8 +1,13 @@
 ---
 title: "Domain Model Taxonomy"
-created_at: 2026-04-15
-updated_at: 2026-04-15
-status: pending
+description: "Classification of domain entities into Roots, Records, Blueprints, and Value Objects."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-15 00:00:00"
+updated_at: "2026-04-15 00:00:00"
+owner: "Michael Naatjes"
+tags: ["adr", "domain", "taxonomy", "typing"]
+version: "0.1.0"
 ---
 
 # ADR 005: Domain Model Taxonomy

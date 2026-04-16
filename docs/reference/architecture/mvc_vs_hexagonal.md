@@ -1,3 +1,15 @@
+---
+title: "MVC vs. Hexagonal Architecture"
+description: "Analysis of the hybrid architectural approach combining MVC internal organization with Hexagonal boundary protection."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "mvc", "hexagonal"]
+version: "0.1.0"
+---
+
 # MVC vs. Hexagonal Architecture
 
 This project employs a **Hybrid Architecture** that combines the organizational strengths of **MVC** with the isolation and decoupling of **Hexagonal Architecture (Ports & Adapters)**.

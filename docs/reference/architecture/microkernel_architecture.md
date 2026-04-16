@@ -1,3 +1,15 @@
+---
+title: "Microkernel Architecture"
+description: "Overview of the Microkernel (Plugin) architecture used to separate the core engine from specialized game logic."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "microkernel", "plugin"]
+version: "0.1.0"
+---
+
 # Microkernel Architecture
 
 **Microkernel Architecture** (also known as Plugin Architecture) is a pattern that separates a minimal functional core (the kernel) from the system's extended functionality (the plugins). The kernel provides the foundational environment, while plugins add specialized features.

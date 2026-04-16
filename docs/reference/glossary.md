@@ -1,8 +1,13 @@
 ---
 title: "Glossary"
-description: "Terms of Art used in this project"
-created_at: 2026-04-13
-updated_at: 2026-04-15
+description: "Definitions of architectural terms and design patterns used in the Oregon Trail engine."
+type: "reference"
+status: "stable"
+created_at: "2026-04-13 00:00:00"
+updated_at: "2026-04-15 00:00:00"
+owner: "Michael Naatjes"
+tags: ["glossary", "terminology", "reference"]
+version: "0.1.0"
 ---
 
 # Glossary

@@ -1,3 +1,15 @@
+---
+title: "Modular Architecture"
+description: "Principles of modular design, focusing on strict boundaries, high cohesion, and the zero-dependency leaf policy."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["architecture", "modular", "boundaries"]
+version: "0.1.0"
+---
+
 # Modular Architecture
 
 **Modular Architecture** is a design practice that emphasizes separating the functionality of a system into independent, interchangeable modules. Each module contains everything necessary to execute a specific aspect of the system's overall functionality.

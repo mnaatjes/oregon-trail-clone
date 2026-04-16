@@ -1,3 +1,15 @@
+---
+title: "Menus and User Flow (Apple II - 1985)"
+description: "Overview of the menu structure and typical user journey in the original 1985 game."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["historical", "apple-ii", "1985", "ui", "ux"]
+version: "0.1.0"
+---
+
 # Menus and User Flow (Apple II - 1985)
 
 This document outlines the menu structure and typical user journey in the original game.

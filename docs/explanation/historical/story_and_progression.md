@@ -1,3 +1,15 @@
+---
+title: "The Story of the Oregon Trail"
+description: "Narrative arc and user progression flow of the 1985 Oregon Trail game."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["historical", "apple-ii", "1985", "narrative", "progression"]
+version: "0.1.0"
+---
+
 # The Story of the Oregon Trail
 
 This document outlines the narrative arc and user progression of the 1985 Oregon Trail game.

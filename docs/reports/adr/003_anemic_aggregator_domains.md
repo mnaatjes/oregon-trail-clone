@@ -1,8 +1,13 @@
 ---
 title: "Anemic Aggregator Domains"
-created_at: 2026-04-15
-updated_at: 2026-04-15
-status: pending
+description: "Design pattern for Aggregate Roots as anemic DTOs to ensure 100% state serializability and snapshottability."
+type: "explanation"
+status: "stable"
+created_at: "2026-04-15 00:00:00"
+updated_at: "2026-04-15 00:00:00"
+owner: "Michael Naatjes"
+tags: ["adr", "domain", "anemic-model", "snapshot"]
+version: "0.1.0"
 ---
 
 # ADR 003: Anemic Aggregator Domains: Roots and Leafs

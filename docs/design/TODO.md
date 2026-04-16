@@ -1,3 +1,15 @@
+---
+title: "Project Implementation TODO"
+description: "Comprehensive task list for establishing foundational infrastructure and architectural enforcement."
+type: "reference"
+status: "stable"
+created_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 00:00:00"
+owner: "Michael Naatjes"
+tags: ["roadmap", "tasks", "implementation"]
+version: "0.1.0"
+---
+
 # Oregon Trail Implementation TODO
 
 This list tracks the tasks required to establish the foundational infrastructure and architectural enforcement for the **Screaming MVC** and **Anemic Aggregate** architecture, strictly following **ADR 001 through 007**.
