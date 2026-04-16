@@ -32,10 +32,10 @@ classDiagram
         +Identity Value-based (Immutable)
     }
 
-    DomainEntity <|-- DomainRoot : Taxonomy: ROOT
-    DomainEntity <|-- DomainRecord : Taxonomy: LEAF
-    DomainEntity <|-- DomainBlueprint : Taxonomy: TEMPLATE
-    DomainEntity <|-- DomainValueObject : Taxonomy: TYPE
+    DomainEntity <|-- DomainRoot : "Taxonomy: ROOT"
+    DomainEntity <|-- DomainRecord : "Taxonomy: LEAF"
+    DomainEntity <|-- DomainBlueprint : "Taxonomy: TEMPLATE"
+    DomainEntity <|-- DomainValueObject : "Taxonomy: TYPE"
 ```
 
 ### Contract Specifications
