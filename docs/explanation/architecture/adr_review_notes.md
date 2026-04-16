@@ -61,6 +61,9 @@ This document serves as a collaborative space for deep-diving into the project's
     2. **Why:** AST parsing is more robust than string-based searching (regex) as it understands the structure of the code (imports, aliases, multiline).
     3. **Enforcement:** This will be implemented as a "Fitness Function" in the Architecture Testing Regime (Phase 2 TODO).
 
+### [ADR-003 Anemic Aggregator]
+
+* **Question:** 
 
 
 ### [ADR-00X: Title]
