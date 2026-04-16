@@ -1,59 +1,69 @@
 # Domain Contracts Design (The Spec)
 
-This document defines the core contracts and interfaces that govern the **Taxonomy** and **Anatomy** of the Oregon Trail domain layer, as established in **ADR 002, 004, and 005**.
+This document defines the core contracts and interfaces that govern the **Taxonomy** and **Anatomy** of the Oregon Trail domain layer, as established in **ADR 001 through 007**.
 
-## 1. Domain Taxonomy (The Species)
-Taxonomy defines "What a thing is" through nominal typing (inheritance) and structural constraints. All core contracts reside in `src/core/contracts/domain/`.
+## 1. The Fundamental Unit: The Package (ADR 004)
+The fundamental unit of the domain is the **Package**, not a base entity class. Each package (e.g., `health`, `character`) is a Sovereign Bounded Context defined by its **Anatomy** and **Taxonomic Signatures**.
+
+### Taxonomic Signatures (ADR 006)
+Every domain package must declare its "Species" and "Intent" within its `__init__.py` facade to be discoverable by the System Kernel.
+
+| Signature | Role | Example |
+| :--- | :--- | :--- |
+| `__DOMAIN_SPECIES__` | Structural Validation | `"ROOT"` or `"LEAF"` |
+| `__DOMAIN_INTENT__` | Screaming Intent | `"Manage Character Vitality"` |
+| `__SERVICE_PROVIDER__` | Bootstrap Pointer | `"health.providers.HealthProvider"` |
+| `__all__` | Encapsulation | List of exported Nouns and Verbs. |
+
+---
+
+## 2. Domain Taxonomy (The Species)
+Taxonomy is enforced through inheritance from core contracts in `src/core/contracts/domain/`. There is no common "DomainEntity" base; classes inherit the specific behavior required by their role (ADR 002, 005).
 
 ```mermaid
 classDiagram
-    class DomainEntity {
-        <<abstract>>
-        +UUID uid
-        +dict metadata
-    }
     class DomainRoot {
         <<abstract>>
-        +UUID uid
+        +UUID uid (Sovereign)
         +BOOT_PRIORITY int
         +REQUIRED_PILLARS list
         +DOMAIN_SCOPE str
     }
     class DomainRecord {
         <<abstract>>
-        +Identity Identity_None
+        +Identity None (Anonymous)
     }
     class DomainBlueprint {
         <<abstract>>
-        +slug str
+        +slug str (Static)
     }
     class DomainValueObject {
         <<abstract>>
-        +Identity Identity_Value
+        +Identity Value-based (Immutable)
     }
 
-    DomainEntity <|-- DomainRoot : ROOT
-    DomainEntity <|-- DomainRecord : LEAF
-    DomainEntity <|-- DomainBlueprint : TEMPLATE
-    DomainEntity <|-- DomainValueObject : TYPE
+    note for DomainRoot "Species: ROOT (Aggregate Root)"
+    note for DomainRecord "Species: LEAF (Passive State)"
+    note for DomainBlueprint "Species: TEMPLATE (Global Truth)"
+    note for DomainValueObject "Species: TYPE (Shared Kernel)"
 ```
 
-### Contract Specifications
+### Contract Specifications (ADR 005)
 
-| Contract | Role | Key Constraint |
-| :--- | :--- | :--- |
-| **DomainRoot** | The Sovereign "Actor". | Must have a unique UUID. Anchors a Bounded Context. |
-| **DomainRecord** | The Anemic "Status". | Passive data fragment. Identity is derived from its parent Root. |
-| **DomainBlueprint** | The Global "Truth". | Read-only template loaded from assets. Never modified at runtime. |
-| **DomainValueObject** | Semantic "Types". | Immutable. Replaced entirely when changed (e.g., Money, Coord). |
+| Contract | Identity | Scope | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **DomainRoot** | UUID | Aggregate Root | The Sovereign "Actor". Anchors a Bounded Context. |
+| **DomainRecord** | None | Leaf State | Anemic, anonymous state fragments (Atoms). |
+| **DomainBlueprint** | Slug | Template | Static "Global Truth" loaded from JSON. |
+| **DomainValueObject** | Value | Shared Kernel | Semantic types (Money, Coord) in `domain/common`. |
 
 ---
 
-## 2. Infrastructure Contracts
-These contracts define how the system discovers and interacts with the domain layer.
+## 3. Infrastructure Contracts
+These contracts define the lifecycle and discovery mechanisms used by the **System Kernel** (ADR 006, 007).
 
-### A. BaseServiceProvider (ADR 006)
-Every domain package must be associated with a Service Provider that manages its lifecycle within the `ServiceContainer`.
+### A. BaseServiceProvider
+Manages the two-phase (Register -> Boot) lifecycle of a domain package.
 
 **Path:** `src/core/contracts/provider.py`
 
@@ -64,35 +74,31 @@ sequenceDiagram
     participant Container as ServiceContainer
 
     Kernel->>Provider: 1. register(container)
-    Provider->>Container: Bind factories & singletons
-    Note over Kernel,Container: Phase 1: Registration (Lazy)
+    Provider->>Container: Bind factories (Lazy)
     
     Kernel->>Provider: 2. boot(container)
-    Provider->>Container: Resolve dependencies & initialize
-    Note over Kernel,Container: Phase 2: Bootstrapping (Active)
+    Provider->>Container: Resolve & Initialize (Active)
 ```
 
-### B. BaseRegistry (ADR 005)
-The Registry is the exclusive provider of **DomainBlueprints**. It prevents hardcoded "magic numbers" in the domain logic.
+### B. BaseRegistry
+The exclusive provider of **DomainBlueprints**.
 
 **Path:** `src/core/contracts/domain/registry.py`
 
 ```mermaid
 flowchart LR
-    Assets[(Assets: JSON/YAML)] -->|Hydrate| Registry[BaseRegistry]
+    Assets[(Assets: JSON)] -->|Hydrate| Registry[BaseRegistry]
     Registry -->|Provides| Blueprint[DomainBlueprint]
     Service[Domain Service] -->|Requests| Registry
 ```
 
 ---
 
-## 3. Interaction Contracts (Structural Protocols)
-To prevent circular dependencies between Roots, interaction is handled via **Static Duck Typing** (ADR 002, 003).
-
-**Path:** `src/domain/common/contracts.py` (Shared) or top of `services.py` (Local).
+## 4. Interaction via Duck Typing (ADR 002, 003)
+Lateral interaction between Roots is strictly decoupled. Roots define their requirements via **Structural Protocols** rather than importing siblings.
 
 ```python
-# Example: Shop Root defines what it needs from a Buyer
+# Defined at the top of services.py in the consuming Root
 class Payer(Protocol):
     balance: int
     def deduct(self, amount: int) -> bool: ...
@@ -109,6 +115,6 @@ graph LR
     end
     
     CharacterRoot -- "Satisfies Shape" --> PayerProtocol
-    Engine[Engine Orchestrator] -->|Passes| CharacterRoot
+    Engine[Engine Orchestrator] -->|Mediates| CharacterRoot
     Engine -->|To| ShopService
 ```
