@@ -21,6 +21,12 @@ documentation_directives:
     explanation:
       path: "docs/explanation/"
       orientation: "Understanding-oriented (Discussions for the co-worker)"
+      sub_directories:
+        - "docs/explanation/architecture/"
+        - "docs/explanation/design/"
+        - "docs/explanation/reports/adr/"
+        - "docs/explanation/reports/status/"
+        - "docs/explanation/terminology/"
     reference:
       path: "docs/reference/"
       orientation: "Information-oriented (Descriptions for the specialist)"
@@ -37,8 +43,8 @@ documentation_directives:
       - "description: One-sentence summary for skim-reading."
       - "type: The Diátaxis quadrant."
       - "status: draft | stable | deprecated."
-      - "created_at: YYYY-MM-DD H:I:S."
-      - "updated_at: YYYY-MM-DD H:I:S."
+      - "created_at: YYYY-MM-DD HH:MM:SS."
+      - "updated_at: YYYY-MM-DD HH:MM:SS."
       - "owner: Primary maintainer."
       - "tags: Keywords for filtering."
       - "version: Software version described."

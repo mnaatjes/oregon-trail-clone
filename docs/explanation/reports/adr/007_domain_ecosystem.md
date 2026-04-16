@@ -2,7 +2,7 @@
 title: "Domain Ecosystem"
 description: "High-level overview of symbiotic interactions between domain packages via the Event Bus and Tick system."
 type: "explanation"
-status: "stable"
+status: "adopted"
 created_at: "2026-04-15 00:00:00"
 updated_at: "2026-04-16 00:00:00"
 owner: "Michael Naatjes"

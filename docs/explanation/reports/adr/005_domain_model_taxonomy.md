@@ -2,7 +2,7 @@
 title: "Domain Model Taxonomy"
 description: "Classification of domain entities into Roots, Records, Blueprints, and Value Objects."
 type: "explanation"
-status: "stable"
+status: "adopted"
 created_at: "2026-04-15 00:00:00"
 updated_at: "2026-04-15 00:00:00"
 owner: "Michael Naatjes"

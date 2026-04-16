@@ -2,9 +2,9 @@
 title: "Adoption of Diataxis Documentation"
 description: "Formal adoption of the Diátaxis framework for project documentation to improve maintainability and onboarding."
 type: "explanation"
-status: "stable"
+status: "adopted"
 created_at: "2026-04-16 02:53:00"
-updated_at: "2026-04-16 03:05:00"
+updated_at: "2026-04-16 03:38:00"
 owner: "Michael Naatjes"
 tags: ["adr", "diataxis", "documentation"]
 version: "0.1.0"
@@ -81,15 +81,17 @@ docs/
 │   ├── architecture/
 │   │   ├── game-loop-design.md      # Why the loop is structured this way
 │   │   └── state-machine-logic.md   # Handling travel vs. town states
+│   ├── design/    
 │   └── terminology/
-│       └── oregon-trail-terms.md    # Disambiguating "Fording," "Caulking," etc.
+│   │   └── oregon-trail-terms.md    # Disambiguating "Fording," "Caulking," etc.
+│   └── reports/
+│       ├── status/
+│       └── adr/
 ├── reference/
 │   ├── api-endpoints.md             # REST API specification
 │   ├── schema-definitions.md        # Database and JSON event schemas
 │   └── cli-commands.md              # Documentation for custom bash management scripts
-└── design/
-    └── reports/
-        └── adr/
+
 ```
 
 ## Status
