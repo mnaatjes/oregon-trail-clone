@@ -1,7 +1,7 @@
 ---
 title: "Domain Heirarchy"
 created_at: 2026-04-15
-updated_at: 2026-04-15
+updated_at: 2026-04-16
 status: presented
 ---
 
@@ -11,147 +11,107 @@ The Oregon Trail Domain Level Architecture must be rationalized with Anti-Patter
 
 ## Context
 
-1. The [*split personality*](./003_hybrid_typing_strategy.md) of domain (Model Concern) genesis and behavior must be resolved. The following is still undecided:
+The "split personality" of the Domain layer resulted from a conflict between the need for rigid structural safety and the need for decoupled, flexible interactions.
 
-    * Are domains **pluggable adapters** requiring **Structured Typing** and therefore require a **Service Contract** `DomainBinding`?
+**Typing Resolution:** We have adopted a Normal-Structural Hybrid strategy.
 
-    * Are domains **rigid extentions** of [**Normally Typed**](./004_normal_typing_strategy.md) `core/domain/contracts/`?
+1. **Normal Typing (Inheritance):** Used for Taxonomy (Species Identification). All entities must inherit from core/contracts/domain (DomainRoot, DomainRecord) to be recognized by the Kernel.
 
-    * Which **Typing** will be adopted: [Normal](./004_normal_typing_strategy.md) or [Structural-Normal Hybrid](./003_hybrid_typing_strategy.md)?
+2. **Structural Typing (Protocols):** Used for Lateral Interaction. Roots interact with other Roots via typing.Protocol (Duck Typing) to prevent circular imports.
 
-2. The Domain (Model Concern) **Lexicon** is inconsistent and unclear. We must determine how to organize and name both Domain Contract Abstracts and their implementations and what their **Responsibilities** will be
-
-    * Responsibilities of Domain Contracts `core/contracts/domain` and Domain Implementations is unclear:
-    
-    * What relationship - if any - will each `core/contracts/domain` have with the `Bootstrap` and `ServiceProviders`?
-
-3. Address the following **Domain-Related Issues**:
-
-    * Will be adopt an **Aggregate Root** domain architecture in which a cluster of associated objects is treated as a single unit for data changes. Is a `DomainEntity` the highest position in the heirerchy representing that `Package`
-
-    * **Zero-Dependency Leaf Policy** Is it mutually exclusive with other decisions and can it be adopted?
-
-    * **Anemic Domain Model**: (Logic IN Service/Package) Will we treat the Screaming-Model as a *Package* (the folder, e.g. `domain/character/`) as the Aggregate Root - instead of the Class (`CharacterClass`) itself. 
-
-        - Allows for *Stateless* logic; therefore logic is decoupled from Stateful-Class/Object
-
-        - Discoverability: Verbs are found IN the Folder `__init__.py`
-
-        - Pure functions are easier to Unit Test
-
-        - Shifts the definition of the **Aggrigate Root** FROM the Class/Object TO the *Package* `domain/<ar-package-name>/__init__.py`
-
-        - Protect internal details and only expose the Package *facade* in `__init__.py`
-
-    * **Domain Driven Model**: (Logic IN Entity) Will we use a *Rich Model*
-
-        - Discoverability: Methods visable ON Object
-
-        - Complexity: Objects become Fat
-
-    * Determine if **Anemic Domain** and **Aggregate Root** are mutually-exclusive or cannot be adopted together? I.e. wanting a Domain Hierarchy of Aggregate Root entry-point but the lower sibling-domains to be *Anemic* with their logic/services contained within their own logic/services files: e.g. `domain/<root-name>/{sibling...}/logic.py`
-
-4. **Testing Regime** must be refactored to conform to new decisions and be rationalized more thoroughly.
-
-## Prerequisites
-
-1. MVC and Screaming-MVC MUST be adopted, rules generated, and `context/` yml file synthesized for Agentic-Workflow
-
-2. Determine if the architecture will enforce **Normal Typing** or **Structural-Normal Hybrid Typing**
-
-## References
-
-1. **Zero-Dependency Leaf** policy is *Mutually Exclusive to **Aggregate Root** policy
+**Lexicon Standardization:** The hierarchy now recognizes four distinct "Species" of data, each with specific responsibilities toward the Orchestrator and ServiceContainer.
 
 ## Decision
 
-1. Resolved *Split Personality* Typing as ___
+### 1. Lexicon and Responsibility Mapping
 
-2. Domain Concern **Responsibilities** and **Lexicon**:
+We categorize the hierarchy based on Identity and Sovereignty:
 
-    * Representing the **Model** Entity, Model, Value-Object, Blueprint, State(Object)
+| Entity | Identity | Scope | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **DomainRoot** | UUID | Aggregate Root | The Sovereign "Actor." Anchors a Bounded Context. |
+| **DomainRecord** | None | Leaf State | Anemic, anonymous state fragments (Atoms). |
+| **DomainValueObject** | Value-based | Shared Kernel | Semantic types (Money, Coord) in `domain/common`. |
+| **DomainBlueprint** | Slug | Template | Static "Global Truth" loaded from JSON. |
 
-    * Representing the **Logic**: Logic, Services
+### 2. The Hierarchy of Authority: Atoms vs. Assemblies
 
-    * Representing the **Infrastructure**: Registry, ServiceProvider, Binding
+We move away from a "flat mud" structure to a Directed Hierarchy:
 
-3. Agreement on **Domain Related Issues**: Structural and Relational:
+* **Leaf Packages (The Atoms):** These are Structural Siblings with a Zero-Dependency Policy. They provide granular "Skills" (e.g., health, inventory). They are strictly sibling-blind.
 
-    3.1. **Aggregate Root**: Adopted
+* **Root Packages (The Assemblies):** These are the Aggregate Roots. They possess Conceptual Hierarchy over Leaves. They compose multiple `DomainRecords` into a single `DomainRoot`.
 
-    * Adopt Aggregate Root in favor of Zero-Dependency Leaf. `DomainEntity` (the Aggregate Root) renamed to `___` 
+### 3. The Anatomy of Anemic Symbiosis
+
+We adopt the **Anemic Domain Model** at the Package Level.
+
+* **The Model (model.py):** The Resource. Passive DTO inheriting from DomainRoot or DomainRecord.
+
+* **The Logic (logic.py):** The Metabolism. Pure, stateless functions that transform Models.
+
+* **The Service (service.py):** The Nervous System. Coordinates the transformation and interacts with the ServiceContainer.
+
+* **The Facade `__init__.py`:** The Voice. Only exposes the "Scream" (Intent) to the outside world.
+
+### 4. Lateral Interaction via Duck Typing
+
+To resolve the Root-to-Root dependency issue:
+
+1. A Root (e.g., Shop) that requires another Root (e.g., Character) to perform a task will define a Structural Protocol.
+
+2. The Orchestrator ensures the object satisfies the protocol before passing it across the boundary.
+
+**Orchestration Flow**
+
+```mermaid
+graph TD
+    %% The Physical Layer (Siblings)
+    subgraph Sibling_Layer [domain/roots]
+        Character[Character Root]
+        Shop[Shop Root]
+    end
+
+    subgraph Leaf_Layer [domain/leaves]
+        Health[Health Record]
+    end
+
+    %% The Orchestrator (The Bridge)
+    Orchestrator[Engine / Orchestrator]
     
-    * An Aggregate Root CANNOT be declared/defined WITHOUT a **Bounded Context**
-
-    * AR becomes the *Facade* for the Bounded Context via **Encapsulation**
-
-    3.2 **The Anatomy of the Anemic Aggregate Package**: Adopted
-
-    * **The Model `domain/<package_name>/model.py`**: Represents the *state*; it just has no behavior - DTO/Entity. It is an immutable (or nearly immutable) @dataclass. It defines the structure of the data.It is *Anemic* because doesn't know how to change itself. It just sits there like a spreadsheet row.
-
-    * **The Logic `domain/<package_name>/logic.py`**: A collection of Pure Functions - Domain Rules. These functions take a Model as input, perform math, and return a new version of the Model (or a modified one). They never touch the database, the network, or the file system. They are "stateless" math.
-
-    * **The Service `domain/<package_name>/service.py`**: Serves as the Orchestrator - Application Service. In Python, a Module (the file itself) acts as a static namespace. However, to stay compatible with your ServiceContainer and Dependency Injection, you’ll likely use a standard class.It pulls data from the source, sends it to the Logic to be processed, and then saves the result. It coordinates the "Transaction" of a game event.
-
-    * **The Facade `domain/<package_name>/__init__.py`**: This is the *Discovery* layer - Package / API. It selectively imports functions from the Service and Logic and makes them available at the package level. The *Scream* ensures that when the Engine types health.apply_damage(), it doesn’t care that the math is actually in logic.py and the coordination is in services.py.
-
-    3.3 **Packages as Structural Siblings**: Adopted
-
-    * The *Reality* is that all Packages / Anemic Aggregates are **Structural Siblings**; each is a *Facade*
-
-    ```text
-    src/domain/
-    ├── health/                  <-- STANDALONE SIBLING
-    │   ├── models.py            <-- HealthState (HP: 10)
-    │   ├── logic.py             <-- apply_damage()
-    │   └── service.py
-    │
-    └── character/               <-- AGGREGATE ROOT
-        ├── models.py            <-- CharacterState (holds a HealthState)
-        ├── logic.py             <-- apply_aging() (NEVER imports health.logic)
-        └── service.py           <-- Coordinates Character-specific events
-    ```
-
-    * However, some Packages have a **Conceptual Hierarchy** over other packages. E.g. `Character` over `Health` or `Shop` over `Character(Storekeeper)`
-
-    * Orchestration:
-
-    ```mermaid
-    graph TD
-        %% The Physical Layer (Siblings)
-        subgraph Sibling_Layer [src/domain/Siblings]
-            Character[Character Package]
-            Health[Health Package]
-        end
-
-        %% The Logical Layer (Engine as Bridge)
-        Engine[Engine / Controller]
-        
-        %% The Execution Flow
-        Engine -->| Pulls HealthState from| Character
-        Engine -->| Passes HealthState to| Health
-        Health -->| Returns New HealthState| Engine
-        Engine -->| Updates| Character
-    ```
-
-4. Implement robust **Testing Regime** which checks-for architectural alignment and provides developer feedback
+    %% Vertical Composition (Allowed)
+    Health -.->|Injected into| Character
+    
+    %% Lateral Interaction (Protocol Handshake)
+    Character -- "Satisfies 'Payer' Protocol" --> Orchestrator
+    Orchestrator -->|Passes compatible DTO| Shop
+    
+    %% Logic Processing
+    Shop -->|Calls| ShopLogic[Shop Logic]
+    ShopLogic -->|Returns Updated DTO| Orchestrator
+    Orchestrator -->|Updates| Character
+```
 
 ## Consequences
 
-3. **Domain Related Issues**:
+### 1. Zero-Dependency Leaf Enforcement
 
-    * Use **Zero-Dependency Leaf** policy at the **Structural Sibling** level ONLY. Standalone packages CANNOT traverse siblings. Aggregate Roots CAN possess Standalone packages in their **Conceptual Hierarchy**
+The Zero-Dependency Leaf Policy is not mutually exclusive with Aggregate Roots; it is the requirement for them. Roots are the only entities allowed to "Assembly" the Atoms. This is enforced via the Testing Regime.
 
-    * A **Bounded Context** MUST be defined with each **Aggregate Root**
+### 2. Bounded Context and Sovereignty
 
-    * Requires a formal **Package** structure for `__init__.py` which is capable of differentiating between a **Standalone Package** and an **Aggregate Root**. 
+Every Aggregate Root defines a Bounded Context. Interactions between these contexts must happen through the Orchestrator/Event Bus. Direct imports between `domain/roots/A` and `domain/roots/B` are a "Hard Fail" in CI.
 
-    * Requires a systemetized way of encoding / enforcing **Conceptual Hierarchy** and configuring for **Dependency Management** via **ServiceProviders**
+### 3. Testing Regime Refactoring
 
-**Hierarchy Enforcement**
+The testing suite is promoted to an Architectural Police role:
 
-### Positive
+* **Taxonomy Check:** Verifies all models.py inherit from the correct core/contracts.
 
-* Defined Scope of `domain` and its components
+* **Import Audit:** Scans for illegal horizontal imports (Leaf-to-Leaf or Root-to-Root).
 
-## Status: Presented
+* **Ontology Verification:** Ensures `__SERVICE_PROVIDER__` and `BOOT_PRIORITY` are present in all Roots.
+
+## Status
+
+**Proposed** 2026-04-16

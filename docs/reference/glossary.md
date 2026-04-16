@@ -234,6 +234,12 @@ graph BT
     Domain -.->|Implements| Contract
 ```
 
+## K
+
+### Kernel
+
+The core component of a system that manages the relationship between different parts (like hardware and software, or in your case, the Engine and the Domain). It acts as the "Standard Library" and "Central Dispatcher."
+
 ## L
 ### Leaf-Policy (Zero-Dependency Leaf Policy)
 An architectural constraint where "leaf" modules (the most granular functional units, like `health` or `wagon`) are prohibited from depending on or importing any sibling modules. All cross-module interaction must be orchestrated by a higher-level layer (the Engine).
@@ -386,6 +392,23 @@ src/
 └── ui/
 ```
 
+### Shared Kernel
+**(Common Entity)**
+
+A centralized architectural layer used to house domain elements. 
+
+It serves as a "common language" or shared library that prevents logic duplication and circular dependencies, ensuring that universal concepts (like Money, Weight, or Coordinates) remain consistent across the entire system without being trapped inside a single specific package.
+
+**Key Characteristics**
+
+* **Location:** Typically organized in a directory like src/domain/common/ or src/domain/shared/.
+
+* **Content:** Limited to pure, stateless objects and semantic bundles that have high reuse value.
+
+* **Purpose:** To mitigate "Common-itis" (the tendency for a generic common folder to become a dumping ground) by strictly limiting its scope to shared domain primitives.
+
+* **Coordination:** Because it is shared, changes to the Kernel require agreement across all domains that depend on it to prevent breaking downstream logic.
+
 ### Service Provider Pattern
 A pattern used to handle the two-phase lifecycle (**Register** and **Boot**) of a module. Service Providers are responsible for wiring a domain's logic and assets into the **DI Container**.
 
@@ -428,6 +451,12 @@ Example of...
 ```text
 
 ```
+
+### System Kernel
+
+The specific implementation of the kernel for your software. In your clone, this is the Core—the part that handles bootstrapping, the ServiceContainer, and the message bus. It is the "Laws of Physics" for your game.
+
+[See Kernel](#kernel)
 
 ## U
 ### Universal Domain Blueprint (UDB)

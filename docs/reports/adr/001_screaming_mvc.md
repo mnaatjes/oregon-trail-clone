@@ -5,78 +5,73 @@ updated_at: 2026-04-15
 status: pending
 ---
 
-# ARD 001: Screaming Model View Controller (MVC) Architecture
+# ADR 001: Screaming Model View Controller (MVC) Architecture
+
+This is the foundational document for the entire system. It establishes the "Laws of Physics" that allow the Ecosystem, Ontology, and Anatomy to exist.
 
 ## Context
 
-The Oregon Trail requires a clear and thorough declaration of the overall program architecture. 
+The Oregon Trail clone requires an architecture that is modular, highly testable, and "Screams" its intent. 
 
-## Prerequisites
+We must resolve the tension between traditional MVC and modern Hexagonal (Ports & Adapters) patterns to create a "Builder-friendly" environment.
 
-1. Clarify the distinction between [Ports & Adapters](#ports--adapters) and [MVC](#mvc) Architectures.
-    * Can Ports & Adapters be used and where in architecture (model, view, and/or controller)
-    * Is Hexagonal Architecture mutually exclusive to MVC Architecture?
+1. MVC vs. Hexagonal (Ports & Adapters)
 
-2. Define and Resolve WHAT [Screaming](#screaming-architecture) is and HOW it will be applied
-    * Define naming Conventions; a recipe
-    * Map major directories
+*We have determined that MVC and Hexagonal architectures are complementary, not mutually exclusive.*
 
-3. Determine if *Screaming* / Feature-Driven MVC will apply ONLY to `domain/` (i.e. models) or all converns (Model, View, and/or Controller)
-    * Which makes sense?
-    * Can this be accomplished in an intuitive manner that is not counter-productive?
+* MVC serves as our Internal Organization Pattern. It separates our state (Model), our orchestration (Controller), and our output (View).
 
+* Ports & Adapters serves as our Boundary Pattern. It protects the MVC core from "Outer World" noise like the filesystem, database, or terminal input.
 
-## References
+2. The Definition of "Screaming"
 
-### Ports & Adapters
+A "Screaming Architecture" ensures that the folder structure reveals the Intent of the Game rather than the Framework used.
 
-* Intended for use with ___
-
-### MVC
-
-* Intended for use with ___
-
-### Screaming Architecture (MVC)
-
-* Intended for use with ___
-* Also known as *Feature-Driven MVC* or *Vertical Slice Architecture*
+* **The Scope:** "Screaming" applies primarily to the Domain (Model). While the Engine and UI follow standard structural patterns, the domain/ directory is organized by Feature Slices (e.g., health, wagon, trading).
 
 ## Decision
 
-1. MVC Architecture adopted as the Structural Pattern
+### 1. Unified Architectural Lexicon
 
-2. *Screaming* MVC implemented
+We adopt Screaming MVC as the primary pattern, mapped to the following directory structure:
 
-* `models/` directory renamed `domain` and rules governing concern determined in [Domain Heirarchy ADR](./002_domain_hierarchy.md)
-* Directory Structure with MVC translations
-```
-src/
-├── core/      # The Specification (Contracts & DI)
-├── domain/    # THE MODEL (Screaming Business Logic: Character, Health, Wagon)
-├── engine/    # THE CONTROLLER (Orchestration & Providers)
-└── ui/        # THE VIEW (TUI Components)
-```
-* Architecture terminology for project: `Feature-Driven MVC` and `Screaming MVC` are synonymous
+| MVC Concern | Directory | Linux/DevOps Analogy | Responsibility |
+| :--- | :--- | :--- | :--- |
+| **THE SPEC** | `src/core/` | The `/etc/` / Kernel Specs | Contracts, DI, and Base Classes. |
+| **THE MODEL** | `src/domain/` | The `/bin/` / Binaries | Screaming business logic and state. |
+| **THE CONTROLLER** | `src/engine/` | The `init` / `systemd` | Orchestration, Events, and Bootstrapping. |
+| **THE VIEW** | `src/ui/` | The `stdout` / TTY | Presentation and User Input. |
 
-3. **Interface** governing the `domain/`: 
+### 2. The "Screaming" Implementation (Facade Pattern)
 
-    * **Discovery** mechanism 
-    
-    * **Encapsulation** with *Fascade Pattern* 
-    
-    Use `__init__.py` to lift the functions up to the top level; e.g. character.apply_aging()
+To ensure the Domain "Screams" its intent without exposing internal complexity:
 
+Each domain package (e.g., domain/roots/character) acts as a Sovereign Bounded Context.
 
+* **Discovery:** The `__init__.py` file acts as a Facade. It "lifts" the important Verbs (Service methods) and Nouns (Model DTOs) to the top level.
+
+* **Encapsulation:** The engine interacts only with the Facade. It never reaches into the internal logic.py or models.py sub-files directly.
+
+### 3. Boundary Protection (The Adapters)
+
+To maintain the purity of the Anemic Model, any interaction with the "Real World" (JSON files, Terminal IO) must happen via Adapters located in the engine/ or ui/ layers. The domain/ remains a "Pure Logic" zone.
 
 ## Consequences
 
 ### Positive
 
-* Strictly defined naming conventions
-* Ability to understand Concern(s) (i.e. Model, View, and/or Controller) without technical expertise
+* **Instant Context:** A developer looking at the src/domain/ folder immediately sees the "Rules of the Trail" (Health, Wagon, Rations) rather than generic folders like models/.
+
+* **High Testability:** The "Model" concern is decoupled from the UI and Persistence, allowing for 100% unit test coverage of game logic.
+
+* **Linux Alignment:** The separation of "Specs" (Core) from "Execution" (Engine) mimics the clarity of a well-organized Linux filesystem.
 
 ### Negative
 
-* If Screaming MVC only applied to Domains (Model Concern) this may cause confusion for users investigating code
+* **Initial Overhead:** Requires more boilerplate in the `__init__.py` files to maintain the Facade.
 
-## Status: Developing
+* **Conceptual Complexity:** Requires developers to understand the difference between the Internal Model and the External Adapter.
+
+## Status
+
+**Pending** 2026-04-16
