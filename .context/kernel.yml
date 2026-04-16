@@ -1,0 +1,32 @@
+kernel_directives:
+  behavioral_ontology:
+    description: "Rules governing HOW a Package sits in the World of the Engine."
+    class_metadata:
+      BOOT_PRIORITY: "Sequence Control (e.g., Map: 1, Character: 5, UI: 10)."
+      REQUIRED_PILLARS: "Dependency Guarding (e.g., Events, Persistence)."
+      DOMAIN_SCOPE: "Lifecycle Management (Global vs. Scene)."
+    package_signatures:
+      __DOMAIN_SPECIES__: "Structural Validation (ROOT vs. LEAF)."
+      __DOMAIN_INTENT__: "Discoverability & Reflection (Screaming human-readable)."
+      __SERVICE_PROVIDER__: "Bootstrap & DI Mapping."
+
+  bootstrap_lifecycle:
+    phase_1: "Registration. ServiceProviders call register() to bind factories to the ServiceContainer."
+    phase_2: "Bootstrapping. ServiceProviders call boot() after all providers are registered."
+    enforcement: "ServiceContainer ensures Phase 2 only starts after Phase 1 is complete for all."
+
+  ecosystem_orchestration:
+    orchestrator: "The active component in the Engine that oversaw movement and sequence."
+    event_bus:
+      role: "The Nervous System. Facilitates cross-domain reaction without coupling."
+      ownership: "Only Roots may emit public events. Leaves remain silent to the outside world."
+    heartbeat:
+      mechanism: "System Tick / Turn Protocol."
+      broadcast: "Broadcast events ensure metabolic needs are met across Roots."
+    state_registry:
+      role: "Total Snapshottability. Collects all active Roots for save-game serialization."
+
+  dependency_injection:
+    container: "src/core/container.py (The Hub)"
+    resolution: "Services are singletons, lazily loaded via ServiceProviders."
+    type_safety: "Use typing.cast(T, ...) for static safety in generic resolution."

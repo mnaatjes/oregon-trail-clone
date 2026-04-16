@@ -1,0 +1,19 @@
+project_metadata:
+  name: "Oregon Trail"
+  description: "A modular, text-based adventure game built with Screaming MVC architecture."
+  version: "0.2.0"
+  author: "Michael Naatjes"
+  updated_at: 2026-04-16
+
+project_goals:
+  - "Maintain a modular, highly testable 'Screaming' architecture."
+  - "Enforce strict separation between Domain logic and System orchestration."
+  - "Ensure 100% snapshotability of the game state through anemic models."
+  - "Mimic the clarity and organization of a well-structured Linux filesystem."
+
+high_level_structure:
+  src/core: "The Spec (Contracts, DI, Base Classes)"
+  src/domain: "The Model (Screaming Business Logic & State)"
+  src/engine: "The Controller (Orchestration, Events, Bootstrapping)"
+  src/ui: "The View (Presentation & User Input)"
+  src/storage: "Persistence Adapters"

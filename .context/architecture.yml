@@ -1,79 +1,33 @@
-project_metadata:
-  name: "Oregon Trail"
-  remote_repository: "https://github.com/mnaatjes/oregon-trail-clone.git"
-  description: "A text-based adventure game where players navigate the challenges of the Oregon Trail."
-  version: "0.1.0"
-  author: "Michael Naatjes"
-  updated_at: 2026-04-12
+architecture_directives:
+  pattern: "Screaming MVC"
+  description: "MVC serves as the Internal Organization Pattern; Ports & Adapters serves as the Boundary Pattern."
 
-guidelines:
-  architecture:
-    - "Follow MVC (Model-View-Controller) patterns"
-    - "Strict separation of concerns"
-    - "Consistent naming conventions (snake_case for Python logic)"
+  laws_of_physics:
+    - "The Folder is the 'What' (Intent); the File is the 'How' (Role)."
+    - "Pillar Boundaries: Domain, UI, and Engine must remain physically and logically separate."
+    - "Orthogonal Evolution: UI changes must never necessitate Domain changes."
+    - "Boundary Protection: Domain must remain a 'Pure Logic' zone, free of I/O or external noise."
 
-  domain:
-    organization_strategy: "Packaging by Component (Screaming Architecture)"
-    structure_rule: "Group by functional sub-system (e.g., domain/health/, domain/character/) rather than technical role."
-    
-    directives:
-      - "Each sub-package represents a Bounded Context with a clear responsibility."
-      - "The __init__.py of each package must act as a 'Public API', exporting only the necessary Entities and Logic."
-      - "Zero-Dependency Principle: Leaf packages (like 'health') must not depend on sibling packages (like 'character')."
-      - "Internal Consistency: Every domain package should internally maintain a consistent structure of models, logic, and exceptions."
-      - "The 'Character' package acts as an Aggregate Root, composing instances from 'leaf' packages like 'health'."
-      - "Prohibit Circular Imports: Hierarchy must be strictly unidirectional (Character -> Health)."
-      - "Registries manage Blueprints"
-      - "Services manage Entities"
+  mvc_mapping:
+    model:
+      path: "src/domain/"
+      analogy: "The /bin/ / Binaries"
+      responsibility: "Screaming business logic and anemic state."
+    view:
+      path: "src/ui/"
+      analogy: "The stdout / TTY"
+      responsibility: "Presentation and User Input (Agnostic of business math)."
+    controller:
+      path: "src/engine/"
+      analogy: "The init / systemd"
+      responsibility: "Orchestration, Events, and Game Lifecycle."
+    spec:
+      path: "src/core/"
+      analogy: "The /etc/ / Kernel Specs"
+      responsibility: "Contracts, Dependency Injection, and Base Classes."
 
-    internal_package_blueprint:
-      models: "State containers and Entities (the 'What')."
-      logic: "Pure domain functions and rules (the 'How')."
-      exceptions: "Domain-specific errors (e.g., StarvationError, InjuryInfectionError)."
-      constants: "Fixed scalars and enums specific to the component."
-
-  core:
-    - "Technical Engine"
-    - "Houses technical utilities that interact with the system (file system, OS)"
-    - Components:
-      - "container.py: The ServiceContainer (Dependency Injection Hub)"
-      - "asset_loader.py: Manages static resource loading"
-      - "events.py: Cross-pillar communication"
-
-  ui:
-    - "Functional Pillar"
-    - "The View in MVC"
-    - "Interface for user interaction (Textual/Asciimatics)"
-
-  storage:
-    - "Functional Pillar"
-    - "Handles data persistence and retrieval"
-    - "Holds specific code that talks to the file system"
-
-  engine:
-    - "Functional Pillar"
-    - "The Controller/Orchestrator in MVC"
-    - "Implementation of game rules and logic using domain services"
-  
-  gateway:
-    - "main.py entry point"
-    - "Responsible for initializing the ServiceContainer"
-    - "Orchestrates the two-phase lifecycle (Register -> Boot) via ServiceProviders"
-
-  assets:
-    - "Contains ASCII art and other static resources"
-    
-
-  documentation:
-    structure:
-      root: "docs/"
-      categories:
-        - "guides"
-        - "how-to"
-        - "reference"
-        - "explanation"
-        - "tutorials"
-    standards:
-      - "Content must align with the Diátaxis framework (Guides/How-to/Reference/Explanation)"
-      - "Every subdirectory must contain a README.md"
-      - "Maintain internal cross-linking integrity within README files"
+  screaming_implementation:
+    facade_pattern: "The __init__.py of each domain package acts as a Facade (The Voice)."
+    discovery: "Lifts important Verbs (Services) and Nouns (Models) to the top level."
+    encapsulation: "Hides internal logic.py and models.py details from the Engine."
+    all_declaration: "Use of __all__ in __init__.py is REQUIRED to contain leaks."

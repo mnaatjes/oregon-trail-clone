@@ -1,0 +1,46 @@
+domain_directives:
+  taxonomy_species:
+    DomainRoot:
+      identity: "UUID (Sovereign)"
+      scope: "Aggregate Root (Anchor for Bounded Context)"
+      responsibility: "The Sovereign 'Actor'. Composes Leaf Records."
+    DomainRecord:
+      identity: "None (Anonymous)"
+      scope: "Leaf State (Atoms)"
+      responsibility: "Anemic, passive state fragments aggregated by Roots."
+    DomainValueObject:
+      identity: "Value-based"
+      scope: "Shared Kernel (domain/common)"
+      responsibility: "Semantic types (Money, Coord) with internal validation."
+    DomainBlueprint:
+      identity: "Slug (Static)"
+      scope: "Global Template"
+      responsibility: "Static 'Global Truth' loaded from assets (e.g., Farmer Profession)."
+
+  anatomy_of_a_package:
+    structure:
+      models.py: "Anemic State (DTOs). Zero logic. The Resource."
+      logic.py: "Domain Verbs. Pure, stateless math. The Metabolism."
+      services.py: "Orchestration. The Nervous System. Coordinates Models and Logic."
+      __init__.py: "The Facade. The Voice of the Domain."
+    anemic_symbiosis:
+      - "Service feeds Model into Logic."
+      - "Logic transforms Model and returns new Model."
+      - "Service persists/returns the new Model."
+
+  hierarchy_and_dependencies:
+    leaf_packages:
+      path: "src/domain/leaves/"
+      policy: "Zero-Dependency. Forbidden from importing any other Leaf or Root."
+    root_packages:
+      path: "src/domain/roots/"
+      policy: "Vertical Composition. Allowed to import Leaf Models."
+    horizontal_isolation:
+      rule: "Forbidden. Roots cannot directly import other Roots."
+      solution: "Lateral interaction via Structural Protocols (Duck Typing)."
+
+  interaction_protocols:
+    strategy: "Python typing.Protocol (Static Duck Typing)"
+    location:
+      shared: "src/domain/common/contracts.py"
+      local: "Top of services.py in the consuming Root."
