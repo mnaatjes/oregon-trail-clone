@@ -139,3 +139,9 @@ Where does the data for the "Totality" live?
 | **Responsibility** | Package Internal Integrity. | System Inter-connectivity & Boundaries. |
 | **Scope** | Self-Contained: Introspective focus. | Boundary-Crossing: Relational focus. |
 | **Failure Mode** | `TaxonomyError` / `TypeError`. | `SystemHang` / `CircularDependency`. |
+## Addendum: Event Sovereignty Rule (2026-04-16)
+
+To maintain Bounded Context integrity, the following event rules are enforced:
+1. **Root Sovereignty:** Only Root Services are permitted to emit events to the Global Event Bus.
+2. **Leaf Silence:** Leaf Services must remain silent to the outside world. They may only return data or emit local signals to their parent Root.
+3. **Reasoning:** This prevents bypassing the Aggregate Root's authority and ensures a clear, managed public API for the domain ecosystem.

@@ -288,3 +288,8 @@ In this Oregon Trail clone:
 ## Status
 
 **Pending** 2026-04-16
+## Addendum: Stateless Service Mandate (2026-04-16)
+
+Services in this architecture are mandated to be **Stateless Singletons**.
+- **Constraint:** Services MUST NOT hold instance state (e.g., character data, health points).
+- **Reasoning:** All state must reside in anemic Models (DTOs) to ensure 100% snapshotability for persistence and to prevent "Stale State" bugs in the singleton lifecycle.

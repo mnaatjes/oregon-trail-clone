@@ -120,3 +120,8 @@ The testing suite is promoted to an Architectural Police role:
 ## Status
 
 **Adopted** 2026-04-16
+## Addendum: Service vs. Provider Clarification (2026-04-16)
+
+To prevent architectural leakage, the following distinction is formalized:
+1. **The Service (services.py):** The business logic Actor. It is a Stateless Singleton registered into the ServiceContainer.
+2. **The ServiceProvider (providers.py):** The Kernel-level Factory. It handles the registration and bootstrapping of the Service. It is NOT part of the Domain Logic.
