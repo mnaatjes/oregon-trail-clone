@@ -2,7 +2,7 @@
 title: "Anemic Aggregator Domains"
 description: "Design pattern for Aggregate Roots as anemic DTOs to ensure 100% state serializability and snapshottability."
 type: "explanation"
-status: "stable"
+status: "adopted"
 created_at: "2026-04-15 00:00:00"
 updated_at: "2026-04-15 00:00:00"
 owner: "Michael Naatjes"
@@ -197,4 +197,4 @@ The "Screaming" nature of the filesystem is preserved. A developer can see the "
 
 ## Status
 
-**Pending** 2026-04-15
+**Adopted** 2026-04-16

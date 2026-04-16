@@ -2,7 +2,7 @@
 title: "Domain Hierarchy"
 description: "Rules for defining the relationship between Aggregate Roots and Leaf Records using Normal and Structural typing."
 type: "explanation"
-status: "stable"
+status: "adopted"
 created_at: "2026-04-15 00:00:00"
 updated_at: "2026-04-16 00:00:00"
 owner: "Michael Naatjes"
@@ -119,4 +119,4 @@ The testing suite is promoted to an Architectural Police role:
 
 ## Status
 
-**Proposed** 2026-04-16
+**Adopted** 2026-04-16
