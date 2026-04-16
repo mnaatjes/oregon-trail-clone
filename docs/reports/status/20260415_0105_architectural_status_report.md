@@ -14,8 +14,18 @@ The project intentionally favors specific patterns over their traditional counte
 *   **Finding:** The project explicitly mandates an **Anemic Domain Model** (via `patterns.yml` and `domain_service_pattern.md`). Entities are "slim" dataclasses holding only structural validation. Logic is strictly separated into `logic.py` (pure functions) and `service.py` (coordination). This is the opposite of classic DDD, which advocates for "Rich" models where behavior lives with the data.
 
 ### Structural Typing vs. Nominal Typing
-*   **Status:** Mutually Exclusive.
-*   **Finding:** The project relies on **Structural Typing** (`typing.Protocol`) for all cross-system interactions (e.g., `DomainBinding`). This allows the Engine to stay agnostic of the Domain's identity ("Plug-Shape"). It explicitly avoids Nominal Typing (rigid inheritance/`implements`) to maintain the "Zero-Dependency" principle between sibling domains.
+*   **Status:** Mutually Exclusive in Implementation.
+*   **Finding:** The project employs a "split-personality" typing model. It relies on **Structural Typing** (`typing.Protocol`) for cross-system functional interactions but uses **Nominal Typing** (`abc.ABC`) for the core infrastructure.
+*   **File Declarations:**
+    *   **Structural Typing (Protocol):** `src/core/contracts/domain/binding.py` (Defines `DomainBinding` as a Protocol for pluggable orchestration).
+    *   **Nominal Typing (Inheritance):** `src/core/contracts/domain/provider.py` (`BaseServiceProvider`), `src/core/contracts/domain/entity.py` (`DomainEntity`), and `src/core/contracts/domain/registry.py` (`BaseRegistry`).
+*   **The Mutual Exclusivity:**
+    *   Nominal typing (ABC/Inheritance) requires a **hard dependency**. A domain class must import and inherit from the contract class to be valid. This is "Typing by Identity."
+    *   Structural typing (Protocol) requires only a **matching shape**. A domain class does not need to know the contract exists; it is valid if its methods match the signature. This is "Typing by Capability."
+*   **The Conflict and Implications:**
+    *   **Dependency Leakage:** While `DomainBinding` (Protocol) aims for a "Zero-Dependency" leaf policy, the fact that domain entities and registries *must* inherit from `DomainEntity` and `BaseRegistry` (Nominal) creates a mandatory dependency on `src/core/contracts/`.
+    *   **Architectural Dissonance:** The system implies that domains are "pluggable adapters" (Structural), yet forces them to be "rigid extensions" of the core (Nominal). This will lead to conflicts in the terminal (e.g., mypy errors) if a developer attempts to use a "pure" structural adapter that hasn't inherited from the nominal base classes required by the Engine's orchestrator or registry loaders.
+    *   **Fragile Decoupling:** The decoupling is only partial. If the nominal base classes in `core` change, every domain package is forced to update, undermining the primary benefit of the structural `Protocol` used in the binding layer.
 
 ### Hybrid Architecture (MVC + Hexagonal)
 *   **Status:** Integrated but potentially confusing.

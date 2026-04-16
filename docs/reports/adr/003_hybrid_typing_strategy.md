@@ -1,16 +1,34 @@
-# ADR 0001: Hybrid Typing Strategy (Structural vs. Nominal)
+---
+title: "Hybrid Typing Strategy"
+created_at: 2026-04-14
+updated_at: 2026-04-15
+status: pending
+---
 
-## Status
-Accepted
+# ADR 003: Hybrid Typing Strategy (Structural vs. Nominal)
 
 ## Context
-The Oregon Trail engine requires both high modularity (to support a "Screaming" and "Plug-and-Play" architecture) and strict data consistency (to ensure all game objects share a common identity and validation logic). 
+The Oregon Trail engine needs to support a ["Screaming" Architecture](./001_screaming_mvc.md) 
 
-Initially, the project exhibited "Architectural Dissonance" by alternating between:
-1. **Structural Typing (Protocols):** Used for `DomainBinding` to allow the Engine to interact with domains without importing them.
-2. **Nominal Typing (Inheritance):** Used for `DomainEntity`, `BaseServiceProvider`, and `BaseRegistry` to enforce shared behavior and identity.
+1. Strict data consistency must be defined and adhered to at the `core/` (Specification) and `engine/` (Controller Concern)
 
-This created a "split-personality" implementation where domains were conceptually "pluggable adapters" (Structural) but implementationally "rigid extensions" of the core (Nominal), leading to potential friction in static analysis (mypy) and ambiguous boundary enforcement.
+   * A **Common Identity** and **Validation** logic must be determined.
+
+   * The [`domain/`](./002_domain_hierarchy.md) (Model Concern) must be ruled by **Contract Enforcement**
+
+   * **Bootstrapping Logic** must be consistent
+
+2. Architectural Dissonance must be removed
+   * **Structural Typing** enforement in `DomainBinding` must be resolved - made to work - with **Normal Typing** `Base*` and Abstract (ABC) Class inheritance
+
+   * It MUST be determined if both **Structural Typing** AND **Normal Typing** are necessary
+
+   * Currently a *split-personality* implementation where domains are conceptually **pluggable adapters** (Structural) but implementationally **rigid extensions** of the core (Nominal), leading to potential friction
+
+
+## Prerequisites
+
+1. 
 
 ## Decision
 We will adopt a **Hybrid Typing Strategy** that leverages the strengths of both systems in their appropriate layers:
@@ -48,3 +66,7 @@ We will adopt a **Hybrid Typing Strategy** that leverages the strengths of both 
 
 ## Final Recommendation
 Keep `DomainBinding` as a **Protocol (Structural)**—the ultimate "Plug." Keep `DomainEntity` as a **Base Class (Nominal)**—the "Skeleton." This ensures the Engine handles "DNA" with Nominal typing and "Interactions" with Structural typing.
+
+## Status
+
+Pending
