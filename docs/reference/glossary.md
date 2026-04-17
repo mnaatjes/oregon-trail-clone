@@ -213,6 +213,14 @@ Encapsulation helps the Orchestrator via the Parent *Fascade* by hiding the *mes
 
 This reduces the *Cognative Load* on the Orchestrator/Engine.
 
+### Epic
+
+In the context of Project Organization and Management, an **Epic** is a large body of work that cannot be completed in a single "Sprint" (usually a 2-week work cycle). It represents a major feature or a significant architectural shift.
+
+* **Example:** "Implement the Character Domain Ecosystem."
+
+* **Role:** It acts as the "Parent" container for dozens of smaller tasks.
+
 ## I
 
 ### Internal Identity
@@ -238,6 +246,14 @@ graph BT
     Engine -->|Calls Contract| Domain
     Domain -.->|Implements| Contract
 ```
+
+### Issue
+
+In the context of Project Organization and Management, an **Issue** is the smallest unit of work. It is a specific, actionable item that one developer can usually complete in a few hours or days.
+
+* **Example:** "Create HealthRecord dataclass in health/models.py."
+
+* **Role:** This is the "Ticket" that moves across your Kanban board.
 
 ## K
 
