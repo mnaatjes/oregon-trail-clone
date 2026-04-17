@@ -250,10 +250,11 @@ sequenceDiagram
     Note over RS: Aggregates DR into DomainRoot
 ```
 
-## Addendum (2026-04-16): Sovereign Identity Registry
+## Addendum (2026-04-16): Sovereign Identity Service & Registry
 
 To ensure global uniqueness and collision safety across all Bounded Contexts:
-1. **The Identity Registry**: The system adopts a core `IdentityRegistry` service as the sole authority for UUID generation and tracking.
-2. **Assignment Mandate**: Domain Services (the "Generals") MUST NOT generate UUIDs locally using `uuid.uuid4()`. They must request a sovereign ID from the `IdentityRegistry`.
-3. **Collision Guard**: The registry maintains a runtime map of all active IDs, providing immediate detection of identity collisions during development or hydration.
-4. **Implementation Detail**: See [TDD: Identity Registry Service](../../design/identity_registry.md) for technical specifications.
+1. **The Identity Service & Registry**: The system adopts a core \`IdentityService\` (Logic) and \`IdentityRegistry\` (Storage) to centralize UUID generation and tracking.
+2. **Assignment Mandate**: Domain Services (the "Generals") MUST NOT generate UUIDs locally using \`uuid.uuid4()\`. They must request a sovereign ID from the \`IdentityService\`.
+3. **Collision Guard**: The \`IdentityRegistry\` maintains a runtime map of all active IDs, providing immediate detection of identity collisions during development or hydration.
+4. **Implementation Detail**: See [TDD: Identity Service & Registry](../../design/identity_registry.md) for technical specifications.
+
