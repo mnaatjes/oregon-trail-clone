@@ -20,6 +20,7 @@ sessions:
     metadata:
       timestamp: "2026-04-17 18:00:00"
       version: "0.1.0"
+      gemini_cli_session_id: "2eceb8e9-36d4-41dd-a366-64f10bef5148" # From Gemini-CLI to resume session
     tasks:
       accomplished:
         - "Finalized TDD-001: DomainBlueprint Contract, establishing the 'Global Truth' DNA for domain entities."
@@ -37,7 +38,7 @@ sessions:
         - "Review and adopt ADR-012 (Testing Regime) and ADR-011 pending addenda."
         - "Develop the scripts/architectural_police.py tool for automated provenance auditing."
     git:
-      branches_affected: ["feat/workflow-standardization"]
+      branches_affected: ["feat/contracts"]
       commit_uuids: []
 
   - session_id: "2026-04-17-01"
@@ -80,7 +81,7 @@ sessions:
         - "Draft TDD for Engine Orchestrator & Boot Lifecycle (src/engine/orchestrator.py)."
         - "Draft TDD for Architecture Testing Regime (Fitness Functions)."
     git:
-      branches_affected: ["main"]
+      branches_affected: ["feat/contracts"]
       commit_uuids: []
 
   - session_id: "2026-04-16-01"
@@ -100,5 +101,5 @@ sessions:
         - "Draft TDD for Engine Orchestrator & Boot Lifecycle (src/engine/orchestrator.py)."
         - "Draft TDD for Architecture Testing Regime (Fitness Functions)."
     git:
-      branches_affected: ["main"]
+      branches_affected: ["feat/contracts"]
       commit_uuids: []
