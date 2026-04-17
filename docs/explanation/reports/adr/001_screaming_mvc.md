@@ -1,13 +1,12 @@
 ---
+id: ADR-001
 title: "Screaming MVC System Architecture"
-description: "Foundational architectural pattern combining MVC for internal organization and Ports & Adapters for boundary protection."
-type: "explanation"
-status: "adopted"
-created_at: "2026-04-15 00:00:00"
-updated_at: "2026-04-15 00:00:00"
-owner: "Michael Naatjes"
-tags: ["adr", "architecture", "mvc", "hexagonal"]
-version: "0.1.0"
+status: adopted
+created_at: 2026-04-15
+updated_at: 2026-04-15
+component: core
+type: "explanation/adr"
+epic_link: "PENDING"
 ---
 
 # ADR 001: Screaming Model View Controller (MVC) Architecture

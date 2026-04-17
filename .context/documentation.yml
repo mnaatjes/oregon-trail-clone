@@ -44,13 +44,20 @@ documentation_directives:
       - "Strict Scoping: Only modify the specific ADR file(s) explicitly referenced in the review or inquiry."
 
   frontmatter_schema:
-    required_keys:
-      - "title: Clear, concise heading."
-      - "description: One-sentence summary for skim-reading."
-      - "type: The Diátaxis quadrant."
-      - "status: draft | stable | deprecated."
-      - "created_at: YYYY-MM-DD HH:MM:SS."
-      - "updated_at: YYYY-MM-DD HH:MM:SS."
-      - "owner: Primary maintainer."
-      - "tags: Keywords for filtering."
-      - "version: Software version described."
+    base_required:
+      - id           # Unique ID (e.g., ADR-011, REF-WAGON)
+      - title        # Clear, concise heading
+      - status       # draft | proposed | stable | deprecated
+      - created_at   # YYYY-MM-DD
+      - updated_at   # YYYY-MM-DD
+      - component    # core | engine | ui | domain:<name>
+      - type         # Diátaxis quadrant
+    
+    adr_extensions:
+      - epic_link    # Link to GH Epic (Use 'PENDING' if not yet created)
+      - type: "explanation/adr"
+
+    tdd_extensions:
+      - parent_adr   # Link to ADR-XXX
+      - feature_link # Link to GH Issue (Use 'PENDING' if not yet created)
+      - type: "explanation/design"
