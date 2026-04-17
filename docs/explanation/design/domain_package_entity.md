@@ -149,3 +149,28 @@ To maintain engineering clarity, the following terms are strictly defined:
 *   **Taxonomy Check:** Automated validation that `models.py` inherits from the correct species-base-class.
 *   **Import Audit:** AST-based scanning to ensure no Root-to-Root or Leaf-to-Leaf direct imports exist.
 *   **Ontology Check:** Ensuring `__CONTEXT__` priority and species match the filesystem location.
+
+---
+
+## 8. UI Visibility & Presentation (The "Passive View")
+To maintain the **Screaming MVC** separation, the Domain must remain "Pure" (free of I/O and rendering code). The UI interacts with the Domain as a "Passive Observer" through standardized metadata and protocols.
+
+### 8.1 The "Passive Visibility" Principle
+*   **Directional Flow:** The Domain NEVER calls the UI. The UI "looks into" the Domain using strictly defined read-only hooks.
+*   **Encapsulation:** No rendering libraries (e.g., `rich`, `ncurses`) are permitted within `src/domain/`.
+
+### 8.2 UI-Domain Anatomy
+1.  **DisplayBlueprint (`models.py`):** Every `DomainBlueprint` should contain a `display` block defining its static visual identity.
+    *   *Fields:* `label` (String), `icon` (String/Emoji), `description` (String), `color_hint` (String).
+2.  **UIRenderable Protocol (`src/core/contracts/`):** The formal "Handshake" that allows the UI to read a Domain Root without knowing its specific species.
+    *   *Methods:* `get_display()`, `get_status_summary()`, `get_alert_level()`.
+
+### 8.3 The UI Adapter (ViewModel Mapping)
+Complex "Presentation Logic" (e.g., changing a Wagon's icon to 🔥 when damaged) must live in the `src/ui/` layer.
+*   **The Process:** The UI Adapter "wraps" a Domain Root, reads its anemic state, and transforms it into a **View Model** for the screen.
+*   **The Benefit:** The Domain stays focused on math (Wagon health), while the UI stays focused on aesthetics (Icon selection).
+
+### 8.4 Presentation Interaction Rules
+*   **No UI in Logic:** `logic.py` must never return a string formatted for the screen. It returns raw data (Models).
+*   **Explicit Metadata:** Any entity intended for player visibility MUST include a `DisplayBlueprint`.
+*   **Protocol-Only Access:** The UI should ideally only interact with Domain Roots via the `UIRenderable` protocol to ensure a "Pedigree-Blind" rendering engine.
