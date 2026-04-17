@@ -4,7 +4,7 @@ description: "Formal adoption of TDD format and process"
 type: "explanation"
 status: "adopted"
 created_at: "2026-04-16 04:24:00"
-updated_at: "2026-04-16 04:47:00"
+updated_at: "2026-04-17 15:00:00"
 owner: "Michael Naatjes"
 tags: ["adr", "tdd", "documentation"]
 version: "0.1.0"
@@ -128,3 +128,15 @@ The TDD Ensures that a Component is fully developed and that edge-cases and othe
 ## Status
 
 **Adopted** 2026-04-16
+
+## Addendum (2026-04-17)
+
+### TDD Frontmatter Properties for Workflow Integration
+To support the **Law of Provenance** and integration with the GitHub Project Metadata Ledger (as proposed in ADR-011), all TDD documents are now REQUIRED to include the following frontmatter properties:
+
+*   **id**: (Required) Unique sequential identifier (e.g., `TDD-005`).
+*   **parent_adr**: (Required) The ID of the ADR that authorized the design (e.g., `ADR-011`).
+*   **title**: (Required) Clear, concise heading.
+*   **status**: (Required) Current state of the design (e.g., `pending`, `stable`).
+*   **feature_link**: (Required) URL to the corresponding GitHub Feature/User Story Issue.
+*   **component**: (Required) The "Screaming" domain (e.g., `domain:health`, `core`, `engine`).

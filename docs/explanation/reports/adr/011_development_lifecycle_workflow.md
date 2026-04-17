@@ -6,7 +6,7 @@ status: "proposed"
 created_at: "2026-04-17 00:00:00"
 updated_at: "2026-04-17 00:00:00"
 owner: "Michael Naatjes"
-tags: ["adr", "workflow", "process", "lifecycle"]
+tags: ["adr", "workflow", "process", "lifecycle", "github-projects"]
 version: "0.1.0"
 ---
 
@@ -36,57 +36,113 @@ We decouple the **Documentation Layer** from the **Project Management Layer** to
 | **TDD** | **User Story / Feature** | Medium / Tactical | "The Health Domain must handle damage events." |
 | **Contract Spec** | **Issue / Task** | Small / Operational | "Create the HealthRecord dataclass." |
 
-### 3. Tracking and Traceability
-#### **Identification and Numbering**
-*   **Documentation IDs:** Use the three-digit sequential prefix (e.g., `ADR-011`, `TDD-005`).
-*   **Project Management IDs:** Use a `#` prefix for GitHub/Local Issues (e.g., `ISS-42`).
-*   **Mapping:** The link is maintained via **Frontmatter** in documentation and **Task Lists** in TDDs.
+### 3. Tracking and Traceability (The Metadata Ledger)
+To realize the Law of Provenance, we utilize a **GitHub Project (v2)** as the authoritative ledger. This ledger syncs the Documentation Layer with the Execution Layer using custom fields and standardized frontmatter metadata.
 
-#### **The Chain of Custody (Visualized)**
-```mermaid
-graph TD
-    ADR[ADR: The Decision] -->|Spawns| Epic[Epic: The Project Container]
-    Epic -->|Guided by| TDD[TDD: The Design Blueprint]
-    TDD -->|Broken into| Issues[Issues: The Coding Tasks]
-    Issues -->|Realized in| Branch[Feature Branch: One Issue/One Branch]
-    Branch -->|Validated by| Police[Architectural Police Tests]
-    Police -->|Merged to| Main[Main: The Source of Truth]
+#### **3.1 Frontmatter Requirements**
+All documentation must include specific metadata to ensure the "Chain of Custody" is auditable both on and offline.
 
-    subgraph Documentation_Layer
-        ADR
-        TDD
-    end
+**For ADR Documents:**
+*   **id**: (Required) The unique identifier (e.g., `ADR-011`).
+*   **epic_link**: (Required) The URL to the corresponding GitHub Epic Issue. This bridges the Documentation Layer to the Project Management Layer.
 
-    subgraph PM_Layer
-        Epic
-        Issues
-    end
+**For TDD Documents:**
+*   **id**: (Required) The unique identifier (e.g., `TDD-005`).
+*   **parent_adr**: (Required) The ID or path of the ADR that authorized this design (e.g., `ADR-011`). This is the "Provenance" link.
+*   **feature_link**: (Required) The URL to the corresponding GitHub Feature/User Story Issue.
+*   **component**: (Required) The "Screaming" domain this design belongs to (e.g., `domain:health`, `core`, `engine`). This allows automated tools to verify that a TDD in a specific folder claims the correct component.
 
-    subgraph Execution_Layer
-        Branch
-        Police
-        Main
-    end
+#### **3.2 Example Frontmatter**
+
+**ADR Example:**
+```yaml
+id: ADR-011
+title: "Development Lifecycle and Workflow"
+status: proposed
+epic_link: "https://github.com/user/repo/issues/10"
+component: core
+...
 ```
 
-### 4. Association Management
-To prevent the "Lost Work" problem, we adopt two tracking methods:
-1.  **Parenting:** In the Project Management tool, every Issue MUST be parented to an Epic.
-2.  **The TDD Task List:** Every TDD must include an **Implementation Section** that lists the specific Issue numbers created to fulfill the design.
+**TDD Example:**
+```yaml
+id: TDD-005
+parent_adr: ADR-011
+title: "TDD: DomainBlueprint Contract"
+status: pending
+feature_link: "https://github.com/user/repo/issues/11"
+component: core
+```
+
+#### **3.3 Custom Fields (GitHub Project)**
+The GitHub Project board must be configured with the following custom fields:
+
+| Field Name | Type | Purpose |
+| :--- | :--- | :--- |
+| **Type** | Single Select | Categorize as Epic (ADR-level) or Task (TDD-level). |
+| **ADR Link** | Text/URL | Direct link to the `docs/explanation/reports/adr/ADR-XXX.md` file. |
+| **TDD Link** | Text/URL | Direct link to the `docs/explanation/design/TDD-XXX.md` file. |
+| **Component** | Single Select | The "Screaming" Domain (e.g., health, weather, core). |
+| **Cycle** | Iteration | Tracks which 2-week "Sprint" the work belongs to. |
+
+#### **3.2 Hierarchical Mapping (Parenting)**
+We utilize GitHub's **Tasklist** feature to enforce the hierarchy:
+1.  **Epic Issue:** A "Placeholder" issue labeled `Epic` represents an ADR. The description contains the link to the ADR.
+2.  **Child Issues:** Individual coding tasks (linked to a TDD) are added to the Epic's Tasklist.
+3.  **Visual Progress:** GitHub automatically displays progress bars (e.g., "4 of 6 tasks") on the Epic, providing at-a-glance status of the ecosystem.
+
+#### **3.3 The Chain of Custody (Visualized)**
+```mermaid
+graph LR
+    subgraph Repo_Docs [Docs/Repo]
+        ADR_File[ADR-011.md]
+        TDD_File[TDD-005.md]
+    end
+
+    subgraph GH_Project [GitHub Project Ledger]
+        Epic[#10 Epic: Weather System]
+        Task[#11 Task: Blizzard Logic]
+    end
+
+    ADR_File -->|Source of Truth| Epic
+    TDD_File -->|Implementation Spec| Task
+    Epic ---|Parent of| Task
+
+    subgraph Development [Local Environment]
+        PR[Pull Request]
+        Code[src/domain/weather/logic.py]
+    end
+
+    Task -->|Authored in| PR
+    PR -->|Realizes| Code
+    PR -->|Auto-Closes| Task
+```
+
+### 4. Automated Workflow "Laws"
+To minimize the "Maintenance Burden," we utilize GitHub's native automation:
+1.  **The "Linked PR" Requirement:** No PR may be merged unless it uses the `Closes #ISS` keyword. This automatically moves the Issue to **Done** in the Project Ledger.
+2.  **Status Sync:** When an Issue is moved to "In Progress" on the board, GitHub can automatically create a branch with the correct naming convention (e.g., `42-health-record-dataclass`).
+
+### 5. The "Screaming" Board Views
+The GitHub Project should include three specific views to monitor compliance:
+*   **The Roadmap (Strategic):** Filters by `Type: Epic`. Shows high-level progression of ADRs.
+*   **The Kanban (Operational):** Filters by `Status`. The daily "Builder" view for moving tasks.
+*   **The Audit (Compliance):** A table view that highlights any Issue where the `TDD Link` or `ADR Link` is empty, enforcing the Law of Provenance.
 
 ## Proposed Artifacts
-*   **`docs/explanation/workflow.md`**: An "Understanding-oriented" guide explaining this philosophy to new contributors.
 *   **`docs/explanation/reports/status/issue_ledger.md`**: (Optional) A local registry for tracking the cross-references between ADRs, TDDs, and Issues.
 
 ## Consequences
 
 ### Pros
 *   **Zero Drift:** Ensures code never outpaces design.
-*   **Autonomous Implementation:** TDDs are detailed enough for AI/Dev assistance without friction.
+*   **Visualizes Metabolism:** GitHub's automated progress bars provide a "Heartbeat" for the project.
+*   **Eliminates "Dark Matter":** The Audit View makes it impossible for code to sneak in without documentation.
 *   **Auditability:** Every bug or feature has a clear paper trail to the original decision.
 
 ### Cons
 *   **Overhead:** Requires more "Up-front" work before a single line of code is written.
+*   **Initial Setup:** Requires manually adding links to the GitHub Project fields for every new design.
 *   **Rigidity:** Slows down "Spike" development or rapid prototyping.
 
 ## Status
