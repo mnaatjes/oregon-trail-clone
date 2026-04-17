@@ -4,7 +4,7 @@ description: "Internal structure of domain packages separating Model (State), Lo
 type: "explanation"
 status: "adopted"
 created_at: "2026-04-15 00:00:00"
-updated_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-17 00:00:00"
 owner: "Michael Naatjes"
 tags: ["adr", "domain", "anatomy", "encapsulation"]
 version: "0.1.0"
@@ -293,3 +293,28 @@ In this Oregon Trail clone:
 Services in this architecture are mandated to be **Stateless Singletons**.
 - **Constraint:** Services MUST NOT hold instance state (e.g., character data, health points).
 - **Reasoning:** All state must reside in anemic Models (DTOs) to ensure 100% snapshotability for persistence and to prevent "Stale State" bugs in the singleton lifecycle.
+
+## Addendum (2026-04-17): Operationalizing Logic vs. Services
+
+To clarify implementation details for Logic and Services, the following operational constraints are adopted:
+
+### 1. The Roles (Calculator vs. Operator)
+*   **Logic (The Calculator):** Pure mathematical transformations. It handles the "How" of domain math (e.g., damage calculation, distance). It is context-blind.
+*   **Service (The Operator):** The Orchestrator. It handles the "When" and "Why" (e.g., applying damage because a wagon hit a rock). It coordinates I/O and state persistence.
+
+### 2. Implementation Ruleset
+| Constraint | Logic (logic.py) | Service (services.py) |
+| :--- | :--- | :--- |
+| **Side Effects** | **Forbidden.** No I/O, no DB, no Event emission. | **Mandated.** Orchestrates all I/O and Events. |
+| **State** | **Stateless.** Pure functions only. | **Stateless.** Singleton classes (no instance state). |
+| **Visibility** | **Private.** Hidden from Horizontal Siblings. | **Public.** Accessible via the Facade. |
+| **Dependencies** | None. Pure input/output. | Container, Adapters, Internal Logic. |
+
+### 3. The "Litmus Test" for Code Placement
+*   Does it talk to an external system (DB/Container)? -> **Service.**
+*   Is it a calculation that returns the same result for the same input 100 years from now? -> **Logic.**
+*   Should another Domain Root be able to see this code directly? -> **Service** (via the Facade).
+
+### 4. Sovereignty and Silence
+*   **Root Services:** Permitted to emit public events to the Global Event Bus.
+*   **Leaf Services:** Must remain silent (internal lifecycle management only).

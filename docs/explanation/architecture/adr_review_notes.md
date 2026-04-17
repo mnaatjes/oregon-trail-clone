@@ -112,10 +112,35 @@ This document serves as a collaborative space for deep-diving into the project's
     3. **Hydration Path:** `DomainRecord`s are hydrated by **Leaf Services** (ADR 003). They may be initialized from `DomainBlueprint` templates but are ultimately the result of the Leaf's internal metabolism (Logic).
 
 
-### [ADR-003 Anemic Aggregator]
-* **Created:**
-* **Question:**
+### [ADR-004 Domain Package Anatomy]
+* **Created:** 2026-04-16 11:31:00
+* **Question:** Given "Services are Singletons/Stateless. They should NOT hold a specific CharacterState as an internal property; they should receive the state as a parameter, transform it via Logic, and return it. This prevents "Stale State" bugs across the ecosystem..."
 
+    1. I want to know the difference between the contents of `logic.py` (Logic) and the contents of `service.py` (Services).
+
+    2. What are the rules for Services and Logic: Who and/or What CAN they interact with and can they NOT interact with?
+
+    3. What is the Scope of each: Logic and Service?
+
+    4. What is the composition of each? Are all Services Singleton Classes? Should Services be static - why or why not? Does `logic.py` just contain a list of independent functions or an organized object?
+
+    5. What capabilities do Services and Logic of `DomainRoot`s have vs `DomainRecord`s?
+
+* **Resolution/Action:**
+    1. **The "Calculator vs. Operator" Model:**
+        *   **Logic (`logic.py`) is the Calculator:** Pure, stateless mathematical transformations. Input (Model) -> Output (New Model). No side effects (no I/O, no events).
+        *   **Service (`services.py`) is the Operator:** The Orchestrator. It fetches the Model, invokes the Logic, saves the result, and emits events.
+    2. **Interaction Boundaries:**
+        *   **Encapsulation:** `logic.py` is private to its package. Outside packages (Horizontal Siblings) must never import `logic.py` directly; they must interact via the Package Service or Facade.
+        *   **I/O Policy:** Only Services may interact with external systems (ServiceContainer, Databases, Event Bus). Logic must remain a "Pure Math" zone.
+    3. **Composition:**
+        *   **Services:** Stateless Singletons implemented as classes. They do not hold instance state to ensure snapshotability.
+        *   **Logic:** A collection of independent, pure functions.
+    4. **Sovereignty:**
+        *   **Roots:** Root Services are the only entities permitted to emit public events.
+        *   **Leaves:** Leaf Services must remain silent to the outside world.
+    5. **Addendum Required:** Draft an addendum for ADR-004 to include these practical definitions and the "Litmus Test" for developers.
+    
 ### [ADR-00X: Title]
 *   **Question/Presumption:** [Define what is being challenged or needs more detail]
 *   **Analysis:** [Your thoughts and findings]
