@@ -4,7 +4,7 @@ description: "Design pattern for Aggregate Roots as anemic DTOs to ensure 100% s
 type: "explanation"
 status: "adopted"
 created_at: "2026-04-15 00:00:00"
-updated_at: "2026-04-16 10:00:00"
+updated_at: "2026-04-16 12:00:00"
 owner: "Michael Naatjes"
 tags: ["adr", "domain", "anemic-model", "snapshot"]
 version: "0.1.0"
@@ -176,7 +176,6 @@ graph TD
     R4 --> Registry
     Registry -- "Single JSON Serialization" --> SaveFile[(SaveGame.json)]
     
-    style SnapshotDesc fill:#fff,stroke-dasharray: 5 5,stroke:#333
 ```
 
 ### 2. Forced Engine Mediation
@@ -216,3 +215,45 @@ To formalize the discovery and validation of Bounded Contexts, the project adopt
 1. **The Manifest**: All loose behavioral metadata (intent, species, priority) is unified into a single `DomainContext` object.
 2. **Implementation**: Every Bounded Context (Root or Leaf) MUST instantiate this manifest in its `__init__.py` as the reserved variable `__CONTEXT__`.
 3. **Rationale**: This provides a single, type-safe point of entry for the Kernel to identify and bootstrap a package, moving away from fragmented metadata variables.
+
+## Addendum (2026-04-16): DomainRecord Properties & Hydration
+
+To standardize the "Atoms" (Leaf Records) of the ecosystem:
+
+1. **Mandatory Properties**: Every `DomainRecord` must be:
+    - **Anonymous**: No internal UUID; its identity is derived from the Root that holds it.
+    - **Anemic**: Contains only data (DTO); zero business logic.
+    - **Cloneable**: Must support deep-copying for safe transformation.
+    - **Validatable**: Must support self-validation against its own schema.
+
+2. **Hydration Lifecycle**:
+    - **Trigger**: A Root Service (e.g., Character) requires a specific leaf state.
+    - **Delegation**: The Root Service calls the Leaf Service (e.g., Health).
+    - **Creation**: The Leaf Service initializes the `DomainRecord`, potentially using a `DomainBlueprint` for default values.
+    - **Metabolism**: If initial logic is required (e.g., calculating starting HP based on difficulty), the Leaf Service passes the Record to its local `logic.py`.
+    - **Handoff**: The Leaf Service returns the completed `DomainRecord` to the Root Service for aggregation into the `DomainRoot`.
+
+```mermaid
+sequenceDiagram
+    participant RS as Root Service (Character)
+    participant LS as Leaf Service (Health)
+    participant LL as Leaf Logic (Health)
+    participant DR as DomainRecord (HealthRecord)
+
+    RS->>LS: Request State
+    activate LS
+    LS->>DR: Instantiate (Default/Blueprint)
+    LS->>LL: transform(DR, context)
+    LL-->>LS: Updated DR
+    LS-->>RS: Return DR
+    deactivate LS
+    Note over RS: Aggregates DR into DomainRoot
+```
+
+## Addendum (2026-04-16): Sovereign Identity Registry
+
+To ensure global uniqueness and collision safety across all Bounded Contexts:
+1. **The Identity Registry**: The system adopts a core `IdentityRegistry` service as the sole authority for UUID generation and tracking.
+2. **Assignment Mandate**: Domain Services (the "Generals") MUST NOT generate UUIDs locally using `uuid.uuid4()`. They must request a sovereign ID from the `IdentityRegistry`.
+3. **Collision Guard**: The registry maintains a runtime map of all active IDs, providing immediate detection of identity collisions during development or hydration.
+4. **Implementation Detail**: See [TDD: Identity Registry Service](../../design/identity_registry.md) for technical specifications.

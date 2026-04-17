@@ -83,6 +83,38 @@ This document serves as a collaborative space for deep-diving into the project's
         *   **The Facade:** `__init__.py` defines the public API via `__all__`.
         *   **Behavioral Ontology:** Metadata variables like `__DOMAIN_INTENT__` and `__DOMAIN_SPECIES__` (ROOT vs LEAF) in `__init__.py` inform the Kernel of the context's nature.
 
+### [ADR-003 Anemic Aggregator]
+* **Created:** 2026-04-16 07:53:00
+* **Question:** Given, "Every DomainRoot must possess a globally unique UUID." -> 
+
+    1. What is the Service which will endow this UUID? 
+    
+    2. Or can this be a function of the Abstract Contract which it performs every time DomainRoot is inherited/implemented?
+
+* **Resolution/Action:**
+    1. **Endowment Responsibility:** Per the "Hydration Flow" in ADR 003, the **Domain Service** is responsible for generating the UUID and passing it to the `DomainRoot` during instantiation.
+    2. **Contract Role:** The `DomainRoot` contract (ADR 002, ADR 005) ensures the *existence* of the identity field, but the service acts as the "General" that assigns it when a sovereign actor is born into the world.
+
+### [ADR-003 Anemic Aggregator]
+* **Created:** 2026-04-16 07:57:00
+* **Question:** Re: `DomainRecord`
+
+    1. What properties must ALL `DomainRecords` have?
+
+
+    2. Where will `DomainRecords` get their values from? Are properties defined on an individual basis?
+
+    3. Are `DomainRecord` entities meant to be hydrated from json files or by the internal logic of the Domain System? We have an Hydration Flow for Aggregate `DomainRoot`s but how are leaves - `DomainRecords` hydrated?
+
+* **Resolution/Action:**
+    1. **Baseline Properties:** Per ADR 005, all `DomainRecord`s are **Anonymous**, **Anemic**, **Cloneable**, and **Validatable**. They represent a passive "Row" of state.
+    2. **Value Sourcing:** Properties are defined by the specific Leaf Package. Values are sourced from **Leaf Services** and **Logic** transformations.
+    3. **Hydration Path:** `DomainRecord`s are hydrated by **Leaf Services** (ADR 003). They may be initialized from `DomainBlueprint` templates but are ultimately the result of the Leaf's internal metabolism (Logic).
+
+
+### [ADR-003 Anemic Aggregator]
+* **Created:**
+* **Question:**
 
 ### [ADR-00X: Title]
 *   **Question/Presumption:** [Define what is being challenged or needs more detail]

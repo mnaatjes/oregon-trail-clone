@@ -4,7 +4,7 @@ description: "High-level overview of symbiotic interactions between domain packa
 type: "explanation"
 status: "adopted"
 created_at: "2026-04-15 00:00:00"
-updated_at: "2026-04-16 00:00:00"
+updated_at: "2026-04-16 12:45:00"
 owner: "Michael Naatjes"
 tags: ["adr", "domain", "ecosystem", "events"]
 version: "0.1.0"
@@ -145,3 +145,11 @@ To maintain Bounded Context integrity, the following event rules are enforced:
 1. **Root Sovereignty:** Only Root Services are permitted to emit events to the Global Event Bus.
 2. **Leaf Silence:** Leaf Services must remain silent to the outside world. They may only return data or emit local signals to their parent Root.
 3. **Reasoning:** This prevents bypassing the Aggregate Root's authority and ensures a clear, managed public API for the domain ecosystem.
+
+## Addendum (2026-04-16): Centralized Identity & State Symbiosis
+
+The Domain Ecosystem's integrity is bolstered by the integration of the **Identity Registry** and the **State Registry**:
+1. **Sovereign Authority**: The `IdentityRegistry` acts as the central clerk, ensuring every active Root has a unique and verified identity in the world.
+2. **Ecosystem Index**: The `StateRegistry` uses the verified identities from the `IdentityRegistry` as the primary index for world snapshotting and serialization.
+3. **Collision Enforcement**: Any attempt to introduce a duplicate identity into the ecosystem (via buggy logic or corrupt save data) results in a "Hard Fail" by the Kernel to preserve state consistency.
+4. **Reference**: The full technical design is documented in [TDD: Identity Registry Service](../../design/identity_registry.md).
