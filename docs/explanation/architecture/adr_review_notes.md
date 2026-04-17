@@ -140,7 +140,7 @@ This document serves as a collaborative space for deep-diving into the project's
         *   **Roots:** Root Services are the only entities permitted to emit public events.
         *   **Leaves:** Leaf Services must remain silent to the outside world.
     5. **Addendum Required:** Draft an addendum for ADR-004 to include these practical definitions and the "Litmus Test" for developers.
-    
+
 ### [ADR-00X: Title]
 *   **Question/Presumption:** [Define what is being challenged or needs more detail]
 *   **Analysis:** [Your thoughts and findings]

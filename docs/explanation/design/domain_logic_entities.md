@@ -32,14 +32,41 @@ This document defines the implementation standards for `logic.py` entities. Logi
 Logic entities function as a stateless calculator. They do not know why they are being called; they only know how to transform data.
 
 ### Interaction Rules (Codified)
-1.  **Purity:** Functions must be "Pure." Given the same input, they must always return the same output.
-2.  **Statelessness:** No use of `global`, `nonlocal`, or instance state.
-3.  **Isolation:** Private to the package. Never exported to horizontal siblings.
-4.  **No I/O:** Forbidden from interacting with the file system, database, or network.
-5.  **No Events:** Forbidden from emitting events to the global event bus.
-6.  **Input-Driven:** Accepts Anemic Models (DTOs) and returns new Anemic Models.
+To qualify as "Logic" in this architecture, every function must share these four traits:
+*   **Signatures are "Model-First":** Every primary logic function must accept a Domain Model (Root or Record) as its first argument.
+*   **Immutability Enforcement:** They must **never** modify the input object. They must always return a **new instance** (clone) of the model with updated values.
+*   **Determinism:** They must be "Pure." If you pass the same inputs, you must get the exact same output back, every single time.
+*   **Internal Scope:** They are designed to be consumed **only** by the Service of their own package.
 
-### Detailed Design
+### 4. Type Enforcement & Bounded Context
+Logic functions are the primary enforcers of the Bounded Context boundary:
+*   **Primary Rule (The "Home" Model):** Within a package (e.g., `health`), the primary input and output **must** be the package's specific Model (`HealthRecord`).
+*   **Type Enforcement:** Python type hints are mandatory.
+    *   *Correct:* `def apply_damage(health: HealthRecord, amount: int) -> HealthRecord:`
+*   **External Type Policy:**
+    *   **Allowed:** Primitives (int, str, etc.) and Common Value Objects from `src/domain/common/`.
+    *   **Forbidden:** Sibling Models. `health/logic.py` cannot accept an `InventoryRecord`.
+
+### 5. Universal "CAN" vs. "PROHIBITED"
+
+| What Logic CAN Do | What Logic is PROHIBITED from Doing |
+| :--- | :--- |
+| **Read Models:** Access any property on the DTO. | **I/O Operations:** No print, open, DB, or network calls. |
+| **Clone Models:** Use `.clone()` to create new state. | **Global/Static State:** No `datetime.now()` or `random`. |
+| **Perform Math:** Use standard math libraries. | **Importing Services:** Must never know `services.py` exists. |
+| **Call Internal Logic:** Call helpers in the same file. | **Horizontal Imports:** Cannot import sibling packages. |
+| **Raise Exceptions:** Raise `InvalidPhysicalStateError`. | **Emitting Events:** Cannot talk to the Event Bus. |
+
+### 6. Summary Table for Logic Enforcement
+| Feature | Enforcement Rule |
+| :--- | :--- |
+| **Input Type** | Must be the package's specific `DomainRoot` or `DomainRecord`. |
+| **Output Type** | Must match the Input Type (Transformation). |
+| **Context** | Strictly limited to the local package + `domain/common`. |
+| **Side Effects** | Zero. Pure calculation only. |
+| **Testing** | Must be testable with zero mocks/stubs. |
+
+## 7. Detailed Design
 
 #### Data Flow Sequence
 ```mermaid
