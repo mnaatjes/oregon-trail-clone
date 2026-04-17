@@ -80,24 +80,64 @@ graph TD
 
 ---
 
-## 4. Internal Component Details
+## 4. Composition over Inheritance (The "Cobbling" Strategy)
+Instead of traditional OOP inheritance (e.g., "Wagon is-a Vehicle"), this architecture favors **Composition by Assembly**. This prevents the "Big Ball of Mud" and ensures that every domain root remains a sovereign structural sibling.
 
-### 4.1 `models.py` (The Resource)
+### 4.1 Composition by Leaf (Shared Parts)
+Instead of a "Vehicle" base class, we create a "Menu" of shared Leaf Packages (Atoms).
+*   **Leaves (Atoms):** `durability`, `inventory`, `mobility`.
+*   **The Wagon Root:** Composes `DurabilityRecord`, `InventoryRecord`, and `AxleRecord`.
+*   **The Ox-Cart Root:** Composes `DurabilityRecord`, `InventoryRecord`, and `DraftAnimalRecord`.
+*   **Role of Inheritance:** Zero. They are structural siblings assembled from the same "Ingredients."
+
+### 4.2 Variation by Blueprint (Specification)
+If two entities share 90% of their structure, they may occupy the same Root Package (e.g., `vehicle`), differentiated by a **DomainBlueprint**.
+*   **The Process:** The **Domain Service** (The Factory) reads a JSON specification (e.g., `wagon.json`), hydrates the required Leaves based on that spec, and "cobbles" them into a single `VehicleRoot` DTO.
+
+### 4.3 The Role of the "Shared Kernel" (domain/common)
+Base classes for shared attributes (e.g., `name`, `weight`, `price`) belong in the **Shared Kernel**.
+*   **Location:** `src/domain/common/models.py`
+*   **The Rule:** `WagonRecord` and `OxCartRecord` may inherit from a `BasePhysicalDTO` in the Shared Kernel. This is permitted because `common` is the "Foundation Language," not a horizontal sibling.
+
+### 4.4 Summary: The Lifecycle of Composition
+| Step | Action | Entity Involved |
+| :--- | :--- | :--- |
+| **1. Define Parts** | Create shared atoms (e.g., health, weight). | **Leaf Packages** |
+| **2. Define Spec** | Write a JSON file defining the "Wagon" stats. | **DomainBlueprint** |
+| **3. Assembly** | Fetch data, run math, and build the DTO. | **Domain Service** |
+| **4. Recognition** | The Engine sees it as a `DomainRoot`. | **Inheritance (Taxonomy)** |
+
+### 4.5 The "Factory-Logic" Role
+The **Domain Service** (`services.py`) acts as the **Factory**. It uses the `models.py` (Blueprints/Parts) and `logic.py` (Assembly Rules) to create the final sovereign aggregate.
+
+### 4.6 Conclusion: The Role of Inheritance
+Inheritance is used **ONLY for Taxonomy (Identity)**:
+*   `WagonRoot` inherits from `DomainRoot` to identify as a **Sovereign Actor** with a UUID.
+*   `HealthRecord` inherits from `DomainRecord` to identify as an **Anemic Data Fragment**.
+
+Behavior is never inherited between Roots; it is encapsulated in a **Leaf** or **Common Logic** and "Composed" where required.
+
+---
+
+## 5. Internal Component Details
+
+### 5.1 `models.py` (The Resource)
 *   **DomainRoot (Roots):** A passive DTO anchoring a UUID. It aggregates multiple `DomainRecord` properties.
 *   **DomainRecord (Leaves):** Anemic, passive state fragments. Must be cloneable and validatable.
 *   **DomainBlueprint:** Read-only "Global Truth" templates loaded from assets.
 
-### 4.2 `logic.py` (The Metabolism)
+### 5.2 `logic.py` (The Metabolism)
 *   **Rules:** Pure functions only. No I/O. Input -> Output.
 *   **Interaction:** Takes a model from `models.py`, transforms it, and returns a new instance.
 
-### 4.3 `services.py` (The Nervous System)
+### 5.3 `services.py` (The Nervous System)
 *   **Rules:** Stateless Singletons.
 *   **Responsibility:** Fetch Model -> Call Logic -> Save Model -> Notify System.
 
 ---
 
-## 5. Formal Terminology (ADR-003 Alignment)
+## 6. Formal Terminology (ADR-003 Alignment)
+
 To maintain engineering clarity, the following terms are strictly defined:
 *   **Root Package:** The physical directory in `src/domain/roots/`.
 *   **Aggregate Root:** The conceptual DDD role of an assembly.
