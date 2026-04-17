@@ -1,13 +1,13 @@
 ---
+id: TDD-009
+parent_adr: ADR-005
 title: "TDD: DomainValueObject Contract"
-description: "Engineering blueprint for Shared Kernel semantic types (Value Objects)."
-type: "explanation"
-status: "pending"
-created_at: "2026-04-17 00:00:00"
-updated_at: "2026-04-17 00:00:00"
-owner: "Michael Naatjes"
-tags: ["design", "domain", "common", "value-object", "tdd"]
-version: "0.1.0"
+status: pending
+created_at: 2026-04-17
+updated_at: 2026-04-17
+component: core
+type: "explanation/design"
+feature_link: PENDING
 ---
 
 # TDD: DomainValueObject Contract

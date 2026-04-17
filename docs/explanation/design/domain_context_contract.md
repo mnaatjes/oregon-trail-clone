@@ -1,13 +1,13 @@
 ---
+id: TDD-002
+parent_adr: ADR-003
 title: "TDD: DomainContext Contract"
-description: "Engineering blueprint for the Unified Context Manifest used for package discovery and bootstrapping."
-type: "explanation"
-status: "pending"
-created_at: "2026-04-17 00:00:00"
-updated_at: "2026-04-17 00:00:00"
-owner: "Michael Naatjes"
-tags: ["design", "domain", "context", "manifest", "tdd"]
-version: "0.1.0"
+status: pending
+created_at: 2026-04-17
+updated_at: 2026-04-17
+component: core
+type: "explanation/design"
+feature_link: PENDING
 ---
 
 # TDD: DomainContext Contract
@@ -17,42 +17,46 @@ The `DomainContext` is the **Unified Context Manifest** (ADR-003 Addendum). Ever
 
 ## 2. Goals & Non-Goals
 ### Goals
-*   Provide a type-safe interface for package metadata.
-*   Centralize Taxonomical (Species) and Ontological (Priority) details.
-*   Enable automated discovery and "Physical-to-Logical" asset mapping.
+*   Standardize how Domain Packages "Scream" their identity to the Engine.
+*   Enable automated Discovery of Root and Leaf packages.
+*   Enforce the sequence of initialization through `BOOT_PRIORITY`.
+*   Decouple the package registration from the physical folder location.
 
 ### Non-Goals
-*   Containing domain state (delegated to Models).
-*   Handling runtime orchestration (delegated to the Orchestrator).
+*   Holding runtime state of game entities (delegated to `DomainRoot`).
+*   Executing business math (delegated to `logic.py`).
 
 ## 3. Proposed Design
 
-### Data Schema (The Manifest)
-The `DomainContext` object must include:
-*   `species: DomainSpecies`: Enum (ROOT | LEAF).
-*   `intent: str`: Human-readable "Scream" of the domain's purpose.
-*   `priority: int`: The Ontological boot priority (0-100).
-*   `required_pillars: List[str]`: Essential Kernel services (e.g., "Events").
-*   `service_provider: str`: The full class path to the `ServiceProvider`.
-
-### Bootstrapping Lifecycle
-```mermaid
-sequenceDiagram
-    participant K as System Kernel
-    participant P as Package __init__.py
-    participant C as __CONTEXT__ (DomainContext)
-
-    K->>P: Discovery Scan
-    P->>C: Instantiate Manifest
-    K->>C: Read species & priority
-    Note over K: Map assets/ based on package path
-    K->>K: Add ServiceProvider to Boot Queue
-```
+### Data Schema (Core Fields)
+Every `DomainContext` manifest must include:
+*   `species: DomainSpecies`: Enum (ROOT or LEAF).
+*   `intent: str`: Human-readable "Scream" of the package (e.g., "Wagon Durability").
+*   `priority: int`: Sequential boot order (0-100).
+*   `pillars: List[str]`: Required kernel services (Events, State, Assets).
+*   `provider: Type[BaseServiceProvider]`: The class responsible for DI registration.
 
 ### Constraints
-1.  **Immutability:** The context must be read-only after instantiation.
-2.  **Location:** Must reside in `src/domain/<roots/leaves>/<package>/__init__.py`.
+1.  **Immutability:** Must be a `@dataclass(frozen=True)`.
+2.  **Naming Convention:** Must be assigned to the variable `__CONTEXT__` in the package's `__init__.py`.
+3.  **Ontology Verification:** The `Architectural Police` will verify that `priority` and `species` match the filesystem location.
+
+### Interaction Sequence
+```mermaid
+sequenceDiagram
+    participant Orchestrator as Engine Orchestrator
+    participant Context as __CONTEXT__ Manifest
+    participant Provider as Service Provider
+    participant Container as Service Container
+
+    Orchestrator->>Context: Scan src/domain/ for __CONTEXT__
+    Orchestrator->>Context: Verify Species & Priority
+    Orchestrator->>Provider: Instantiate via provider class path
+    Provider->>Container: register() services and factories
+    Orchestrator->>Provider: boot() services after all registered
+```
 
 ## 4. Diagnostic Goals
-*   **Ontology Audit:** Verification that the `species` matches the physical folder path (ROOT in roots, LEAF in leaves).
-*   **Discovery Enforcement:** Fails the system boot if `__CONTEXT__` is missing from any domain package.
+*   **Discovery Audit:** Verify that every folder in `src/domain/{roots,leaves}` contains a valid `DomainContext`.
+*   **Priority Conflict Check:** Ensure no two Roots share the same `BOOT_PRIORITY` to prevent race conditions.
+*   **Pillar Validation:** Ensure all required pillars (e.g., "Events") are registered in the Container before the package boots.

@@ -1,13 +1,13 @@
 ---
+id: TDD-006
+parent_adr: ADR-004
 title: "TDD: DomainRecord Contract"
-description: "Engineering blueprint for anemic Leaf state fragments (Atoms)."
-type: "explanation"
-status: "pending"
-created_at: "2026-04-17 00:00:00"
-updated_at: "2026-04-17 00:00:00"
-owner: "Michael Naatjes"
-tags: ["design", "domain", "leaf", "record", "tdd"]
-version: "0.1.0"
+status: pending
+created_at: 2026-04-17
+updated_at: 2026-04-17
+component: core
+type: "explanation/design"
+feature_link: PENDING
 ---
 
 # TDD: DomainRecord Contract

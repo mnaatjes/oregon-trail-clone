@@ -1,13 +1,13 @@
 ---
+id: TDD-007
+parent_adr: ADR-003
 title: "TDD: DomainRoot Contract"
-description: "Engineering blueprint for the Sovereign Aggregate Root DTO."
-type: "explanation"
-status: "pending"
-created_at: "2026-04-17 00:00:00"
-updated_at: "2026-04-17 00:00:00"
-owner: "Michael Naatjes"
-tags: ["design", "domain", "root", "aggregate", "tdd"]
-version: "0.1.0"
+status: pending
+created_at: 2026-04-17
+updated_at: 2026-04-17
+component: core
+type: "explanation/design"
+feature_link: PENDING
 ---
 
 # TDD: DomainRoot Contract
