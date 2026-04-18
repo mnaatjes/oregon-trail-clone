@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pytest
 from rich import inspect
-from core.contracts.domain.registry import BaseRegistry
+from core.contracts.registry import BaseRegistry
 from core.contracts.domain.blueprint import DomainBlueprint, DisplayBlueprint
 
 @pytest.fixture
@@ -33,7 +33,7 @@ class MockMaladyRegistry(BaseRegistry[MaladyBlueprint]):
     def hydrate(self, raw_data: dict) -> None:
         for slug, data in raw_data.items():
             blueprint = MaladyBlueprint(**data)
-            self.register(blueprint)
+            self.register(slug, blueprint)
 
 def test_registry_registration_and_retrieval():
     registry = MockMaladyRegistry()
@@ -139,7 +139,7 @@ def test_registry_overwrite():
     }
     
     new_cholera_blueprint = MaladyBlueprint(**new_cholera_data)
-    registry.register(new_cholera_blueprint)
+    registry.register(new_cholera_blueprint.slug, new_cholera_blueprint)
     
     cholera = registry.get("cholera")
     assert cholera is not None
@@ -189,8 +189,8 @@ def test_registry_duplicate_registration(display_bp):
         recovery_time_days=5
     )
     
-    registry.register(blueprint1)
-    registry.register(blueprint2)  # This should overwrite the first blueprint
+    registry.register(blueprint1.slug, blueprint1)
+    registry.register(blueprint2.slug, blueprint2)  # This should overwrite the first blueprint
     
     cholera = registry.get("cholera")
     assert cholera is not None
