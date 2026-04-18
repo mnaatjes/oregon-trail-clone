@@ -2,7 +2,7 @@
 id: TDD-001
 parent_adr: ADR-005
 title: "TDD: DomainBlueprint Contract"
-status: pending
+status: approved
 created_at: 2026-04-17
 updated_at: 2026-04-17
 component: core

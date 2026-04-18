@@ -7,7 +7,7 @@ created_at: 2026-04-16
 updated_at: 2026-04-16
 component: core
 type: "explanation/design"
-feature_link: PENDING
+feature_link: https://github.com/mnaatjes/oregon-trail-clone/issues/14
 ---
 
 # TDD: Domain Context Manifest

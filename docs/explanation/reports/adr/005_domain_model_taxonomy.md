@@ -3,10 +3,10 @@ id: ADR-005
 title: "Domain Model Taxonomy"
 status: adopted
 created_at: 2026-04-15
-updated_at: 2026-04-15
+updated_at: 2026-04-18
 component: core
 type: "explanation/adr"
-epic_link: "PENDING"
+epic_link: "https://github.com/mnaatjes/oregon-trail-clone/issues/5"
 ---
 
 # ADR 005: Domain Model Taxonomy
