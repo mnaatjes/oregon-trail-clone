@@ -82,25 +82,38 @@ class DomainBlueprint(ABC):
     display: DisplayBlueprint
 ```
 
-### Component Relationship
+### Component Relationship (The Law of Composition)
+In accordance with the Anemic Aggregate pattern, **Blueprints are never inherited by Roots or Records.** They are composed.
+
+*   **Inheritance (Taxonomy):** Used ONLY to define a specific species of Blueprint (e.g., `WagonBlueprint` inherits from `DomainBlueprint`).
+*   **Composition (Ecosystem):** A `DomainRoot` instance **aggregates** a reference to its `DomainBlueprint`.
+
 ```mermaid
 classDiagram
     class DomainBlueprint {
+        <<Abstract>>
         +str slug
         +DisplayBlueprint display
     }
+    class WagonBlueprint {
+        +int max_durability
+    }
     class DomainRoot {
+        <<Abstract>>
         +UUID uid
         +DomainBlueprint blueprint
     }
-    class DomainRecord {
-        +validate() bool
+    class WagonRoot {
+        +int current_durability
     }
-    DomainRoot o-- DomainBlueprint : Initialized From
-    DomainBlueprint *-- DisplayBlueprint : Contains
+
+    DomainBlueprint <|-- WagonBlueprint : Inheritance (Taxonomy)
+    DomainRoot <|-- WagonRoot : Inheritance (Taxonomy)
+    WagonRoot o-- WagonBlueprint : Composition (Instance DNA)
 ```
 
 ## 5. Cross-Cutting Concerns
+*   **Identity vs. DNA:** The Blueprint represents the **DNA** (Shared, Static). The Root represents the **Instance** (Unique, Stateful).
 *   **Memory Efficiency:** Since Blueprints are shared singletons, using `frozen=True` dataclasses ensures minimal memory overhead when referenced by thousands of records.
 *   **Validation:** The `AssetManager` must validate that the JSON "slug" matches the physical file path during the "Mirror Audit."
 *   **Fail-Fast:** If a required field is missing from the JSON asset, the `TaxonomyMismatchError` must prevent the Engine from booting.

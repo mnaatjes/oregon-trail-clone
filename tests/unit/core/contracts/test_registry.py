@@ -5,12 +5,20 @@ from dataclasses import dataclass
 import pytest
 from rich import inspect
 from core.contracts.domain.registry import BaseRegistry
-from core.contracts.domain.blueprint import DomainBlueprint
+from core.contracts.domain.blueprint import DomainBlueprint, DisplayBlueprint
+
+@pytest.fixture
+def display_bp():
+    return DisplayBlueprint(
+        asset_id="asset-id",
+        label="Some label"
+    )
 
 @dataclass(frozen=True)
 class MaladyBlueprint(DomainBlueprint):
     # Properties from docs/design/characters.md
     slug: str
+    display: DisplayBlueprint
     name: str
     description: str
     symptoms: list[str]
@@ -30,6 +38,7 @@ def test_registry_registration_and_retrieval():
     raw_data = {
         "cholera": {
             "slug": "cholera",
+            "display": display_bp,
             "name": "Cholera",
             "description": "An infectious disease causing severe diarrhea.",
             "symptoms": ["diarrhea", "dehydration", "vomiting"],
@@ -38,6 +47,7 @@ def test_registry_registration_and_retrieval():
         },
         "blizzard": {
             "slug": "blizzard",
+            "display": display_bp,
             "name": "Blizzard",
             "description": "A severe snowstorm with strong winds.",
             "symptoms": ["hypothermia", "frostbite"],
@@ -69,6 +79,7 @@ def test_registry_all():
     raw_data = {
         "cholera": {
             "slug": "cholera",
+            "display": display_bp,
             "name": "Cholera",
             "description": "An infectious disease causing severe diarrhea.",
             "symptoms": ["diarrhea", "dehydration", "vomiting"],
@@ -78,6 +89,7 @@ def test_registry_all():
         "blizzard": {
             "slug": "blizzard",
             "name": "Blizzard",
+            "display": display_bp,
             "description": "A severe snowstorm with strong winds.",
             "symptoms": ["hypothermia", "frostbite"],
             "damage_per_day": 15,
@@ -101,6 +113,7 @@ def test_registry_overwrite():
         "cholera": {
             "slug": "cholera",
             "name": "Cholera",
+            "display": display_bp,
             "description": "An infectious disease causing severe diarrhea.",
             "symptoms": ["diarrhea", "dehydration", "vomiting"],
             "damage_per_day": 10,
@@ -114,6 +127,7 @@ def test_registry_overwrite():
     new_cholera_data = {
         "slug": "cholera",
         "name": "Cholera Updated",
+        "display": display_bp,
         "description": "Updated description.",
         "symptoms": ["diarrhea", "dehydration"],
         "damage_per_day": 12,
@@ -148,11 +162,12 @@ def test_registry_invalid_hydration():
     with pytest.raises(TypeError):
         registry.hydrate(invalid_data)
 
-def test_registry_duplicate_registration():
+def test_registry_duplicate_registration(display_bp):
     registry = MockMaladyRegistry()
     
     blueprint1 = MaladyBlueprint(
         slug="cholera",
+        display=display_bp,
         name="Cholera",
         description="An infectious disease causing severe diarrhea.",
         symptoms=["diarrhea", "dehydration", "vomiting"],
@@ -162,6 +177,7 @@ def test_registry_duplicate_registration():
     
     blueprint2 = MaladyBlueprint(
         slug="cholera",
+        display=display_bp,
         name="Cholera Duplicate",
         description="Duplicate entry.",
         symptoms=["diarrhea"],
