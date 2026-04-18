@@ -30,7 +30,7 @@ The `DomainContext` is the **Unified Context Manifest** (ADR-003 Addendum). Ever
 
 ### Data Schema (Core Fields)
 Every `DomainContext` manifest must include:
-*   `species: DomainSpecies`: Enum (ROOT or LEAF).
+*   `family: DomainFamily`: Enum (ROOT or LEAF).
 *   `intent: str`: Human-readable "Scream" of the package (e.g., "Wagon Durability").
 *   `priority: int`: Sequential boot order (0-100).
 *   `pillars: List[str]`: Required kernel services (Events, State, Assets).
@@ -39,7 +39,7 @@ Every `DomainContext` manifest must include:
 ### Constraints
 1.  **Immutability:** Must be a `@dataclass(frozen=True)`.
 2.  **Naming Convention:** Must be assigned to the variable `__CONTEXT__` in the package's `__init__.py`.
-3.  **Ontology Verification:** The `Architectural Police` will verify that `priority` and `species` match the filesystem location.
+3.  **Ontology Verification:** The `Architectural Police` will verify that `priority` and `family` match the filesystem location.
 
 ### Interaction Sequence
 ```mermaid

@@ -20,18 +20,28 @@ Taxonomy is the classification of things based on shared characteristics. This i
 ## Decision
 
 ### 1. The Four Species of Data
+Species defines **Individual Identity** and **Taxonomic Branch** (e.g., "wagon", "character").
 
 | Species | Identity | Lifecycle | Role |
 | :--- | :--- | :--- | :--- |
-| **DomainRoot** | UUID | Stateful | The Sovereign "Actor" (e.g., Character). |
-| **DomainRecord** | Anonymous | Stateful | Anemic fragments (e.g., Health status). |
-| **DomainBlueprint** | Slug | Static | "Global Truth" templates (e.g., Farmer profession). |
-| **DomainValueObject** | Value-based | Transient | Semantic types (e.g., Money, Coord). |
+| **DomainRoot** | UUID | Stateful | The Sovereign "Actor". |
+| **DomainRecord** | Anonymous | Stateful | Anemic fragments. |
+| **DomainBlueprint** | Slug | Static | "Global Truth" templates. |
+| **DomainValueObject** | Value-based | Transient | Semantic types. |
 
-### 2. Taxonomical Rule of Composition
+### 2. The Domain Family (Structure)
+Family defines the **Architectural Level** and **Package Role** within the Domain Layer.
+
+| Family | Location | Interaction |
+| :--- | :--- | :--- |
+| **ROOT** | `src/domain/roots/` | Orchestrators; may aggregate Leafs. |
+| **LEAF** | `src/domain/leaves/` | Atoms; Zero-dependency on other Leafs. |
+
+### 3. Taxonomical Rule of Composition
 1. A **DomainRoot** may contain many **DomainRecords**.
 2. A **DomainRecord** may contain many **DomainValueObjects**.
 3. A **DomainRecord** (Leaf) MUST NOT contain a **DomainRoot**.
+4. Horizontal interaction between **LEAF** families is forbidden.
 
 ## Status
 **Adopted** 2026-04-15
