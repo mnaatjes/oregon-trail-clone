@@ -37,7 +37,7 @@ To prevent process fatigue for minor maintenance, we propose a "Fast-Track" poli
     *   No changes to `services.py` method signatures.
 2.  **Workflow:** Create a GitHub Issue labeled `type:fast-track`, branch using `fix/ISS-ID-slug`, and state in the PR description: "Fast-Track: No architectural changes."
 
-## Addendum (2026-04-18): Python CLI "Police" Tool
+## Addendum (2026-04-18): Python CLI "Police" Tool (PENDING)
 To prevent manual ledger desync, we propose the creation of a Python CLI utility located in `scripts/architectural_police.py`.
 
 ### 1. Role and Intended Use
@@ -48,7 +48,7 @@ Its primary role is Provenance Auditing and Structural Enforcement. It ensures t
 
 ### 2. Where to Write the Code?
 According to ADR-011, the tool should be located at:
-*   `scripts/architectural_police.py`
+*   `.scripts/architectural_police.py`
 
 You would likely use the `argparse` or `click` library to create a CLI interface with subcommands like `audit-docs` or `check-boundaries`.
 
