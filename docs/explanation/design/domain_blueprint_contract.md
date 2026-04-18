@@ -80,6 +80,12 @@ class DisplayBlueprint:
 class DomainBlueprint(ABC):
     slug: str
     display: DisplayBlueprint
+
+    @property
+    @abstractmethod
+    def __species__(self) -> str:
+        """Enforces abstraction and identifies the blueprint species."""
+        pass
 ```
 
 ### Component Relationship (The Law of Composition)

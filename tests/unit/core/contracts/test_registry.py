@@ -25,6 +25,10 @@ class MaladyBlueprint(DomainBlueprint):
     damage_per_day: int
     recovery_time_days: int
 
+    @property
+    def __species__(self) -> str:
+        return "malady"
+
 class MockMaladyRegistry(BaseRegistry[MaladyBlueprint]):
     def hydrate(self, raw_data: dict) -> None:
         for slug, data in raw_data.items():

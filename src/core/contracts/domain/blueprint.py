@@ -1,5 +1,5 @@
 # src/core/contracts/blueprint.py
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional
 
@@ -24,3 +24,8 @@ class DomainBlueprint(ABC):
     """
     slug: str  # e.g., 'cholera', 'blizzard', 'farmer'
     display: DisplayBlueprint
+
+    @property
+    @abstractmethod
+    def __species__(self) -> str:
+        """Enforces abstration and identifies the blueprint species"""
