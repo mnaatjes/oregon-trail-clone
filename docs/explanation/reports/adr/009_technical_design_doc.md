@@ -3,10 +3,10 @@ id: ADR-009
 title: "Technical Design Documentation (TDD)"
 status: adopted
 created_at: 2026-04-16
-updated_at: 2026-04-17
+updated_at: 2026-04-18
 component: core
 type: "explanation/adr"
-epic_link: "PENDING"
+epic_link: "https://github.com/mnaatjes/oregon-trail-clone/issues/9"
 ---
 
 # Technical Design Documentation (TDD)

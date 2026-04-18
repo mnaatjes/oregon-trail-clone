@@ -3,10 +3,10 @@ id: ADR-004
 title: "Domain Package Anatomy"
 status: adopted
 created_at: 2026-04-15
-updated_at: 2026-04-17
+updated_at: 2026-04-18
 component: core
 type: "explanation/adr"
-epic_link: "PENDING"
+epic_link: "https://github.com/mnaatjes/oregon-trail-clone/issues/4"
 ---
 
 # ADR 004: Domain Package Anatomy

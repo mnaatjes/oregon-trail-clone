@@ -3,10 +3,10 @@ id: ADR-001
 title: "Screaming MVC System Architecture"
 status: adopted
 created_at: 2026-04-15
-updated_at: 2026-04-15
+updated_at: 2026-04-18
 component: core
 type: "explanation/adr"
-epic_link: "PENDING"
+epic_link: "https://github.com/mnaatjes/oregon-trail-clone/issues/1"
 ---
 
 # ADR 001: Screaming Model View Controller (MVC) Architecture

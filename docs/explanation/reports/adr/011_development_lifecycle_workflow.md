@@ -6,7 +6,7 @@ created_at: 2026-04-17
 updated_at: 2026-04-18
 component: core
 type: "explanation/adr"
-epic_link: "PENDING"
+epic_link: "https://github.com/mnaatjes/oregon-trail-clone/issues/10"
 ---
 
 # ADR 011: Development Lifecycle and Workflow
