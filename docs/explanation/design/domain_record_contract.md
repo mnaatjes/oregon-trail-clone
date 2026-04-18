@@ -34,7 +34,7 @@ All `DomainRecord` implementations must be:
 *   **Validatable:** Must define specific constraints (e.g., `hp` cannot be negative).
 
 ### Constraints
-1.  **Taxonomy:** Must inherit from `src/core/contracts/domain/blueprint.py:DomainRecord`.
+1.  **Taxonomy:** Must inherit from `src/core/contracts/domain/record.py:DomainRecord`.
 2.  **Anonymous Identity:** Cannot include a `uid` or `id` field. Its context is provided by its parent Root.
 3.  **Isolation:** Strictly prohibited from importing sibling Leaf models.
 
