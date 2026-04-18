@@ -2,6 +2,7 @@
 
 from abc import ABC
 from dataclasses import dataclass
+from typing import get_type_hints
 
 @dataclass(frozen=True)
 class DomainValueObject(ABC):
@@ -22,18 +23,25 @@ class DomainValueObject(ABC):
         - Created in Logic
         - Saved to Storage
     """
-    
-    def __eq__(self, other):
-        """
-        Forces a comparison of the dict of the ValueObject
-        - Allows Proper Comparison
-        - e.g. value_obj_a == value_obj_b to return True
-        """
-        if not isinstance(other, DomainValueObject):
-            return False
-        return self.__dict__ == other.__dict__
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        # Identity Purity Guard
+        forbidden = {"uid", "uuid", "id", "slug"}
+        for f in get_type_hints(cls):
+            if f.lower() in forbidden:
+                raise TypeError(
+                    f"[IDENTITY VIOLATION] in '{cls.__name__}' "
+                    f"CANNOT use property '{f}' "
+                    f"Use of Identification in DomainValueObjects PROHIBITED!"
+                )
 
-    def __hash__(self):
-        # Allows Value Objects to be used as keys in dictionaries 
-        # or elements in sets
-        return hash(tuple(sorted(self.__dict__.items())))
+    def __post_init__(self) -> None:
+        """Hook for structural validation."""
+        self.validate()
+    
+    def validate(self) -> None:
+        """
+        Override this in subclasses to enforce rules.
+        Should raise ValueError or TypeError if invalid.
+        """
+        pass
