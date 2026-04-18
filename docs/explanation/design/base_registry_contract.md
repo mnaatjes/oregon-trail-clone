@@ -1,7 +1,7 @@
 ---
-id: TDD-008
+id: TDD-012
 parent_adr: ADR-003
-title: "TDD: Universal BaseRegistry"
+title: "TDD: Universal BaseRegistry (Lean)"
 status: draft
 created_at: 2026-04-18
 updated_at: 2026-04-18
@@ -10,52 +10,39 @@ type: "explanation/design"
 feature_link: https://github.com/mnaatjes/oregon-trail-clone/issues/31
 ---
 
-# TDD: Universal BaseRegistry
+# TDD: Universal BaseRegistry (Lean)
 
 ## 1. Overview
-The `BaseRegistry` is a foundational utility designed to provide a standardized, type-safe mechanism for storing and retrieving objects via unique string keys. By utilizing Python's `typing.Protocol`, it allows for "Static Duck Typing," ensuring that disparate parts of the system (UI, Domain, Engine) can be managed via consistent registry patterns without being forced into a rigid inheritance hierarchy.
+The `BaseRegistry` is a foundational utility designed to provide a standardized, type-safe mechanism for storing and retrieving objects via unique string keys. This "Lean" version prioritizes **Explicit over Implicit** and ensures strict adherence to the **Single Responsibility Principle (SRP)** by decoupling the stored items from the registry's storage logic.
 
 ## 2. Goals & Non-Goals
 
 ### Goals
+*   **Zero Coupling**: Items do not need to "know" they are being registered (no Protocols or specific properties required).
 *   **Total Serializability**: Enforce `str` keys to ensure compatibility with JSON-based world snapshotting.
-*   **Type Safety**: Leverage `Generic[T]` and `TypeVar` to provide full IDE support and static analysis.
-*   **Horizontal Isolation**: Use `Protocols` to allow registration without requiring items to inherit from a "Core" base class.
-*   **Flexibility**: Support both automatic key discovery (via protocol) and explicit key assignment.
+*   **Type Safety**: Leverage `Generic[T]` and `TypeVar` to provide full IDE support.
+*   **Explicit Registration**: The caller is responsible for providing the key, ensuring clear provenance of data.
 
 ### Non-Goals
-*   Managing the lifecycle of registered objects (creation/destruction).
-*   Implementing persistence or I/O logic (delegated to specialized registries or providers).
+*   Automatic key discovery (Duck Typing).
+*   Managing the lifecycle of registered objects.
 
 ## 3. Proposed Design
 
 ### Type Definitions
 *   **`RegistryKey`**: A `TypeAlias` for `str`.
-*   **`RegistryItem`**: A `typing.Protocol` requiring a `registry_key` property.
-*   **`T`**: A `TypeVar` bound to `RegistryItem` for type-safe registry operations.
+*   **`T`**: A generic `TypeVar` representing any object type.
 
-### Core Class: `BaseRegistry[T]`
-The registry will maintain an internal `Dict[RegistryKey, T]` to store items.
+### Core Class: `BaseRegistry[Generic[T]]`
+The registry maintains an internal `Dict[RegistryKey, T]`.
 
 #### Methods:
 | Method | Signature | Responsibility |
 | :--- | :--- | :--- |
-| `register` | `(item: T, key: Optional[RegistryKey] = None)` | Adds an item. Uses `item.registry_key` if `key` is not provided. |
-| `get` | `(key: RegistryKey) -> Optional[T]` | Retrieves an item by key. Returns `None` if not found. |
-| `all` | `() -> Dict[RegistryKey, T]` | Returns a mapping of all registered items. |
-| `exists` | `(key: RegistryKey) -> bool` | Checks if a key is currently registered. |
-| `remove` | `(key: RegistryKey)` | Removes an item from the registry. |
+| `register` | `(key: RegistryKey, item: T)` | Adds an item to the map. Key is mandatory. |
+| `get` | `(key: RegistryKey) -> Optional[T]` | Retrieves an item by key. |
+| `all` | `() -> Dict[RegistryKey, T]` | Returns the internal mapping. |
+| `exists` | `(key: RegistryKey) -> bool` | Checks for key existence. |
 
-### Logic Flow (Registration)
-1.  If an explicit `key` is provided, use it as the dictionary key.
-2.  If no `key` is provided, attempt to access `item.registry_key`.
-3.  If neither is available, raise a `ValueError` to prevent "silent failures" in the registry.
-
-## 4. Diagnostic Goals
-*   **Identity Collision**: The registry should optionally support "overwrite protection" or logging when a key is re-registered.
-*   **Protocol Verification**: Use `@runtime_checkable` on the `RegistryItem` protocol to allow for `isinstance()` checks during registration for extra safety.
-*   **Serialization Check**: Ensure that all keys stored are valid strings that do not break `json.dumps`.
-
-## 5. Alternatives Considered
-*   **Inheritance-based Registry**: Rejected as it violates the principle of Horizontal Isolation by forcing all registry-ready items to inherit from a common Core class.
-*   **Non-string Keys**: Rejected to maintain strict adherence to ADR-003's requirement for 100% serializable state.
+## 4. Rationale for Change
+Previous designs using `typing.Protocol` forced items to be "self-aware" of their registration status. This violated SRP and introduced unnecessary complexity. The Lean strategy ensures the Item focuses on **State**, the Registry focuses on **Storage**, and the Provider focuses on **Orchestration**.
