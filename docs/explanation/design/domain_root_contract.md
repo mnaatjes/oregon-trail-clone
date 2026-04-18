@@ -34,7 +34,7 @@ All `DomainRoot` implementations must include:
 *   `records: Dict[str, DomainRecord]`: A mapping of aggregated Leaf Records.
 
 ### Constraints
-1.  **Taxonomy:** Must inherit from `src/core/contracts/domain/blueprint.py:DomainRoot`.
+1.  **Taxonomy:** Must inherit from `src/core/contracts/domain/root.py:DomainRoot`.
 2.  **Anemic:** Must be a `@dataclass(frozen=True)`. No methods other than `clone()` are permitted.
 3.  **Sovereignty:** Only one `DomainRoot` is allowed per Root Package.
 
