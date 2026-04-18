@@ -35,3 +35,8 @@ Taxonomy is the classification of things based on shared characteristics. This i
 
 ## Status
 **Adopted** 2026-04-15
+
+## Addendum (2026-04-18): Abstraction and Species Identification
+To enforce the abstract nature of the `DomainBlueprint` contract in Python and facilitate engine-level discovery, every blueprint must implement an abstract `__species__` property. This ensures that:
+1.  Base contracts cannot be instantiated directly.
+2.  All blueprints explicitly identify their taxonomic branch (e.g., "wagon", "malady") for structural verification and registry lookup.
