@@ -7,7 +7,7 @@ created_at: 2026-04-17
 updated_at: 2026-04-17
 component: core
 type: "explanation/design"
-feature_link: PENDING
+feature_link: https://github.com/mnaatjes/oregon-trail-clone/issues/19
 ---
 
 # TDD: Domain Service Entities
