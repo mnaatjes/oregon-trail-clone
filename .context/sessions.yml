@@ -4,21 +4,48 @@ metadata:
   scope: "Project Wide"
   version: "0.1.0"
   created_at: "2026-04-16 2:00:00"
-  updated_at: "2026-04-17 18:00:00"
+  updated_at: "2026-04-18 20:45:00"
   permissions: "read, write"
 
 header:
   created_at: "2026-04-16 02:31:00"
-  updated_at: "2026-04-17 18:00:00"
+  updated_at: "2026-04-18 20:45:00"
   directives:
     - "Most recent session at top"
     - "session_id value from Gemini-CLI"
     - "Track version of project"
   
 sessions:
+  - session_id: "2026-04-18-02"
+    metadata:
+      timestamp: "2026-04-18 20:45:00"
+      version: "0.1.0"
+    tasks:
+      accomplished:
+        - "Refined and implemented the BaseRegistry as a universal, concrete, generic class in src/core/contracts/registry.py (TDD-012, #31)."
+        - "Updated registry unit tests to support the new generic and explicit key registration pattern (#33)."
+        - "Implemented the DomainRoot abstract base contract in src/core/contracts/domain/root.py with __post_init__ and __init_subclass__ guards for horizontal isolation and vertical composition (#29)."
+        - "Formalized the hybrid DX pattern for DomainRoots using @property proxies for type-safe record access, updated in TDD-007 (#32)."
+        - "Implemented the DomainValueObject abstract base contract in src/core/contracts/domain/value_object.py with identity purity guards (#36)."
+        - "Verified DomainRoot and DomainValueObject with comprehensive unit tests in the .venv environment."
+        - "Proposed and drafted ADR-013: Species-Based Engine Routing to formalize orchestrator-domain decoupling."
+        - "Created and linked the GitHub Epic-Issue #34 for ADR-013."
+        - "Refined domain taxonomy terminology: Renamed DomainSpecies in DomainContext to DomainFamily (ROOT/LEAF) to avoid entity-level conflict."
+        - "Synchronized ADR-005 and TDD-002 with the new DomainFamily (ROOT/LEAF) distinction."
+        - "Implemented the initial DomainContext contract in src/core/contracts/domain/context.py with priority validation guards (#38)."
+      todo:
+        - "Complete verification tests for DomainContext in tests/unit/core/contracts/test_domain_context.py (#38)."
+        - "Implement StateRegistry for Engine (#30) inheriting from the new BaseRegistry."
+        - "Implement the Core IdentityService (#21) for unified UUID generation."
+        - "Develop the scripts/architectural_police.py tool (#22) to automate boundary and provenance auditing."
+        - "Draft TDD for Engine Orchestrator and Boot Lifecycle (src/engine/orchestrator.py)."
+    git:
+      branches_affected: ["feat/29-root-contract", "main", "feat/38-domain-context-contract"]
+      commit_uuids: ["f0dfe0c", "12650d8", "b18b3ca"]
+
   - session_id: "2026-04-18-01"
     metadata:
-      timestamp: "2026-04-18 20:00:00"
+      timestamp: "2026-04-18 10:00:00"
       version: "0.1.0"
     tasks:
       accomplished:
@@ -37,66 +64,3 @@ sessions:
     git:
       branches_affected: ["main"]
       commit_uuids: ["58eb0b6", "956055a"]
-
-  - session_id: "2026-04-17-01"
-    metadata:
-      timestamp: "2026-04-17 14:00:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Resolved architectural ambiguity in ADR-004 regarding Logic vs. Services using the 'Calculator vs. Operator' analogy."
-        - "Drafted and adopted a formal addendum for ADR-004 to operationalize Logic and Service roles."
-        - "Initialized TDDs for Domain Logic, Domain Services, and the top-level Domain Package Entity."
-        - "Proposed and drafted ADR-010: Asset Management & Directory Mirroring to formalize code-asset relationships."
-        - "Codified 'Composition over Inheritance' and 'UI Visibility' rules within the Domain Package TDD."
-        - "Drafted specialized TDDs for core taxonomy contracts: DomainRoot, DomainRecord, DomainContext, and DomainValueObject."
-      todo:
-        - "Implement DomainContext contract in src/core/contracts/domain/context.py."
-        - "Implement foundational Taxonomy Contracts (DomainRoot, DomainRecord, DomainValueObject)."
-        - "Draft TDD for Engine Orchestrator & Boot Lifecycle (src/engine/orchestrator.py)."
-        - "Draft TDD for Architecture Testing Regime (Fitness Functions)."
-    git:
-      branches_affected: ["feat/contracts"]
-      commit_uuids: []
-
-  - session_id: "2026-04-16-02"
-    metadata:
-      timestamp: "2026-04-16 14:00:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Resolved deep architectural questions in adr_review_notes.md regarding Domain Hierarchy and Anemic Aggregators."
-        - "Rationalized the 'Bounded Context' definition into a unified DomainContext Manifest pattern."
-        - "Formalized the DomainContext Manifest policy in ADR 003 and drafted its Technical Design (TDD)."
-        - "Engineered a centralized Identity strategy, splitting logic (IdentityService) from storage (IdentityRegistry)."
-        - "Updated ADR 003 and 007 with addenda regarding Identity assignment and State Registry symbiosis."
-        - "Codified the DomainRecord hydration flow with sequence diagrams in ADR 003."
-        - "Refined the Technical Design Document (TDD) for Identity Service & Registry to ensure SRP compliance."
-      todo:
-        - "Implement DomainContext contract in src/core/contracts/domain/context.py."
-        - "Draft TDD for Domain Taxonomy Contracts (src/core/contracts/domain/)."
-        - "Draft TDD for Engine Orchestrator & Boot Lifecycle (src/engine/orchestrator.py)."
-        - "Draft TDD for Architecture Testing Regime (Fitness Functions)."
-    git:
-      branches_affected: ["feat/contracts"]
-      commit_uuids: []
-
-  - session_id: "2026-04-16-01"
-    metadata:
-      timestamp: "2026-04-16 05:55:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Formalized the Technical Design Documentation (TDD) workflow in .context/design.yml."
-        - "Prioritized the project roadmap in TODO.md, focusing on high-leverage architectural designs."
-        - "Initialized adr_review_notes.md to track and resolve architectural challenges."
-        - "Resolved foundational questions on Service roles, Event Sovereignty, and Structural Protocols."
-        - "Applied surgical addenda to ADR 002, 004, and 007 to formalize new architectural constraints."
-        - "Codified the ADR addenda workflow in .context/documentation.yml for historical integrity."
-      todo:
-        - "Draft TDD for Domain Taxonomy Contracts (src/core/contracts/domain/)."
-        - "Draft TDD for Engine Orchestrator & Boot Lifecycle (src/engine/orchestrator.py)."
-        - "Draft TDD for Architecture Testing Regime (Fitness Functions)."
-    git:
-      branches_affected: ["feat/contracts"]
-      commit_uuids: []
