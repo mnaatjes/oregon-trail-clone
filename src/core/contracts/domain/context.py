@@ -16,7 +16,7 @@ class DomainContext:
     family: DomainFamily
     intent: str
     priority: int
-    requirements: List[KernelSubsystem]
+    requirements: List[KernelSubsystem] = field(default_factory=list)
     service: Type[Any]|None = None
 
     def __post_init__(self) -> None:
