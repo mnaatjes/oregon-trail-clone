@@ -4,7 +4,7 @@ parent_adr: ADR-003
 title: "TDD: DomainContext Contract"
 status: pending
 created_at: 2026-04-17
-updated_at: 2026-04-17
+updated_at: 2026-04-19
 component: core
 type: "explanation/design"
 feature_link: https://github.com/mnaatjes/oregon-trail-clone/issues/13
@@ -13,52 +13,48 @@ feature_link: https://github.com/mnaatjes/oregon-trail-clone/issues/13
 # TDD: DomainContext Contract
 
 ## 1. Overview
-The `DomainContext` is the **Unified Context Manifest** (ADR-003 Addendum). Every package in `src/domain/` must instantiate this object in its `__init__.py` as `__CONTEXT__`. It serves as the single source of truth for the Kernel during Discovery and Bootstrapping.
+The `DomainContext` is the **Unified Context Manifest**. Every package in `src/domain/` must instantiate this object in its `__init__.py` as `__CONTEXT__`. 
+
+By passing the actual **Blueprint** or **Spore** class as the `intent`, the manifest becomes a type-safe "DNA Sample" that the Engine uses for Discovery and Bootstrapping.
 
 ## 2. Goals & Non-Goals
 ### Goals
-*   Standardize how Domain Packages "Scream" their identity to the Engine.
-*   Enable automated Discovery of Root and Leaf packages.
-*   Enforce the sequence of initialization through `BOOT_PRIORITY`.
-*   Decouple the package registration from the physical folder location.
-
-### Non-Goals
-*   Holding runtime state of game entities (delegated to `DomainRoot`).
-*   Executing business math (delegated to `logic.py`).
+*   **Type-Safe Discovery:** Use class references instead of loose strings to identify domain intent.
+*   **Auto-Bubbling:** Automatically derive `DomainFamily` and `Species` from the intent class.
+*   **Zero-Boilerplate:** Eliminate redundant string declarations across the package.
+*   **Validation:** Enforce architectural rules (e.g., ROOT packages must provide a Service) at the code level.
 
 ## 3. Proposed Design
 
 ### Data Schema (Core Fields)
-Every `DomainContext` manifest must include:
-*   `family: DomainFamily`: Enum (ROOT or LEAF).
-*   `intent: str`: Human-readable "Scream" of the package (e.g., "Wagon Durability").
-*   `priority: int`: Sequential boot order (0-100).
-*   `requirements: List[str]`: Required kernel subsystems (Events, State, Assets).
-*   `service: Type[Any]|None`: The class reference for the package's primary Service (for auto-wiring).
+The manifest no longer requires a `family` property, as it is derived from the `intent` class.
 
-### Constraints
-1.  **Immutability:** Must be a `@dataclass(frozen=True)`.
-2.  **Naming Convention:** Must be assigned to the variable `__CONTEXT__` in the package's `__init__.py`.
-3.  **Anemic Purity:** The `service` class should only use constructor injection for items listed in `requirements`.
+| Property | Type | Role |
+| :--- | :--- | :--- |
+| **`intent`** | `Type[DomainBlueprint] | Type[DomainSpore]` | The structural definition (The Class). |
+| **`priority`** | `int` (0-100) | Sequential boot order (lower = earlier). |
+| **`requirements`**| `List[KernelSubsystem]` | Kernel services needed for injection. |
+| **`service`** | `Type[Any] | None` | The operator (Required if `intent` is a `RootBlueprint`). |
 
-### Interaction Sequence
-```mermaid
-sequenceDiagram
-    participant Orchestrator as Engine Orchestrator
-    participant Context as __CONTEXT__ Manifest
-    participant Service as Domain Service Class
-    participant Container as Service Container
+### Derived Properties (Logic)
+The `DomainContext` provides helper properties for the Engine:
+*   **`family`**: Returns `self.intent.family` (ROOT, LEAF, or SPORE).
+*   **`species`**: Derived from `self.intent.__name__` or an explicit species property.
 
-    Orchestrator->>Context: Scan src/domain/ for __CONTEXT__
-    Orchestrator->>Context: Verify Requirements & Priority
-    Orchestrator->>Container: Resolve instances for each requirement
-    Orchestrator->>Service: Instantiate via Constructor Injection
-    Service-->>Orchestrator: Return live Service instance
-    Orchestrator->>Container: Register Service as a Singleton
+### Package Integration Example
+```python
+# src/domain/roots/wagon/__init__.py
+from .models import WagonBlueprint, WagonRoot
+from .services import WagonService
+
+__CONTEXT__ = DomainContext(
+    intent=WagonBlueprint,  # The Class IS the intent
+    priority=10,
+    service=WagonService
+)
 ```
 
 ## 4. Diagnostic Goals
-*   **Discovery Audit:** Verify that every folder in `src/domain/{roots,leaves}` contains a valid `DomainContext`.
-*   **Priority Conflict Check:** Ensure no two Roots share the same `BOOT_PRIORITY` to prevent race conditions.
-*   **Requirement Validation:** Ensure all required subsystems (e.g., "Events") are registered and booted in the Container before the package service is instantiated.
-
+*   **Type Match Audit:** Verify that `intent` inherits from `DomainBlueprint` or `DomainSpore`.
+*   **Service Guard:** Raise a `TypeError` if a ROOT family intent is provided without a `service`.
+*   **Requirement Integrity:** Ensure all listed `requirements` are available in the `KernelSubsystem` registry.
