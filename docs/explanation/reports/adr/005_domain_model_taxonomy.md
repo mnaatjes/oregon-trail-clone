@@ -19,14 +19,30 @@ Taxonomy is the classification of things based on shared characteristics. This i
 
 ## Decision
 
-### 1. The Four Species of Data
+### 1. The Five Levels of Identity
+To manage the "Biologic" hierarchy, we define identity at five distinct levels:
+
+| Identity Level | Value | Source |
+| :--- | :--- | :--- |
+| **Family** | `DomainFamily.ROOT` | `RootBlueprint` base class |
+| **Species** | `"wagon"` | `WagonBlueprint` class name |
+| **Breed (Variant)** | `"conestoga"` | `conestoga.json` (The Asset Breed) |
+| **Individual** | `UUID-A1B2...` | `IdentityService` (Assigned at birth) |
+
+### 2. The Type-Safe Manifest Strategy
+We use the **Blueprint Class** (or Spore Class) as the central hook for package discovery. By passing the class to the `DomainContext`, we ensure:
+- **Vertical Integrity:** The manifest knows the exact structure of its data.
+- **Auto-Discovery:** The Engine derives family and species strings directly from the type.
+- **Zero-Boilerplate:** Developers never manually type species strings in the manifest.
+
+### 2. The Four Species of Data
 Species defines **Individual Identity** and **Taxonomic Branch** (e.g., "wagon", "character").
 
 | Species | Identity | Lifecycle | Role |
 | :--- | :--- | :--- | :--- |
 | **DomainRoot** | UUID | Stateful | The Sovereign "Actor". |
 | **DomainRecord** | Anonymous | Stateful | Anemic fragments. |
-| **DomainBlueprint** | Slug | Static | "Global Truth" templates. |
+| **DomainBlueprint** | Breed | Static | "Global Truth" templates. |
 | **DomainSpore** | Value-based | Transient | Semantic types. |
 
 ### 2. The Domain Family (Structure)
