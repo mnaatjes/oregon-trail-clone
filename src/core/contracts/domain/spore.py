@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from typing import get_type_hints
 
 @dataclass(frozen=True)
-class DomainValueObject(ABC):
+class DomainSpore(ABC):
     """
-    Abstract base for all Domain Value Objects.
+    Abstract base for all Domain Value Objects (DomainFamily.SPORE).
     
     - Value Objects have no identity (UID). 
         - Two instances are considered identical if all their attributes are equal.

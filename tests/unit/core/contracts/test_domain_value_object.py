@@ -2,12 +2,12 @@
 import pytest
 from dataclasses import dataclass, FrozenInstanceError
 from typing import Any
-from src.core.contracts.domain.value_object import DomainValueObject
+from core.contracts.domain.spore import DomainSpore
 
 # --- Shared Mocks ---
 
 @dataclass(frozen=True)
-class Money(DomainValueObject):
+class Money(DomainSpore):
     amount: float
     denomination: str = "USD"
 
@@ -21,7 +21,7 @@ class Money(DomainValueObject):
         return Money(amount=(self.amount + other.amount))
 
 @dataclass(frozen=True)
-class Coordinate(DomainValueObject):
+class Coordinate(DomainSpore):
     x: float
     y: float
 
@@ -35,7 +35,7 @@ def test_equality():
 def test_type_strict_equality():
     """Verify that different ValueObject types are never equal even with same data."""
     @dataclass(frozen=True)
-    class Point(DomainValueObject):
+    class Point(DomainSpore):
         x: float
         y: float
     
@@ -83,7 +83,7 @@ def test_identity_guard():
     """Verify that identity fields (uid, id, etc) are prohibited at definition time."""
     with pytest.raises(TypeError) as info:        
         @dataclass(frozen=True)
-        class House(DomainValueObject):
+        class House(DomainSpore):
             id: str
     assert "IDENTITY VIOLATION" in str(info.value)
 
@@ -91,6 +91,6 @@ def test_identity_guard_case_insensitive():
     """Verify that identity guard catches variations like UUID or Id."""
     with pytest.raises(TypeError) as info:
         @dataclass(frozen=True)
-        class Token(DomainValueObject):
+        class Token(DomainSpore):
             Uuid: str
     assert "IDENTITY VIOLATION" in str(info.value)
