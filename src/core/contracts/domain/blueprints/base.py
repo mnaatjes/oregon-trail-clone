@@ -13,16 +13,16 @@ class DisplayBlueprint:
     description: str = "" # Text Description 
 
 @dataclass(frozen=True)
-class DomainBlueprint(ABC):
+class BaseBlueprint(ABC):
     """
     Abstract base for all domain templates.
-    - Slug Property ensures every blueprint has at least a unique identifier.
+    - Breed Property (fmr. "slug") ensures every blueprint has at least a unique identifier.
     - Read-only
     - Global Template
     - Shared accross many instances
     - Loaded from assets (e.g. assets/professions.json)
     """
-    slug: str  # e.g., 'cholera', 'blizzard', 'farmer'
+    breed: str  # Variant: e.g., 'cholera', 'blizzard', 'farmer'
     display: DisplayBlueprint
 
     @property
