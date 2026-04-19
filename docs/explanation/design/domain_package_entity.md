@@ -25,7 +25,7 @@ Residing in `src/core/contracts/domain/context.py`, it defines the package's "Id
 
 | Property | Requirement | Role |
 | :--- | :--- | :--- |
-| `family` | `DomainFamily.ROOT` \| `LEAF` | Taxonomical classification for discovery. |
+| `family` | `ROOT` \| `LEAF` \| `SPORE` | Taxonomical classification for discovery. |
 | `intent` | `str` (Non-empty) | The "Scream" of the package (e.g., "vitality"). |
 | `priority` | `int` (0-100) | Boot sequence order (lower = earlier). |
 | `requirements` | `List[KernelSubsystem]` | Required services for injection (Events, State, etc.). |
@@ -46,16 +46,22 @@ graph TD
     Start[New Domain Concept] --> Q1{Is it an Assembly of states?}
     
     Q1 -- Yes --> Root[Create Root Package: src/domain/roots/]
-    Q1 -- No --> Leaf[Create Leaf Package: src/domain/leaves/]
+    Q1 -- No --> Q2{Is it Shared & Identity-less?}
+    
+    Q2 -- Yes --> Spore[Create Spore Package: src/domain/common/]
+    Q2 -- No --> Leaf[Create Leaf Package: src/domain/leaves/]
     
     Root --> R_Init[init.py: __CONTEXT__ Family=ROOT]
     Root --> R_Model[models.py: Inherit DomainRoot]
-    Root --> R_Service[services.py: Required Service Provider]
     
     Leaf --> L_Init[init.py: __CONTEXT__ Family=LEAF]
     Leaf --> L_Model[models.py: Inherit DomainRecord]
     
+    Spore --> S_Init[init.py: __CONTEXT__ Family=SPORE]
+    Spore --> S_Model[models.py: Inherit DomainValueObject]
+    
     R_Model -- "Vertical Composition" --> L_Model
+    R_Model -- "Nomadic Data" --> S_Model
 ```
 
 ---

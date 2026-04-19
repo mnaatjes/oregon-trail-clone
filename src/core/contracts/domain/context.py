@@ -10,6 +10,7 @@ from src.core.contracts.kernel import KernelSubsystem
 class DomainFamily(Enum):
     ROOT = auto()
     LEAF = auto()
+    SPORE = auto()
 
 @dataclass(frozen=True)
 class DomainContext:

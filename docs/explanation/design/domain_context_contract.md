@@ -30,7 +30,7 @@ The `DomainContext` is the **Unified Context Manifest**. Every package in `src/d
 
 ### Data Schema (Core Fields)
 Every `DomainContext` manifest must include:
-*   `family: DomainFamily`: Enum (`ROOT` or `LEAF`).
+*   `family: DomainFamily`: Enum (`ROOT`, `LEAF`, or `SPORE`).
 *   `intent: str`: Human-readable "Scream" of the package (e.g., "vitality").
 *   `priority: int`: Sequential boot order (0-100, lower = earlier).
 *   `requirements: List[KernelSubsystem]`: Required kernel subsystems (e.g., `KernelSubsystem.EVENTS`).
