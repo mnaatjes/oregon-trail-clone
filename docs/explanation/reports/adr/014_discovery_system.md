@@ -6,7 +6,7 @@ created_at: 2026-04-19
 updated_at: 2026-04-19
 component: engine
 type: "explanation/adr"
-epic_link: PENDING
+epic_link: https://github.com/mnaatjes/oregon-trail-clone/issues/42
 ---
 
 # ADR-014: Automated Domain Discovery System
