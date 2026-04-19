@@ -64,4 +64,4 @@ def test_immutability():
     """Verify that the DomainContext is frozen."""
     context = DomainContext(DomainFamily.LEAF, "Immutable", 10, [])
     with pytest.raises(Exception): # FrozenInstanceError
-        context.priority = 20
+        context.priority = 20 #type: ignore
