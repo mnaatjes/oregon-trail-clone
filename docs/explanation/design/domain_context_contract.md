@@ -33,30 +33,32 @@ Every `DomainContext` manifest must include:
 *   `family: DomainFamily`: Enum (ROOT or LEAF).
 *   `intent: str`: Human-readable "Scream" of the package (e.g., "Wagon Durability").
 *   `priority: int`: Sequential boot order (0-100).
-*   `pillars: List[str]`: Required kernel services (Events, State, Assets).
-*   `provider: Type[BaseServiceProvider]`: The class responsible for DI registration.
+*   `requirements: List[str]`: Required kernel subsystems (Events, State, Assets).
+*   `service: Type[Any]|None`: The class reference for the package's primary Service (for auto-wiring).
 
 ### Constraints
 1.  **Immutability:** Must be a `@dataclass(frozen=True)`.
 2.  **Naming Convention:** Must be assigned to the variable `__CONTEXT__` in the package's `__init__.py`.
-3.  **Ontology Verification:** The `Architectural Police` will verify that `priority` and `family` match the filesystem location.
+3.  **Anemic Purity:** The `service` class should only use constructor injection for items listed in `requirements`.
 
 ### Interaction Sequence
 ```mermaid
 sequenceDiagram
     participant Orchestrator as Engine Orchestrator
     participant Context as __CONTEXT__ Manifest
-    participant Provider as Service Provider
+    participant Service as Domain Service Class
     participant Container as Service Container
 
     Orchestrator->>Context: Scan src/domain/ for __CONTEXT__
-    Orchestrator->>Context: Verify Species & Priority
-    Orchestrator->>Provider: Instantiate via provider class path
-    Provider->>Container: register() services and factories
-    Orchestrator->>Provider: boot() services after all registered
+    Orchestrator->>Context: Verify Requirements & Priority
+    Orchestrator->>Container: Resolve instances for each requirement
+    Orchestrator->>Service: Instantiate via Constructor Injection
+    Service-->>Orchestrator: Return live Service instance
+    Orchestrator->>Container: Register Service as a Singleton
 ```
 
 ## 4. Diagnostic Goals
 *   **Discovery Audit:** Verify that every folder in `src/domain/{roots,leaves}` contains a valid `DomainContext`.
 *   **Priority Conflict Check:** Ensure no two Roots share the same `BOOT_PRIORITY` to prevent race conditions.
-*   **Pillar Validation:** Ensure all required pillars (e.g., "Events") are registered in the Container before the package boots.
+*   **Requirement Validation:** Ensure all required subsystems (e.g., "Events") are registered and booted in the Container before the package service is instantiated.
+

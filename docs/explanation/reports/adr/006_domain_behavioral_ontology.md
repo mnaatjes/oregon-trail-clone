@@ -26,7 +26,7 @@ Every package's `__init__.py` must expose a `DomainContext` manifest assigned to
 | `intent` | `str` | Human-readable "Scream" of the package. |
 | `priority` | `int` | Sequential boot order (0-100). |
 | `requirements` | `List[str]` | Required kernel subsystems (Events, Assets, etc). |
-| `provider` | `Type[ServiceProvider]` | The DI wiring class. |
+| `service` | `Type[Any]|None` | The Domain Service class (Enables Zero-Provider auto-wiring). |
 
 ### 2. Boot Priority
 To ensure the world is built in the correct order, we adopt a sequential priority:
@@ -39,3 +39,5 @@ To ensure the world is built in the correct order, we adopt a sequential priorit
 ## Status
 **Adopted** 2026-04-15
 **Updated** 2026-04-19 (Terminology alignment with ADR-005 and TDD-002)
+**Addendum** 2026-04-19: **Zero-Provider Strategy.** To minimize boilerplate and enforce "Anemic Purity," domain packages are transitioned to a "Zero-Provider" model. The Engine Orchestrator will perform Automated Constructor Injection for the `service` class based on the `requirements` list, eliminating the need for `provider.py` files in 90% of domain packages. Explicit type-hinting in domain constructors is now the primary mechanism for dependency wiring.
+

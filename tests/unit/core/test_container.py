@@ -2,7 +2,7 @@
 import pytest
 from rich import inspect
 from src.core.container import ServiceContainer
-from core.contracts.domain.provider import BaseServiceProvider
+from core.contracts.provider import BaseServiceProvider
 
 class MockProvider(BaseServiceProvider):
     def __init__(self, container: ServiceContainer):

@@ -1,4 +1,4 @@
-# tests/unit/core/contracts/domain/context.py
+# tests/unit/core/contracts/domain/test_domain_context.py
 
 import pytest
 from dataclasses import dataclass
@@ -10,6 +10,7 @@ def test_init():
         family=DomainFamily.LEAF,
         intent="test-intent",
         priority=2,
-        pillars=[],
-        provider=None
+        requirements=[]
     )
+
+    inspect(context)
