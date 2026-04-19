@@ -19,6 +19,7 @@ sessions:
   - session_id: "2026-04-19-01"
     metadata:
       timestamp: "2026-04-19 16:30:00"
+      gemini_cli_session_id: "4e9f059d-924b-4cde-a725-070bd33ef225"
       version: "0.1.0"
     tasks:
       accomplished:
