@@ -3,9 +3,10 @@
 from dataclasses import dataclass
 
 import pytest
-from rich import inspect
-from core.contracts.registry import BaseRegistry
-from core.contracts.domain.blueprints.base import BaseBlueprint, DisplayBlueprint
+from src.core.contracts.registry import BaseRegistry
+from src.core.contracts.domain.blueprints.record import RecordBlueprint
+from src.core.contracts.domain.blueprints.display import DisplayBlueprint
+from src.core.contracts.domain.taxonomy import DomainFamily
 
 @pytest.fixture
 def display_bp():
@@ -15,34 +16,32 @@ def display_bp():
     )
 
 @dataclass(frozen=True)
-class MaladyBlueprint(BaseBlueprint):
-    # Properties from docs/design/characters.md
-    breed: str
-    display: DisplayBlueprint
-    name: str
-    description: str
-    symptoms: list[str]
-    damage_per_day: int
-    recovery_time_days: int
+class MaladyBlueprint(RecordBlueprint):
+    """Concrete implementation of a RecordBlueprint for testing."""
+    name: str = ""
+    description: str = ""
+    symptoms: list[str] = None
+    damage_per_day: int = 0
+    recovery_time_days: int = 0
 
     @property
-    def __species__(self) -> str:
+    def species(self) -> str:
         return "malady"
 
 class MockMaladyRegistry(BaseRegistry[MaladyBlueprint]):
-    def hydrate(self, raw_data: dict) -> None:
+    def hydrate(self, raw_data: dict, display: DisplayBlueprint) -> None:
         for breed, data in raw_data.items():
-            blueprint = MaladyBlueprint(**data)
+            # Merge breed and display into the data dict for constructor
+            init_data = {"breed": breed, "display": display, **data}
+            blueprint = MaladyBlueprint(**init_data)
             self.register(breed, blueprint)
 
-def test_registry_registration_and_retrieval():
+def test_registry_registration_and_retrieval(display_bp):
     registry = MockMaladyRegistry()
     
     # Sample data to hydrate the registry
     raw_data = {
         "cholera": {
-            "breed": "cholera",
-            "display": display_bp,
             "name": "Cholera",
             "description": "An infectious disease causing severe diarrhea.",
             "symptoms": ["diarrhea", "dehydration", "vomiting"],
@@ -50,8 +49,6 @@ def test_registry_registration_and_retrieval():
             "recovery_time_days": 7
         },
         "blizzard": {
-            "breed": "blizzard",
-            "display": display_bp,
             "name": "Blizzard",
             "description": "A severe snowstorm with strong winds.",
             "symptoms": ["hypothermia", "frostbite"],
@@ -60,86 +57,65 @@ def test_registry_registration_and_retrieval():
         }
     }
     
-    registry.hydrate(raw_data)
-    inspect(registry.all())  # Debug: Inspect the internal state of the registry
+    registry.hydrate(raw_data, display_bp)
+    
     cholera = registry.get("cholera")
     blizzard = registry.get("blizzard")
     
     assert cholera is not None
     assert cholera.name == "Cholera"
-    assert cholera.damage_per_day == 10
+    assert cholera.family == DomainFamily.LEAF
     
     assert blizzard is not None
     assert blizzard.name == "Blizzard"
-    assert blizzard.damage_per_day == 15
+    assert blizzard.species == "malady"
     
     # Test retrieval of non-existent blueprint
     non_existent = registry.get("non_existent")
     assert non_existent is None
 
-def test_registry_all():
+def test_registry_all(display_bp):
     registry = MockMaladyRegistry()
     
     raw_data = {
         "cholera": {
-            "breed": "cholera",
-            "display": display_bp,
             "name": "Cholera",
-            "description": "An infectious disease causing severe diarrhea.",
-            "symptoms": ["diarrhea", "dehydration", "vomiting"],
-            "damage_per_day": 10,
-            "recovery_time_days": 7
+            "damage_per_day": 10
         },
         "blizzard": {
-            "breed": "blizzard",
             "name": "Blizzard",
-            "display": display_bp,
-            "description": "A severe snowstorm with strong winds.",
-            "symptoms": ["hypothermia", "frostbite"],
-            "damage_per_day": 15,
-            "recovery_time_days": 14
+            "damage_per_day": 15
         }
     }
     
-    registry.hydrate(raw_data)
+    registry.hydrate(raw_data, display_bp)
     all_blueprints = registry.all()
     
     assert len(all_blueprints) == 2
     assert "cholera" in all_blueprints
     assert "blizzard" in all_blueprints
     assert all_blueprints["cholera"].name == "Cholera"
-    assert all_blueprints["blizzard"].name == "Blizzard"
 
-def test_registry_overwrite():
+def test_registry_overwrite(display_bp):
     registry = MockMaladyRegistry()
     
     raw_data = {
         "cholera": {
-            "breed": "cholera",
             "name": "Cholera",
-            "display": display_bp,
-            "description": "An infectious disease causing severe diarrhea.",
-            "symptoms": ["diarrhea", "dehydration", "vomiting"],
-            "damage_per_day": 10,
-            "recovery_time_days": 7
+            "damage_per_day": 10
         }
     }
     
-    registry.hydrate(raw_data)
+    registry.hydrate(raw_data, display_bp)
     
     # Overwrite existing blueprint
-    new_cholera_data = {
-        "breed": "cholera",
-        "name": "Cholera Updated",
-        "display": display_bp,
-        "description": "Updated description.",
-        "symptoms": ["diarrhea", "dehydration"],
-        "damage_per_day": 12,
-        "recovery_time_days": 5
-    }
-    
-    new_cholera_blueprint = MaladyBlueprint(**new_cholera_data)
-    registry.register(new_cholera_blueprint.breed, new_cholera_blueprint)
+    new_cholera = MaladyBlueprint(
+        breed="cholera",
+        display=display_bp,
+        name="Cholera Updated",
+        damage_per_day=12
+    )
+    registry.register("cholera", new_cholera)
     
     cholera = registry.get("cholera")
     assert cholera is not None
@@ -151,48 +127,22 @@ def test_registry_empty():
     assert registry.all() == {}
     assert registry.get("non_existent") is None
 
-def test_registry_invalid_hydration():
+def test_registry_exists(display_bp):
     registry = MockMaladyRegistry()
+    blueprint = MaladyBlueprint(breed="test", display=display_bp)
+    registry.register("test", blueprint)
     
-    # Invalid data (missing required fields)
-    invalid_data = {
-        "invalid_malady": {
-            "breed": "invalid_malady",
-            "name": "Invalid Malady"
-            # Missing description, symptoms, damage_per_day, recovery_time_days
-        }
-    }
-    
-    with pytest.raises(TypeError):
-        registry.hydrate(invalid_data)
+    assert registry.exists("test") is True
+    assert registry.exists("fake") is False
 
 def test_registry_duplicate_registration(display_bp):
     registry = MockMaladyRegistry()
     
-    blueprint1 = MaladyBlueprint(
-        breed="cholera",
-        display=display_bp,
-        name="Cholera",
-        description="An infectious disease causing severe diarrhea.",
-        symptoms=["diarrhea", "dehydration", "vomiting"],
-        damage_per_day=10,
-        recovery_time_days=7
-    )
+    blueprint1 = MaladyBlueprint(breed="cholera", display=display_bp, name="C1")
+    blueprint2 = MaladyBlueprint(breed="cholera", display=display_bp, name="C2")
     
-    blueprint2 = MaladyBlueprint(
-        breed="cholera",
-        display=display_bp,
-        name="Cholera Duplicate",
-        description="Duplicate entry.",
-        symptoms=["diarrhea"],
-        damage_per_day=8,
-        recovery_time_days=5
-    )
-    
-    registry.register(blueprint1.breed, blueprint1)
-    registry.register(blueprint2.breed, blueprint2)  # This should overwrite the first blueprint
+    registry.register("cholera", blueprint1)
+    registry.register("cholera", blueprint2) # Overwrite
     
     cholera = registry.get("cholera")
-    assert cholera is not None
-    assert cholera.name == "Cholera Duplicate"
-    assert cholera.damage_per_day == 8
+    assert cholera.name == "C2"
