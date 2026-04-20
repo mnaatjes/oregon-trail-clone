@@ -15,59 +15,67 @@ feature_link: https://github.com/mnaatjes/oregon-trail-clone/issues/42
 ## 1. Overview
 The `DomainScanner` is a specialized Engine utility designed to bridge the gap between the physical filesystem and the logical Domain Layer. It automates the detection of `DomainContext` manifests, allowing the game engine to "self-assemble" by discovering and loading all available domain packages at runtime.
 
-## 2. Infrastructure & Tooling
-The scanner utilizes three primary Python standard library modules to perform reflection and dynamic loading.
+## 2. Theoretical Foundation: The Package Entry Point
+In Python, an `__init__.py` file is more than just a marker; it is the **Entry Point** for a directory-based package. The scanner targets these files specifically because:
+*   **Namespace Anchoring**: It marks the directory as a logical unit rather than a collection of loose files.
+*   **Facade Pattern**: It allows the scanner to see "surface-level" definitions (like our Manifest) without immediately loading deep sub-modules.
+*   **Metadata Storage**: It provides a standardized location for custom "Dunder" variables.
+
+---
+
+## 3. Infrastructure & Tooling
 
 ### A. Filesystem Navigation: `pathlib.Path`
-*   **Purpose**: Recursively traverses the `src/domain` directory to find package entry points.
-*   **Input**: A filesystem directory path.
-*   **Output**: A generator of `Path` objects pointing to `__init__.py` files.
-*   **Implementation Note**: We use `.rglob("__init__.py")` to ensure we find nested domains in `roots/`, `leaves/`, and `common/`.
+*   **Tool**: `Path.rglob("__init__.py")`
+*   **Input**: A filesystem directory path (e.g., `src/domain`).
+*   **Output**: A generator of `Path` objects.
+*   **Concept**: **Recursive Discovery**. We use `rglob` to find nested domains across `roots/`, `leaves/`, and `common/`.
 
-### B. Dynamic Importing: `importlib.util`
-*   **Purpose**: Loads Python code from a file path into memory without requiring a static `import` statement.
-*   **Input**: A physical file path.
-*   **Output**: A loaded Python Module object.
-*   **Example Code**:
+### B. Reflection Phase 1: The Spec (The Blueprint)
+*   **Tool**: `importlib.util.spec_from_file_location(name, path)`
+*   **Input**: A logical name and a physical file path.
+*   **Output**: A `ModuleSpec` object.
+*   **Concept**: **The Blueprint**. The Spec is a passive object that knows *where* the code is but does **not** contain the code's logic or variables.
+*   **Critical Properties**:
+    *   `.origin`: The physical path (useful for error reporting).
+    *   `.submodule_search_locations`: A list that, if populated, proves the directory is a valid **Package**.
+    *   `.loader_state`: Usually `None` for standard loaders, but stores transient state for complex loading operations.
+
+### C. Reflection Phase 2: The Module (The Reality)
+*   **Tools**: `importlib.util.module_from_spec(spec)` and `spec.loader.exec_module(module)`
+*   **Concept**: **The Live Object**. 
+    1.  `module_from_spec`: Creates a blank namespace in memory.
+    2.  `exec_module`: Triggers the "Ignition," executing the `__init__.py` code and populating the module's dictionary.
+*   **Bytecode Caching**: Upon execution, Python generates a "Precompiled Bytecode Tree" (`.pyc` file in `__pycache__`). This skips the parsing/compilation phase on subsequent boots, significantly improving performance.
+
+### D. Attribute Extraction: `getattr` & `inspect`
+*   **Tool**: `getattr(module, "__CONTEXT__", None)`
+*   **Concept**: **The Manifest Pattern**. 
+    *   A **Manifest** is an architectural "shipping label" (`__CONTEXT__`) that declares a domain's content (Priority, Intent, Requirements) before it is fully integrated.
+    *   **Custom Dunders**: We use double-under names (`__CONTEXT__`) to distinguish orchestration metadata from standard business logic.
+*   **Deep Inspection**:
     ```python
-    import importlib.util
-    from pathlib import Path
-
-    def load_module_from_path(path: Path):
-        # Create a unique name for the dynamic module to avoid collisions
-        module_name = f"discovery.{path.parent.name}"
-        spec = importlib.util.spec_from_file_location(module_name, path)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        return module
-    ```
-
-### C. Attribute Introspection: `getattr`
-*   **Purpose**: Safely extracts the `__CONTEXT__` object from the loaded module.
-*   **Input**: The loaded module object.
-*   **Output**: The `DomainContext` instance.
-*   **Example Code**:
-    ```python
-    # Safely extract the manifest
-    manifest = getattr(module, "__CONTEXT__", None)
+    # See all variables and imports defined in the file
+    all_content = vars(module) 
     
-    if not manifest:
-        raise DiscoveryError(f"Package at {path} is missing __CONTEXT__ manifest.")
+    # Identify classes explicitly
+    import inspect
+    classes = inspect.getmembers(module, inspect.isclass)
     ```
 
-## 3. Structural Design
+---
+
+## 4. Structural Design
 
 ### Location (Pillar Mirroring)
-Following the `src/{layer}/{pillar}/{role}` standard:
 *   **Path**: `src/engine/domain/scanner.py`
-*   **Layer**: `engine` (Active system logic)
-*   **Pillar**: `domain` (Domain management responsibility)
 *   **Role**: `scanner` (Utility service)
 
-### Class Architecture
-To support future extensibility (e.g., `AssetScanner`, `UIScanner`), the system employs an abstract base class.
+### Naming Conventions & Hazards
+When using `spec_from_file_location`, the `name` argument should be a clean logical identifier (e.g., `domain.root.test_package`). 
+*   **The Hazard**: If the name includes `__init__.py` (e.g., `test_package.__init__`), the `spec.parent` property will incorrectly split the "Unit," which can break relative imports inside the domain.
 
-#### The Base Contract
+### The Base Contract
 *   **Location**: `src/core/kernel/contracts/scanner.py`
 *   **Definition**:
     ```python
@@ -83,59 +91,27 @@ To support future extensibility (e.g., `AssetScanner`, `UIScanner`), the system 
             """Scans a path and returns a list of discovered entities of type T."""
     ```
 
-#### The DomainScanner Implementation
-*   **Class Type**: **Stateless Service**.
-*   **Instantiation**: It is instantiated by the `Kernel` and registered in the `ServiceContainer`.
-*   **State**: It maintains no internal state, allowing it to be safely reused or tested against different directories.
-*   **DI Key**: `engine.domain_scanner`
+---
 
-## 4. Integration & Usage
+## 5. Integration & Usage
 
 ### Usage with DomainOrchestrator
-The `DomainScanner` is a primary dependency of the `DomainOrchestrator`.
-
-1.  **Boot Phase**: The `DomainOrchestrator` receives the `DomainScanner` via constructor injection.
-2.  **Discovery**: The Orchestrator calls `scanner.scan(Path("src/domain"))`.
-3.  **Handoff**: The Orchestrator receives a `List[DomainContext]` and passes them to the `DomainRegistrar` for wiring.
+The `DomainScanner` is a stateless service injected into the `DomainOrchestrator`. It provides the `List[DomainContext]` required for the Orchestrator to build its **Priority Graph**.
 
 ### Separation of Concerns
-By separating the `Scanner` from the `Orchestrator`:
-*   The **Scanner** handles filesystem IO and Python import "magic."
-*   The **Orchestrator** handles the logical boot sequence and priority graphing.
-*   **Testing**: We can test the Orchestrator with a "Mock Scanner" that returns hardcoded contexts, avoiding slow and brittle filesystem tests in the Orchestrator suite.
+*   **Scanner**: Handles Filesystem IO and Reflection (The "Prospector").
+*   **Orchestrator**: Handles the Boot Sequence and Logic (The "Conductor").
 
-## 5. Testing & Validation
+---
 
-### Tooling Verification (Filesystem Isolation)
-To test the scanner without it scanning the entire project, use the `pytest` `tmp_path` fixture.
+## 6. Testing & Prototyping
 
-```python
-def test_scanner_identifies_valid_manifests(tmp_path):
-    # 1. Setup: Create a fake domain package
-    domain_dir = tmp_path / "mock_domain"
-    domain_dir.mkdir()
-    init_file = domain_dir / "__init__.py"
-    
-    # Write a valid manifest to the fake file
-    init_file.write_text("from src.core.domain.contracts.context import DomainContext\n"
-                         "__CONTEXT__ = DomainContext(family='ROOT', species='TEST')")
+### Tools for Verification
+*   **`pytest` `tmp_path`**: Create isolated, temporary domain folders.
+*   **`rich.inspect(module, methods=True)`**: Use this during prototyping to see the "Guts" of what was captured (attributes, `__dict__`, and Manifests).
 
-    # 2. Act
-    scanner = DomainScanner()
-    results = scanner.scan(tmp_path)
-
-    # 3. Assert
-    assert len(results) == 1
-    assert results[0].species == 'TEST'
-```
-
-### Major Methods to Verify
-1.  **`scan(path)`**: Ensure it ignores directories without `__init__.py`.
-2.  **`validate(manifest)`**: Ensure it raises `DiscoveryError` if `__CONTEXT__` is the wrong type or missing.
-3.  **`path_resolution`**: Ensure it handles relative and absolute paths correctly across different OS environments (Linux/Windows).
-
-## 6. Diagnostic Checklist
-- [ ] `BaseScanner` contract implemented in `src/core/kernel/contracts/`.
-- [ ] `DomainScanner` correctly ignores `__pycache__` and non-package folders.
-- [ ] `DiscoveryError` provides the specific file path of the failing package.
-- [ ] Scanning is performant (< 100ms for entire domain layer).
+### Diagnostic Checklist
+- [ ] `DomainScanner` resolves absolute paths to prevent "Import Identity Mismatch."
+- [ ] `DiscoveryError` provides specific file paths and line numbers if possible.
+- [ ] The scanner ignores `__pycache__` and non-package folders automatically.
+- [ ] `__CONTEXT__` validation ensures the object is an instance of `DomainContext`.
