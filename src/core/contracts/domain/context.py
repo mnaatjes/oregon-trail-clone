@@ -1,16 +1,10 @@
 # src/core/contracts/domain/context.py
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
 from typing import List, Type, Any
 
+from src.core.contracts.domain.taxonomy import DomainFamily
 from src.core.contracts.kernel import KernelSubsystem
-
-# Declare Enums for Domain Family (leaf[DomainRecord] or root[DomainRoot])
-class DomainFamily(Enum):
-    ROOT = auto()
-    LEAF = auto()
-    SPORE = auto()
 
 @dataclass(frozen=True)
 class DomainContext:
