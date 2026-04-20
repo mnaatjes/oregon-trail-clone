@@ -4,7 +4,7 @@ from typing import Self, Dict, Any
 import pytest
 from dataclasses import dataclass, field, replace
 from uuid import uuid4, UUID
-from src.core.contracts.domain.blueprint import DomainBlueprint, DisplayBlueprint
+from core.contracts.domain.blueprints.base import BaseBlueprint, DisplayBlueprint
 from src.core.contracts.domain.root import DomainRoot
 from src.core.contracts.domain.record import DomainRecord
 
@@ -16,7 +16,7 @@ display = DisplayBlueprint(
     description="Test Description"
 )
 
-class MockBlueprint(DomainBlueprint):
+class MockBlueprint(BaseBlueprint):
     @property
     def __species__(self) -> str:
         return "mock_species"
@@ -25,13 +25,13 @@ class MockBlueprint(DomainBlueprint):
 class MockRecord(DomainRecord):
     val: int = 1
     def clone(self) -> Self:
-        return MockRecord(val=self.val)
+        return MockRecord(val=self.val) #type: ignore
     def validate(self) -> bool:
         return True
 
 @pytest.fixture
 def bp():
-    return MockBlueprint(slug="test-slug", display=display)
+    return MockBlueprint(breed="test-slug", display=display)
 
 # --- Test Cases ---
 
@@ -55,7 +55,7 @@ def test_horizontal_violation_declaration(bp):
     with pytest.raises(TypeError) as info:
         @dataclass(frozen=True)
         class InvalidRoot(DomainRoot):
-            other: DomainRoot # Illegal Horizontal Reference
+            other: DomainRoot # type: ignore
             def clone(self) -> Self: return self
             
     assert "HORIZONTAL VIOLATION" in str(info.value)
@@ -88,7 +88,7 @@ def test_vertical_violation(bp):
         WagonRoot(
             uid=uuid4(),
             blueprint=bp,
-            records={"broken": "not-a-record"} # Invalid type
+            records={"broken": "not-a-record"} # type: ignore
         )
     assert "VERTICAL VIOLATION" in str(info.value)
 
@@ -99,7 +99,7 @@ def test_sovereignty_violation(bp):
         def clone(self) -> Self: return self
 
     with pytest.raises(TypeError) as info:
-        WagonRoot(uid="not-a-uuid", blueprint=bp)
+        WagonRoot(uid="not-a-uuid", blueprint=bp) # type:ignore
         
     assert "SOVEREIGNTY VIOLATION" in str(info.value)
 
@@ -108,7 +108,7 @@ def test_anemic_purity_violation(bp):
     # Attempting to define a non-frozen dataclass should fail 
     # because the parent is already frozen.
     with pytest.raises(TypeError):
-        @dataclass(frozen=False)
+        @dataclass(frozen=False) # type: ignore
         class MutableRoot(DomainRoot):
             def clone(self) -> Self: return self
 
@@ -125,4 +125,4 @@ def test_deep_clone_mechanism(bp):
 
     assert original is not cloned
     assert original.records["r1"] is not cloned.records["r1"]
-    assert original.records["r1"].val == cloned.records["r1"].val
+    assert original.records["r1"].val == cloned.records["r1"].val # type:ignore

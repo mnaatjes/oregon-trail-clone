@@ -5,7 +5,7 @@ from dataclasses import dataclass, field, fields
 from uuid import UUID
 from typing import Dict, Self, get_type_hints
 from src.core.contracts.domain.record import DomainRecord
-from src.core.contracts.domain.blueprint import DomainBlueprint
+from core.contracts.domain.blueprints.base import BaseBlueprint
 
 @dataclass(frozen=True)
 class DomainRoot(ABC):
@@ -14,7 +14,7 @@ class DomainRoot(ABC):
     Enforces total serializability and strict vertical composition.
     """
     uid: UUID   # Soveriegn Identity
-    blueprint: DomainBlueprint  # Static Template
+    blueprint: BaseBlueprint  # Static Template
     records: Dict[str, DomainRecord] = field(default_factory=dict)
 
     def __init_subclass__(cls, **kwargs) -> None:

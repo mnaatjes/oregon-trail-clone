@@ -1,70 +1,104 @@
+# tests/unit/core/contracts/test_blueprint.py
+
 import pytest
-from abc import ABC
 from dataclasses import dataclass, FrozenInstanceError
-from src.core.contracts.domain.blueprint import DomainBlueprint, DisplayBlueprint
+from src.core.contracts.domain.blueprints.base import BaseBlueprint
+from src.core.contracts.domain.blueprints.root import RootBlueprint
+from src.core.contracts.domain.blueprints.record import RecordBlueprint
+from src.core.contracts.domain.blueprints.display import DisplayBlueprint
+from src.core.contracts.domain.taxonomy import DomainFamily
 
 # --- Test Helpers ---
 
 @dataclass(frozen=True)
-class MockBlueprint(DomainBlueprint):
+class MockBlueprint(BaseBlueprint):
     """Concrete implementation for testing purposes."""
+    
     @property
-    def __species__(self) -> str:
-        return "mock"
+    def species(self) -> str:
+        return "mock-species"
 
-@pytest.fixture
-def valid_display():
-    return DisplayBlueprint(
-        asset_id="asset.test",
-        label="Test Item",
-        description="A test item for verification."
-    )
+    @property
+    def family(self) -> DomainFamily:
+        return DomainFamily.ROOT
 
-# --- Tests ---
+@dataclass(frozen=True)
+class MockRoot(RootBlueprint):
+    @property
+    def species(self) -> str:
+        return "root-species"
 
-def test_abstraction_guard(valid_display):
-    """Verify that DomainBlueprint cannot be instantiated even with valid data."""
-    with pytest.raises(TypeError) as exc_info:
-        # Attempting to instantiate the ABC directly
-        DomainBlueprint(slug="test-slug", display=valid_display) # type: ignore
-        
-    assert "Can't instantiate abstract class DomainBlueprint" in str(exc_info.value)
-    assert "__species__" in str(exc_info.value)
+@dataclass(frozen=True)
+class MockRecord(RecordBlueprint):
+    @property
+    def species(self) -> str:
+        return "record-species"
 
-def test_species_enforcement(valid_display):
-    """Verify that subclasses MUST implement __species__ to be instantiated."""
-    class BrokenBlueprint(DomainBlueprint):
-        pass # Missing __species__ implementation
-        
-    with pytest.raises(TypeError) as exc_info:
-        BrokenBlueprint(slug="test", display=valid_display) # type: ignore
+# --- BaseBlueprint Tests ---
+
+def test_base_blueprint_abstraction():
+    """Ensure BaseBlueprint cannot be instantiated directly as it is an ABC."""
+    display = DisplayBlueprint(asset_id="any", label="any")
+    with pytest.raises(TypeError) as info:
+        # pylint: disable=abstract-class-instantiated
+        instance = BaseBlueprint(breed="test", display=display) # type: ignore
     
-    assert "__species__" in str(exc_info.value)
+    assert "Can't instantiate abstract class BaseBlueprint" in str(info.value)
 
-def test_immutability_guard(valid_display):
-    """Verify that blueprints are frozen and cannot be modified after creation."""
-    bp = MockBlueprint(slug="stable-slug", display=valid_display)
-    
+def test_base_blueprint_fields():
+    """Verify standard fields are correctly inherited and stored."""
+    display = DisplayBlueprint(asset_id="asset-1", label="Mock Label")
+    blueprint = MockBlueprint(breed="mock-breed", display=display)
+
+    assert blueprint.breed == "mock-breed"
+    assert blueprint.display.label == "Mock Label"
+    assert blueprint.display.asset_id == "asset-1"
+
+def test_base_blueprint_immutability():
+    """Ensure BaseBlueprint fields are frozen."""
+    display = DisplayBlueprint(asset_id="asset-1", label="Mock Label")
+    blueprint = MockBlueprint(breed="mock-breed", display=display)
+
     with pytest.raises(FrozenInstanceError):
-        bp.slug = "mutated-slug" # type: ignore
+        blueprint.breed = "new-breed" # type: ignore
 
-def test_deep_freeze_guard(valid_display):
-    """Verify that nested display metadata is also frozen."""
-    bp = MockBlueprint(slug="test", display=valid_display)
-    
     with pytest.raises(FrozenInstanceError):
-        bp.display.label = "Attempted Hack" # type: ignore
+        blueprint.display = DisplayBlueprint(asset_id="new", label="new") # type: ignore
 
-def test_blueprint_equality(valid_display):
-    """Verify that two blueprints with identical data are considered equal."""
-    bp1 = MockBlueprint(slug="standard", display=valid_display)
-    bp2 = MockBlueprint(slug="standard", display=valid_display)
-    
-    assert bp1 == bp2           # Data equality should be True
-    assert bp1 is not bp2       # Instance identity should be False
+# --- RootBlueprint Tests ---
 
-def test_blueprint_slug_integrity(valid_display):
-    """Verify the slug is correctly stored and accessible."""
-    bp = MockBlueprint(slug="domain.test.item", display=valid_display)
-    assert bp.slug == "domain.test.item"
-    assert bp.__species__ == "mock"
+def test_root_blueprint_abstraction():
+    """Ensure RootBlueprint cannot be instantiated directly."""
+    display = DisplayBlueprint(asset_id="any", label="any")
+    with pytest.raises(TypeError) as info:
+        instance = RootBlueprint(breed="test", display=display) # type: ignore
+    assert "Can't instantiate abstract class RootBlueprint" in str(info.value)
+
+def test_root_blueprint_implementation():
+    """Verify RootBlueprint provides family and inherits fields."""
+    display = DisplayBlueprint(asset_id="r1", label="Root")
+    blueprint = MockRoot(breed="breed1", display=display)
+
+    assert blueprint.family == DomainFamily.ROOT
+    assert blueprint.species == "root-species"
+    assert blueprint.breed == "breed1"
+    assert isinstance(blueprint, RootBlueprint)
+
+# --- RecordBlueprint Tests ---
+
+def test_record_blueprint_abstraction():
+    """Ensure RecordBlueprint cannot be instantiated directly."""
+    display = DisplayBlueprint(asset_id="any", label="any")
+    with pytest.raises(TypeError) as info:
+        instance = RecordBlueprint(breed="test", display=display) # type: ignore
+    assert "Can't instantiate abstract class RecordBlueprint" in str(info.value)
+
+def test_record_blueprint_implementation():
+    """Verify RecordBlueprint provides family and inherits fields."""
+    display = DisplayBlueprint(asset_id="rec1", label="Record")
+    blueprint = MockRecord(breed="breed2", display=display)
+
+    assert blueprint.family == DomainFamily.LEAF
+    assert blueprint.species == "record-species"
+    assert blueprint.breed == "breed2"
+    assert isinstance(blueprint, RecordBlueprint)
