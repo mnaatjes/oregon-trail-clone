@@ -27,6 +27,13 @@ class DomainContext:
                 f"[CONTEXT VIOLATION] property 'intent' CANNOT be empty "
                 f"MUST be implementation of DomainSpore, RootBlueprint, or RecordBlueprint"
             )
+
+        # Enforce Service for ROOT family
+        if self.family == DomainFamily.ROOT and self.service is None:
+            raise ValueError(
+                f"[CONTEXT VIOLATION] DomainContext for ROOT family '{self.intent}' "
+                f"MUST provide a Service class for orchestrated dependency injection."
+            )
         
     @property
     def family(self) -> DomainFamily:

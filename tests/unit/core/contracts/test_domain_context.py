@@ -55,21 +55,17 @@ def test_intent_validation():
         DomainContext(intent=None, priority=1) # Use None to trigger validation
 
 def test_root_requires_service():
-    """
-    Verify that a ROOT family currently allows None service.
-    TODO: Revert to expecting ValueError once src/ guard is implemented.
-    """
-    context = DomainContext(
-        intent=RootBlueprint,
-        priority=50,
-        requirements=[]
-        # service is None by default
-    )
-    assert context.family == DomainFamily.ROOT
-    assert context.service is None
+    """Verify that a ROOT family MUST provide a service class."""
+    with pytest.raises(ValueError, match="MUST provide a Service"):
+        DomainContext(
+            intent=RootBlueprint,
+            priority=50,
+            requirements=[]
+            # service is None by default
+        )
 
 def test_immutability():
     """Verify that the DomainContext is frozen."""
-    context = DomainContext(intent=RootBlueprint, priority=1)
+    context = DomainContext(intent=RootBlueprint, priority=1, service=MockService)
     with pytest.raises(Exception): # FrozenInstanceError
         context.priority = 20 #type: ignore
