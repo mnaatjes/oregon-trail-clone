@@ -2,7 +2,7 @@
 
 import pytest
 from src.core.registries import spores
-from src.core.contracts.domain.spore import DomainSpore
+from core.kernel.contracts.domain.spore import DomainSpore
 
 @pytest.fixture(autouse=True)
 def clear_registry():

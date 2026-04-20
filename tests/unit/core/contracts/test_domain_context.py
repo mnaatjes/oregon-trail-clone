@@ -1,11 +1,11 @@
 # tests/unit/core/contracts/test_domain_context.py
 
 import pytest
-from src.core.contracts.domain.context import DomainContext, DomainFamily
-from src.core.contracts.kernel import KernelSubsystem
-from src.core.contracts.domain.service import BaseDomainService
+from core.kernel.contracts.domain.context import DomainContext, DomainFamily
+from core.kernel.contracts.kernel import KernelSubsystem
+from core.kernel.contracts.domain.service import BaseDomainService
 
-from src.core.contracts.domain.blueprints.root import RootBlueprint
+from core.kernel.contracts.domain.blueprints.root import RootBlueprint
 
 class MockService(BaseDomainService):
     """A dummy service for testing injection."""

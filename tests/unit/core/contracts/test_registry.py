@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from typing import Optional
 
 import pytest
-from src.core.contracts.registry import BaseRegistry
-from src.core.contracts.domain.blueprints.record import RecordBlueprint
-from src.core.contracts.domain.blueprints.display import DisplayBlueprint
-from src.core.contracts.domain.taxonomy import DomainFamily
+from core.kernel.contracts.registry import BaseRegistry
+from core.kernel.contracts.domain.blueprints.record import RecordBlueprint
+from core.kernel.contracts.domain.blueprints.display import DisplayBlueprint
+from core.kernel.contracts.domain.taxonomy import DomainFamily
 
 @pytest.fixture
 def display_bp():

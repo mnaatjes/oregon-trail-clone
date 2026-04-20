@@ -1,7 +1,7 @@
 # src/core/contracts/provider.py
 
 from abc import ABC, abstractmethod
-from src.core.container import ServiceContainer
+from core.kernel.container import ServiceContainer
 
 class BaseServiceProvider(ABC):
     """

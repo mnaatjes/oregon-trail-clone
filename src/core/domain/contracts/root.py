@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field, fields
 from uuid import UUID
 from typing import Dict, Self, get_type_hints
-from src.core.contracts.domain.record import DomainRecord
-from core.contracts.domain.blueprints.base import BaseBlueprint
+from core.kernel.contracts.domain.record import DomainRecord
+from core.kernel.contracts.domain.blueprints.base import BaseBlueprint
 
 @dataclass(frozen=True)
 class DomainRoot(ABC):

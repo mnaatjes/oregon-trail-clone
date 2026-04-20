@@ -1,7 +1,7 @@
 # tests/unit/core/test_container.py
 import pytest
 from rich import inspect
-from src.core.container import ServiceContainer
+from core.kernel.container import ServiceContainer
 from core.providers.base import BaseServiceProvider
 
 class MockProvider(BaseServiceProvider):

@@ -4,10 +4,10 @@ from typing import Self, Dict, Any
 import pytest
 from dataclasses import dataclass, field, replace
 from uuid import uuid4, UUID
-from core.contracts.domain.blueprints.base import BaseBlueprint, DisplayBlueprint
-from src.core.contracts.domain.root import DomainRoot
-from src.core.contracts.domain.record import DomainRecord
-from src.core.contracts.domain.taxonomy import DomainFamily
+from core.kernel.contracts.domain.blueprints.base import BaseBlueprint, DisplayBlueprint
+from core.kernel.contracts.domain.root import DomainRoot
+from core.kernel.contracts.domain.record import DomainRecord
+from core.kernel.contracts.domain.taxonomy import DomainFamily
 
 # --- Shared Mocks ---
 

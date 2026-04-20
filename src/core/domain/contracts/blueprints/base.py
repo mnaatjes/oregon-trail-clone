@@ -2,8 +2,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.core.contracts.domain.taxonomy import DomainFamily
-from src.core.contracts.domain.blueprints.display import DisplayBlueprint
+from core.kernel.contracts.domain.taxonomy import DomainFamily
+from core.kernel.contracts.domain.blueprints.display import DisplayBlueprint
 
 
 @dataclass(frozen=True)

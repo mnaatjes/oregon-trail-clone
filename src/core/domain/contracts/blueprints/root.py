@@ -1,21 +1,20 @@
-# src/core/contracts/domain/blueprints/record.py
+# src/core/contracts/domain/blueprints/root.py
 
-from dataclasses import dataclass
 from abc import ABC, abstractmethod
-
-from src.core.contracts.domain.blueprints.base import BaseBlueprint
-from src.core.contracts.domain.blueprints.display import DisplayBlueprint
-from src.core.contracts.domain.taxonomy import DomainFamily
+from dataclasses import dataclass
+from core.kernel.contracts.domain.blueprints.base import BaseBlueprint
+from core.kernel.contracts.domain.blueprints.display import DisplayBlueprint
+from core.kernel.contracts.domain.taxonomy import DomainFamily
 
 @dataclass(frozen=True)
-class RecordBlueprint(BaseBlueprint):
+class RootBlueprint(BaseBlueprint):
     """
-    Abstract base for RECORD/LEAF templates.
+    Abstract base for all ROOT templates.
     - Breed Property (fmr. "slug") ensures every blueprint has at least a unique identifier.
     - Read-only
     - Global Template
     - Shared across many instances
-    - Loaded from assets (e.g. assets/professions.json)    
+    - Loaded from assets (e.g. assets/professions.json)
     """
 
     @property
@@ -27,4 +26,4 @@ class RecordBlueprint(BaseBlueprint):
     @property
     def family(self) -> DomainFamily:
         """The architectural role (ROOT or LEAF)."""
-        return DomainFamily.LEAF
+        return DomainFamily.ROOT

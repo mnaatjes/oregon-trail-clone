@@ -1,7 +1,7 @@
 # src/core/registries/spore.py
 
-from src.core.contracts.registry import BaseRegistry, RegistryKey
-from src.core.contracts.domain.spore import DomainSpore
+from core.kernel.contracts.registry import BaseRegistry, RegistryKey
+from core.kernel.contracts.domain.spore import DomainSpore
 
 class SporeRegistry(BaseRegistry[type[DomainSpore]]):
     """Global Registry for all DomainSpore instances"""

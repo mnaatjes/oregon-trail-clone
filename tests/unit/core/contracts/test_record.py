@@ -5,7 +5,7 @@ from typing import Self
 import pytest
 from rich import inspect
 from dataclasses import dataclass, FrozenInstanceError, replace
-from src.core.contracts.domain.record import DomainRecord
+from core.kernel.contracts.domain.record import DomainRecord
 
 @dataclass(frozen=True)
 class WheelRecord(DomainRecord):

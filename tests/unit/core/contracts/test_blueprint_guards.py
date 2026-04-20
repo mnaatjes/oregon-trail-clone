@@ -2,11 +2,11 @@
 
 import pytest
 from dataclasses import dataclass
-from src.core.contracts.domain.blueprints.base import BaseBlueprint
-from src.core.contracts.domain.blueprints.root import RootBlueprint
-from src.core.contracts.domain.blueprints.record import RecordBlueprint
-from src.core.contracts.domain.blueprints.display import DisplayBlueprint
-from src.core.contracts.domain.taxonomy import DomainFamily
+from core.kernel.contracts.domain.blueprints.base import BaseBlueprint
+from core.kernel.contracts.domain.blueprints.root import RootBlueprint
+from core.kernel.contracts.domain.blueprints.record import RecordBlueprint
+from core.kernel.contracts.domain.blueprints.display import DisplayBlueprint
+from core.kernel.contracts.domain.taxonomy import DomainFamily
 
 @dataclass(frozen=True)
 class ValidRoot(RootBlueprint):
