@@ -15,43 +15,47 @@ updated_at: 2026-04-12
 │   └── domain_contract_spec.yml
 ├── src/
 │   ├── core/               # Technical foundation & Framework rules
-│   │   ├── contracts/      # ABCs & Protocols (The Specification)
-│   │   │   ├── provider.py # BaseServiceProvider ABC
-│   │   │   ├── registry.py # BaseRegistry ABC
-│   │   │   └── service.py  # BaseService ABC / Protocols
-│   │   ├── container.py    # Service/Dependency Injection Container
-│   │   └── events.py       # Global Event Bus / Observer logic
-│   ├── domain/             # THE HEART: Functional sub-systems (UDB Pattern)
+│   │   ├── kernel/         # Global Framework (The "System" Pillar)
+│   │   │   ├── contracts/  # Global ABCs & Protocols (Events, DI, Registry)
+│   │   │   └── ...
+│   │   ├── domain/         # Domain-specific infrastructure
+│   │   │   ├── contracts/  # Domain Protocols (Roots, Records, Spores)
+│   │   │   ├── registries/ # Passive data stores (SporeRegistry, etc.)
+│   │   │   └── providers/  # Domain Service Providers
+│   │   └── container.py    # Service/Dependency Injection Container
+│   ├── domain/             # THE MODEL: Pure Business Logic & State
 │   │   ├── character/      # Character Identity & Stats package
-│   │   │   ├── __init__.py # Public API for Character
-│   │   │   ├── models.py   # Identity & Stats entities
-│   │   │   └── logic.py    # Identity-based rules (e.g. Age calculation)
 │   │   ├── health/         # Isolated Health & Malady package
-│   │   │   ├── __init__.py # Public API for Health
-│   │   │   ├── models.py   # HP & HealthState entities
-│   │   │   ├── maladies.py # Disease, Injury, & MentalIllness logic
-│   │   │   └── services.py # Resolution logic (Disease/Sanity resolvers)
-│   │   └── wagon/          # Wagon & Inventory package (Future expansion)
-│   ├── engine/             # MVC Controller: Orchestrates domain interactions
-│   │   └── providers/      # Concrete implementations of core/contracts/
-│   ├── storage/            # Infrastructure: JSON Repository/Persistence
-├── ui/                 # MVC View: Textual-based TUI components
-    └── main.py             # App entry point & Bootstrap loop
+│   │   └── wagon/          # Wagon & Inventory package
+│   ├── engine/             # THE CONTROLLER: Orchestration & Lifecycle
+│   │   ├── domain/         # Active Domain Orchestration (Orchestrator, Registrar)
+│   │   └── ...
+│   ├── storage/            # THE ADAPTERS: Persistence (JSON/SQL)
+│   ├── ui/                 # THE VIEW: Presentation & User Input
+│   └── main.py             # App entry point & Bootstrap loop
 ├── tests/                  # Test suites mirrored to src/ structure
 │   ├── architecture/       # Meta-tests for Contract/Blueprint enforcement
-│   ├── domain/
-│   │   ├── character/
-│   │   └── health/
+│   ├── unit/
+│   │   ├── core/
+│   │   └── domain/
+│   └── integration/
 ├── pyproject.toml
 └── requirements.txt
 
 ## Structural / Architectural Rules
 
 ### The "Pillar Mirroring" Pattern
-To allow for parallel systems, we should adopt a pattern where each architectural layer (`src/core`, `src/engine`) mirrors the top-level pillars (`src/domain`, `src/ui`, `src/storage`).
+To allow for parallel systems, each architectural layer (`src/core`, `src/engine`) MUST mirror the top-level pillars (`src/domain`, `src/ui`, `src/storage`).
 
+*   **Pillar-First Organization**: The folder represents the "What" (Pillar), while the sub-folders or files represent the "How" (Role).
+    *   **Formula**: `src/{layer}/{pillar}/{role}/` (e.g., `src/core/domain/contracts/`)
+    *   *Correct*: `src/core/domain/contracts/`
+    *   *Incorrect*: `src/core/contracts/domain/`
 *   **`src/core/`**: Reserved for "Specs" (Protocols, ABCs) and "Passive" components (Registries, DTOs).
-*   **`src/engine/`**: Partitioned by pillar (e.g., `src/engine/domain/`) for active orchestration logic.
-    *   **Rule**: Create `src/engine/domain/` and move domain-specific orchestration there.
+*   **`src/engine/`**: Reserved for "Active" components (Orchestrators, Registrars) that manage pillar lifecycles.
+*   **Vertical Alignment Example**:
+    *   **Spec**: `src/core/domain/contracts/root.py`
+    *   **Model**: `src/domain/wagon/models.py`
+    *   **Orchestration**: `src/engine/domain/orchestrator.py`
 
 ```
