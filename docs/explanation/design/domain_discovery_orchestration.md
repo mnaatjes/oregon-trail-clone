@@ -29,7 +29,7 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 ## 3. Component Specification
 
 ### 3.1 BaseDomainService (The Actor)
-*   **Path:** `src/core/contracts/domain/service.py`
+*   **Path:** `src/core/domain/contracts/service.py`
 *   **Role:** The stateless "Operator" of an aggregate root. 
 *   **Contract:** 
     *   Must implement the `Bootable` protocol (optional `boot()` method).
@@ -37,14 +37,14 @@ This specification defines the "Conductor-Based" initialization of the Domain La
     *   Focuses purely on coordinating `logic.py` and `models.py`.
 
 ### 3.2 BaseServiceProvider (The Infrastructure)
-*   **Path:** `src/core/contracts/provider.py`
+*   **Path:** `src/core/kernel/contracts/provider.py`
 *   **Role:** The "Electrician" that wires a package into the Engine.
 *   **Key Feature: Domain Facades.**
     *   Provides type-hinted `@property` access to: `self.events` (`EventBus`) and `self.assets` (`AssetService`).
     *   Decouples the domain developer from `self.container.get("string_key")`.
 
 ### 3.3 DomainRegistrar (The Archivist)
-*   **Path:** `src/core/registries/registrar.py`
+*   **Path:** `src/engine/domain/registrar.py`
 *   **Role:** Handles the **Static DNA** of a package.
 *   **Logic:** 
     *   If `family == SPORE`: Registers the `intent` class in the `SporeRegistry`.
@@ -52,14 +52,14 @@ This specification defines the "Conductor-Based" initialization of the Domain La
     *   Also handles the registration of `logic.py` modules into the `LogicRegistry`.
 
 ### 3.4 DomainProviderFactory (The Wire-Man)
-*   **Path:** `src/core/factories/provider.py`
+*   **Path:** `src/engine/domain/provider_factory.py`
 *   **Role:** Produces the correct `ServiceProvider` for a discovered package.
 *   **Logic:** 
     *   **The Check:** If `DomainContext.provider_class` is defined, instantiate the user's custom provider.
     *   **The Fallback:** If no custom provider exists, instantiate a `StandardDomainProvider` that automatically binds the `DomainContext.service` to the `ServiceContainer`.
 
 ### 3.5 DomainOrchestrator (The Conductor)
-*   **Path:** `src/engine/orchestration/domain.py`
+*   **Path:** `src/engine/domain/orchestrator.py`
 *   **Role:** The active agent that manages the total lifecycle.
 *   **Logic:**
     1.  **Discovery:** Scans `src/domain/` for `__CONTEXT__` objects.

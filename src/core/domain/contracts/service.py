@@ -1,4 +1,4 @@
-# src/core/contracts/domain/service.py
+# src/core/domain/contracts/service.py
 
 from abc import ABC, abstractmethod
 

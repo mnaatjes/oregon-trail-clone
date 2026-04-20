@@ -1,4 +1,4 @@
-# src/core/contracts/provider.py
+# src/core/kernel/contracts/provider.py
 
 from abc import ABC, abstractmethod
 from core.kernel.container import ServiceContainer

@@ -35,7 +35,10 @@ class BaseFactory(ABC, Generic[T]):
 
     @abstractmethod
     def validate(self, **data: Any) -> None:
-        """Validate product"""
+        """
+        Validate the processed data:
+        - Raise Exceptions on failure
+        """
         pass
 
     @abstractmethod
@@ -44,12 +47,12 @@ class BaseFactory(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def instantiate(self, **kwargs) -> T:
+    def instantiate(self, **processed) -> T:
         """Produces the Class, Object, or Interface defined in target"""
         pass
 
     @abstractmethod
-    def finalize(self, instance:Any) -> T:
+    def finalize(self, instance: T) -> T:
         """A hook for logic that must occur after the object exists but before it is returned to the caller"""
         pass
 
@@ -59,7 +62,7 @@ class BaseFactory(ABC, Generic[T]):
         Enforces the sequence of construction laws
         - prepare()
         - validate()
-        - initialize()
+        - instantiate()
         - finalize()
         """
         # 1. Transform Raw Data
@@ -70,6 +73,13 @@ class BaseFactory(ABC, Generic[T]):
 
         # 2. Create Object/Class instance
         instance = self.instantiate(**processed)
+
+        # Verify product IS target type
+        if not isinstance(instance, self.target):
+            raise TypeError(
+                f"[FACTORY VIOLATION] in '{self.__class__.__name__}' "
+                f"Produced: '{type(instance).__name__}', Expected: '{self.target.__name__}'"
+            )
 
         # 3. Implement Post-Processing and return
         return self.finalize(instance)
