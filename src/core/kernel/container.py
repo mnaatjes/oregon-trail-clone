@@ -19,7 +19,7 @@ class ServiceContainer:
         # is returned throughout the application lifecycle.
         self._instances: Dict[Union[str, Type], Any] = {}
 
-    def register(self, key: Union[str, Type[T]], service: Any) -> None:
+    def bind(self, key: Union[str, Type[T]], service: Any) -> None:
         """
         Bind a service to the container.
         
@@ -28,10 +28,6 @@ class ServiceContainer:
             service: A live object, a class definition, or a factory function.
         """
         self._services[key] = service
-
-    def bind(self, key: Union[str, Type[T]], service: Any) -> None:
-        """Alias for register, for more intuitive access."""
-        self.register(key, service)
 
     def resolve(self, key: Union[str, Type[T]]) -> T:
         """

@@ -9,8 +9,8 @@ class MockProvider(BaseServiceProvider):
         super().__init__(container)
         self.boot_called = False
 
-    def register(self):
-        self.container.register('mock_service', lambda c: 'This is a mock service')
+    def bind(self):
+        self.container.bind('mock_service', lambda c: 'This is a mock service')
     
     def boot(self):
         self.boot_called = True
@@ -24,9 +24,9 @@ class DependentMockProvider(BaseServiceProvider):
         self.boot_called = False
         self.resolved_service = None
 
-    def register(self):
+    def bind(self):
         # This service depends on 'mock_service' from the first provider
-        self.container.register('dependent_service', lambda c: f"Dependent on: {c.get('mock_service')}")
+        self.container.bind('dependent_service', lambda c: f"Dependent on: {c.get('mock_service')}")
     
     def boot(self):
         self.boot_called = True
@@ -45,14 +45,14 @@ def test_service_registration(container):
 
     for p in provider.provides():
         assert not container.has(p)
-        container.register(p, lambda c: f"Service for {p}")
+        container.bind(p, lambda c: f"Service for {p}")
         assert container.has(p)
     
     inspect(container._services)
 
 def test_service_retrieval(container):
     provider = MockProvider(container)
-    provider.register()
+    provider.bind()
 
     service = container.get('mock_service')
     assert service == 'This is a mock service'
@@ -61,7 +61,7 @@ def test_service_retrieval(container):
         container.get('non_existent_service')
 
 def test_container_bootstrapping(container):
-    """Verify the two-phase (Register -> Boot) lifecycle orchestration."""
+    """Verify the two-phase (bind -> Boot) lifecycle orchestration."""
     providers = [
         MockProvider(container),
         DependentMockProvider(container)
@@ -69,7 +69,7 @@ def test_container_bootstrapping(container):
 
     # PHASE 1: Registration
     for p in providers:
-        p.register()
+        p.bind()
     
     assert container.has('mock_service')
     assert container.has('dependent_service')
@@ -90,8 +90,8 @@ def test_container_bootstrapping(container):
     assert container.get('dependent_service') == 'Dependent on: This is a mock service'
     
 def __test_service_overwrite(container):
-    container.register('test_service', lambda c: 'First version')
+    container.bind('test_service', lambda c: 'First version')
     assert container.get('test_service') == 'First version'
 
-    container.register('test_service', lambda c: 'Second version')
+    container.bind('test_service', lambda c: 'Second version')
     assert container.get('test_service') == 'Second version'

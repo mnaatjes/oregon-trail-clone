@@ -13,7 +13,7 @@ class BaseServiceProvider(ABC):
         self.container = container
 
     @abstractmethod
-    def register(self) -> None:
+    def bind(self) -> None:
         """
         Phase 1: Bind classes or instances into the container.
         Do not look for other services here; they may not be registered yet.

@@ -4,8 +4,9 @@ metadata:
   directive: "This file is the primary record of project history and status. It MUST be updated at the end of every agent session to ensure chronological integrity and architectural alignment."
   version: "0.1.0"
   created_at: "2026-04-19"
-  updated_at: "2026-04-19 17:30:00"
+  updated_at: "2026-04-20 16:30:00"
   permissions: "read, write"
+  last_gemini_cli_session_id: "778b1fd0-2a03-4073-80b5-d8c3b42b9d21"
 
 status_summary:
   phase: "Core Foundation"
@@ -18,6 +19,7 @@ architectural_milestones:
   identity_chain: "Standardized 5-level identity: Family -> Species -> Breed -> Individual (UID) -> Namespace (Intent)."
   type_safe_manifests: "Transitioned from string-based intents to Class-based intents in DomainContext for auto-bubbling and validation."
   facade_sop: "ADR-016 established to enforce strict __init__.py encapsulation using __all__."
+  pillar_mirroring: "Codified the 'Pillar Mirroring' pattern (src/{layer}/{pillar}/{role}) in README.md to ensure parallel scalability."
 
 active_design_epics:
   - id: "ADR-014"
@@ -37,17 +39,38 @@ active_design_epics:
     issue: "#46"
 
 critical_conflicts_resolved:
+  - date: "2026-04-20"
+    issue: "Pillar vs. Role Priority"
+    resolution: "Adopted 'Pillar-First' organization (src/core/domain/contracts) to improve cohesion and mirroring."
+  - date: "2026-04-20"
+    issue: "Import Chaos after Refactor"
+    resolution: "Performed project-wide automated sed replacement and manual test logic alignment."
   - date: "2026-04-19"
     issue: "TDD-002/003 Redundancy"
     resolution: "Consolidated into a single Source of Truth (TDD-002)."
-  - date: "2026-04-19"
-    issue: "Identity Lexicon"
-    resolution: "Renamed 'Slug' to 'Breed' to align with the taxonomic metaphor."
-  - date: "2026-04-19"
-    issue: "Intent Definition"
-    resolution: "Passed Blueprint/Spore classes directly to DomainContext to eliminate redundant strings."
 
 sessions:
+  - session_id: "2026-04-20-02"
+    metadata:
+      timestamp: "2026-04-20 16:30:00"
+      version: "0.1.0"
+    tasks:
+      accomplished:
+        - "Codified the 'Pillar Mirroring' pattern in README.md (src/{layer}/{pillar}/{role})."
+        - "Refactored src/core and src/engine into Pillar-First structure (Kernel, Domain, UI, Storage)."
+        - "Standardized all __init__.py files with relative path headers and explicit __all__ exports (ADR-016)."
+        - "Resolved project-wide broken imports and synchronized test logic with implementation."
+        - "Implemented architectural guard in DomainContext to enforce Service requirements for ROOT families."
+        - "Verified architecture with 64/64 passing unit and integration tests."
+      todo:
+        - "Phase 1: Implement Bootable protocol (kernel/contracts/kernel.py) and BaseDomainService."
+        - "Phase 1: Implement DomainServiceProvider with Engine Facades."
+        - "Phase 2: Implement DomainRegistrar for static DNA hydration."
+        - "Phase 3: Implement DomainOrchestrator discovery and priority-graph logic."
+    git:
+      branches_affected: ["main"]
+      commit_uuids: ["current_session"]
+
   - session_id: "2026-04-20-01"
     metadata:
       timestamp: "2026-04-20 11:45:00"

@@ -30,8 +30,8 @@ class DomainServiceProvider(BaseServiceProvider):
         """Facade to Collection of Registries"""
         pass
 
-    def register(self) -> None:
-        return super().register()
+    def bind(self) -> None:
+        return super().bind()
     
     def boot(self) -> None:
         return super().boot()
