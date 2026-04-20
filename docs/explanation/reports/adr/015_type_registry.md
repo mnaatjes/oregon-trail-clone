@@ -9,30 +9,34 @@ type: "explanation/adr"
 epic_link: https://github.com/mnaatjes/oregon-trail-clone/issues/43
 ---
 
-# ADR-015: Lazy-Loading Spore (Type) Registry
+# ADR-015: Spore (Type) Registry
 
 ## Context
-`DomainSpores` (Spores) are nomadic, immutable data vessels that reside in `src/domain/common/`. Unlike `DomainRoots` (ROOT) which provide services and anchor contexts, Spores are identity-less atoms used for semantic typing (e.g., coordinates, money). 
+`DomainSpores` (Spores) are nomadic, immutable data vessels. Unlike `DomainRoots` (ROOT) which provide services and anchor contexts, Spores are identity-less atoms used for semantic typing (e.g., coordinates, money). 
 
-To ensure high performance and clean dependency management, we want to:
-1. Avoid "pre-booting" or registering Spores that are not in use.
-2. Implement "Just-in-Time" (JIT) recognition of Spore types when a Root or Record imports them.
-3. Allow the Engine to recognize these nomadic types for validation and serialization without manual registration.
+To ensure clean dependency management and avoid global side-effects, we want to:
+1. Avoid "magic" side-effects where importing a module alters global state.
+2. Provide a central registry for the Engine to recognize these nomadic types for validation and serialization.
+3. Ensure that registration is explicit, traceable, and easy to isolate during testing.
 
 ## Decision
-We will implement a **Spore Type Registry** using Python's `__init_subclass__` hook. 
+We will implement an **Explicit Spore Type Registry**. Registration of `DomainSpore` types is a handled by the system orchestration layer, not the classes themselves.
 
-1. **Implicit Registration:** Every class inheriting from `DomainSpore` will automatically register its type definition with a global `SporeRegistry` the moment the class is defined (i.e., when the module is first imported).
-2. **Lazy-Loading:** The Engine Orchestrator will not proactively scan `src/domain/common` for Spores. Instead, Spores are "discovered" when they are first referenced by a Root or Record's type hints.
-3. **Type-Hint Discovery:** The Discovery Scanner (ADR-014) will inspect the properties of `DomainRoots` and `DomainRecords`. If it encounters a type belonging to the `SPORE` family, it will verify its registration in the `SporeRegistry`.
+1. **Explicit Registration:** Every `DomainSpore` must be registered with the `SporeRegistry` by an external orchestrator (e.g., the Discovery Scanner or a Service Provider).
+2. **Orchestrated Discovery:** The Discovery Scanner (ADR-014) is responsible for identifying `DomainSpore` subclasses within domain packages and explicitly registering them during the bootstrap phase.
+3. **Registry as a Passive Container:** The `SporeRegistry` remains a pure, passive container that holds type definitions. It does not contain any logic for finding or loading those types.
 
 ## Implementation Strategy
-- **Base Class Hook:** Add `__init_subclass__` to `DomainSpore` in `src/core/contracts/domain/spore.py`.
-- **Registry:** Resides in `src/core/contracts/registry.py` as a specialized `BaseRegistry[Type[DomainSpore]]`.
-- **Validation:** The Discovery Scanner ensures that all `SPORE` types used in a package are validly registered.
+- **Base Class:** `DomainSpore` remains a "dumb" data structure, focusing only on identity purity guards and attribute validation.
+- **Registry:** Resides in `src/core/registries/spore.py` as a specialized `BaseRegistry[Type[DomainSpore]]`.
+- **Registration Flow:**
+    - The **Discovery Scanner** scans a domain's `models.py`.
+    - It identifies classes inheriting from `DomainSpore`.
+    - It calls `spores.register(name, cls)` for each identified type.
 
 ## Consequences
-- **Positive:** Zero boot-time overhead for unused Spores.
-- **Positive:** Automates the "Manual Registration" tax for developers.
-- **Negative:** Registration happens as a side-effect of import, which can be less explicit than manual wiring.
-- **Neutral:** Requires consistent use of type hints in Domain models.
+- **Positive:** Explicit and predictable. No hidden "magic" happens on import.
+- **Positive:** High testability. Registries can be easily cleared or mocked without worrying about module-level side-effects.
+- **Positive:** Aligns with the "Zen of Python": Explicit is better than implicit.
+- **Negative:** Requires an active discovery or registration step before types are available to the Engine.
+- **Neutral:** Centralizes type management in the Engine's bootstrap sequence.
