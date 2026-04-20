@@ -5,9 +5,9 @@ from typing import Optional
 
 import pytest
 from core.kernel.contracts.registry import BaseRegistry
-from core.kernel.contracts.domain.blueprints.record import RecordBlueprint
-from core.kernel.contracts.domain.blueprints.display import DisplayBlueprint
-from core.kernel.contracts.domain.taxonomy import DomainFamily
+from core.domain.contracts.blueprints.record import RecordBlueprint
+from core.domain.contracts.blueprints.display import DisplayBlueprint
+from core.domain.contracts.taxonomy import DomainFamily
 
 @pytest.fixture
 def display_bp():

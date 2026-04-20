@@ -3,11 +3,11 @@
 from dataclasses import dataclass, field
 from typing import List, Type, Any
 
-from core.kernel.contracts.domain.taxonomy import DomainFamily
+from core.domain.contracts.taxonomy import DomainFamily
 from core.kernel.contracts.kernel import KernelSubsystem
-from core.kernel.contracts.domain.blueprints.root import RootBlueprint
-from core.kernel.contracts.domain.blueprints.record import RecordBlueprint
-from core.kernel.contracts.domain.spore import DomainSpore
+from core.domain.contracts.blueprints.root import RootBlueprint
+from core.domain.contracts.blueprints.record import RecordBlueprint
+from core.domain.contracts.spore import DomainSpore
 
 @dataclass(frozen=True)
 class DomainContext:

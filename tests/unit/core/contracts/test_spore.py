@@ -1,6 +1,6 @@
 import pytest
 from dataclasses import dataclass
-from core.kernel.contracts.domain.spore import DomainSpore
+from core.domain.contracts.spore import DomainSpore
 
 def test_valid_spore_definition():
     """Verify that a standard Spore with valid fields can be defined and instantiated."""

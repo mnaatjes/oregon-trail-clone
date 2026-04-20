@@ -2,11 +2,11 @@
 
 import pytest
 from dataclasses import dataclass, FrozenInstanceError
-from core.kernel.contracts.domain.blueprints.base import BaseBlueprint
-from core.kernel.contracts.domain.blueprints.root import RootBlueprint
-from core.kernel.contracts.domain.blueprints.record import RecordBlueprint
-from core.kernel.contracts.domain.blueprints.display import DisplayBlueprint
-from core.kernel.contracts.domain.taxonomy import DomainFamily
+from core.domain.contracts.blueprints.base import BaseBlueprint
+from core.domain.contracts.blueprints.root import RootBlueprint
+from core.domain.contracts.blueprints.record import RecordBlueprint
+from core.domain.contracts.blueprints.display import DisplayBlueprint
+from core.domain.contracts.taxonomy import DomainFamily
 
 # --- Test Helpers ---
 

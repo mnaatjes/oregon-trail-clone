@@ -3,9 +3,9 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
-from core.kernel.contracts.domain.blueprints.base import BaseBlueprint
-from core.kernel.contracts.domain.blueprints.display import DisplayBlueprint
-from core.kernel.contracts.domain.taxonomy import DomainFamily
+from core.domain.contracts.blueprints.base import BaseBlueprint
+from core.domain.contracts.blueprints.display import DisplayBlueprint
+from core.domain.contracts.taxonomy import DomainFamily
 
 @dataclass(frozen=True)
 class RecordBlueprint(BaseBlueprint):

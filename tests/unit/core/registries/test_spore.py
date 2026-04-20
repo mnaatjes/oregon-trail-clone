@@ -1,8 +1,8 @@
 # tests/unit/core/registries/test_spore.py
 
 import pytest
-from src.core.registries import spores
-from core.kernel.contracts.domain.spore import DomainSpore
+from core.domain.registries.spore import spores
+from core.domain.contracts.spore import DomainSpore
 
 @pytest.fixture(autouse=True)
 def clear_registry():
@@ -15,7 +15,7 @@ class MockSpore(DomainSpore):
 
 def test_spores_singleton_import():
     """Verify that the spores registry is correctly exported via facade."""
-    from src.core.registries import spores as exported_spores
+    from core.domain.registries.spore import spores as exported_spores
     assert exported_spores is spores
 
 def test_register_and_get_spore():

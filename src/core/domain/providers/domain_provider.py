@@ -1,6 +1,6 @@
-# src/core/providers/domain.py
+# src/core/domain/providers/domain_provider.py
 
-from core.providers.base import BaseServiceProvider
+from core.kernel.contracts.provider import BaseServiceProvider
 
 class DomainServiceProvider(BaseServiceProvider):
     # Register Facades for Kernel Services
