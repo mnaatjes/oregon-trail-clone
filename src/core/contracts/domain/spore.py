@@ -1,6 +1,6 @@
 # src/core/contracts/domain/spore.py
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 @dataclass(frozen=True)
@@ -44,6 +44,13 @@ class DomainSpore(ABC):
         """Hook for structural validation."""
         self.validate()
     
+
+    @property
+    @abstractmethod
+    def species(self) -> str:
+        """Alias/Species name for DomainValueObject (SPORE)"""
+        pass
+
     def validate(self) -> None:
         """
         Override this in subclasses to enforce business rules.
