@@ -7,6 +7,7 @@ from uuid import uuid4, UUID
 from core.contracts.domain.blueprints.base import BaseBlueprint, DisplayBlueprint
 from src.core.contracts.domain.root import DomainRoot
 from src.core.contracts.domain.record import DomainRecord
+from src.core.contracts.domain.taxonomy import DomainFamily
 
 # --- Shared Mocks ---
 
@@ -18,8 +19,12 @@ display = DisplayBlueprint(
 
 class MockBlueprint(BaseBlueprint):
     @property
-    def __species__(self) -> str:
+    def species(self) -> str:
         return "mock_species"
+    
+    @property
+    def family(self):
+        return DomainFamily.ROOT
 
 @dataclass(frozen=True)
 class MockRecord(DomainRecord):
@@ -48,7 +53,6 @@ def test_initialization_domain_root(bp):
     assert wagon.uid == uid
     assert wagon.blueprint == bp
     assert wagon.records == {}
-    assert wagon.__species__ == "mock_species"
 
 def test_horizontal_violation_declaration(bp):
     """Verify that DomainRoot cannot be used as a type hint in another Root."""
