@@ -1,5 +1,4 @@
 # src/core/contracts/kernel.py
-
 from enum import Enum, unique
 
 @unique

@@ -2,5 +2,5 @@
 
 from abc import ABC, abstractmethod
 
-class BaseService(ABC):
+class BaseDomainService(ABC):
     pass
