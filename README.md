@@ -35,8 +35,8 @@ updated_at: 2026-04-12
 │   ├── engine/             # MVC Controller: Orchestrates domain interactions
 │   │   └── providers/      # Concrete implementations of core/contracts/
 │   ├── storage/            # Infrastructure: JSON Repository/Persistence
-│   ├── ui/                 # MVC View: Textual-based TUI components
-│   └── main.py             # App entry point & Bootstrap loop
+├── ui/                 # MVC View: Textual-based TUI components
+    └── main.py             # App entry point & Bootstrap loop
 ├── tests/                  # Test suites mirrored to src/ structure
 │   ├── architecture/       # Meta-tests for Contract/Blueprint enforcement
 │   ├── domain/
@@ -44,4 +44,14 @@ updated_at: 2026-04-12
 │   │   └── health/
 ├── pyproject.toml
 └── requirements.txt
+
+## Structural / Architectural Rules
+
+### The "Pillar Mirroring" Pattern
+To allow for parallel systems, we should adopt a pattern where each architectural layer (`src/core`, `src/engine`) mirrors the top-level pillars (`src/domain`, `src/ui`, `src/storage`).
+
+*   **`src/core/`**: Reserved for "Specs" (Protocols, ABCs) and "Passive" components (Registries, DTOs).
+*   **`src/engine/`**: Partitioned by pillar (e.g., `src/engine/domain/`) for active orchestration logic.
+    *   **Rule**: Create `src/engine/domain/` and move domain-specific orchestration there.
+
 ```

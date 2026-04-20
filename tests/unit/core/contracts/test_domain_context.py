@@ -3,10 +3,11 @@
 import pytest
 from src.core.contracts.domain.context import DomainContext, DomainFamily
 from src.core.contracts.kernel import KernelSubsystem
-from src.core.contracts.domain.service import BaseService
+from src.core.contracts.domain.service import BaseDomainService
+
 from src.core.contracts.domain.blueprints.root import RootBlueprint
 
-class MockService(BaseService):
+class MockService(BaseDomainService):
     """A dummy service for testing injection."""
     @property
     def species(self):
