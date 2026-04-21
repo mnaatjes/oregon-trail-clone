@@ -75,112 +75,58 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 
 ## 5. Plan of Execution
 
-### Questions
+### Refinement Questions
 
-1. Where to implement `ArchitecuralGuard` for Domain?
+1. `DiscoveryManifest`
 
-    * Should `ArchitectureGuard` be a contract with a `DomainGuard` implementation?
-    * Should `ArchitectureGuard` be a Global Service?
+Given 
+```py
+# Declare Typevar
+T = TypeVar("T", bound=DiscoveryUnit)
 
-2. What types of `ArchitectureGuard` methods are needed?
+class BaseScanner(ABC, Generic[T]):
+    @abstractmethod
+    def scan(self, path:str) -> List[T]:
+        """Find all units of type T in the given path."""
+        pass
+```
 
-    * `LogicEntity` existance and composititon
+How do we properly introduce the `DiscoveryManifest` and enforce its usage?
 
-3. What type/Object definitions are needed?
+2. `ArchitecturalPolice`
 
-    * `LogicEntity`?
-    * `DomainService` - Started
-    * `PriorityGraph` - Where? What (Global Service)?
+    * Name recomendations: change `PoliceUnit` to `GuardUnit`? Recommend other intuitive names
 
-4. What is left todo for *Facade Enforcement*?
+    * Recommended `The Facade: Access it via self.police on the BaseServiceProvider. This gives you full IDE type-hinting.` Does this mean a ServiceProvider registers the PoliceService for use elsewhere? I assumed this as a given. Or do you mean something else?
 
-    * Is it still necessary to prevent leakage using `__all__` (See [Facade Enforcement](../reports/adr/004_domain_package_anatomy.md#3-facade-enforcement-__all__))?
-
-5. What todos for `LogicEntity` enforcement and validation (See [Domain Logic Entities](./domain_logic_entities.md#2-goals--non-goals))?
-
-    * Enforce purity of all logic functions
-    * Enforce composition and type as *functions*
-    * Where are these functions going and how will they be accessed/addressed? i.e. `module_name.<function-name>` e.g. `domain.root.wagon.apply_damage`
-    * What is *Side-Effect Isolation*? How is it enforced? Why at the `LogicEntity` level and not package as whole? Part of *Zero Leaf Dependency* Architecture Guards
-    * What are *Atomic Transformations*?
-
-6. What are the `Package` and `Facade` level **Architecture Guards**?
-
-    * `LogicEntity` composition and enforcement
-    * `DomainService` composition and encapsulation
-    * *Zero Dependency Leaf* isolation
-    * *Horizontal* Violations
-    * *Vertical* Violations
-    * *Compositional* Violations: e.g. does filepath `domain/root/<package-name>` have `DomainRoot` entity, do `DomainContext` properties align? Is the *Aggregate Root* composed of all necessary components/files?
-    * **Goal:** Get list of *Composition* rules together by entity and start checking them off
     * Should we identify where existing `[X VIOLATIONS]` take place to enroll them into an `ArchitectureGuard` Service?
+
     * Should we document *SOP*s for an `SOPGuard` sub-Service of the `ArchitectureGuard`? e.g raise `TypreError` if `ROOT` package has no `Service`.
+    
     * How can we separate *Service Flow* from *Logic* [[ADR-004] Domain Package Anatomy](https://github.com/mnaatjes/oregon-trail-clone/issues/4)
 
-7. What are the output types/Objects **FROM** `DomainOrchestrator`?
+3. Logical Entities:
 
-    * `DomainScanner` &rarr; `Package` containing: `Facade`, `DomainContext`
-    * From `Package.facade.context.priority` &rarr; `PriorityGraph`
-    * From `Package.facade.context.requirements` &rarr; `KernelSubsystem` Services (`EventBus`, `AssetsManager`, ...)
-    * What would an `AggregateManigest` accomplish?
-
-8. How to turn `Package` entity into:
-    * `PriorityGraph`
-    * Accessible Domain Entities
-
-9. Determine when to close-out branch `feat/52-domain-scanner` and move on to `DomainOrchestrator`:
-
-    * Do we need to add any properties to `Package` or `Facade`?
-    * Do we need to perform follow-up testing on *Discovery* system? **YES**
-
-10. Github Issue [[ADR-004] Domain Package Anatomy](https://github.com/mnaatjes/oregon-trail-clone/issues/4) refers to `domain package contains the mandatory 4-file set` - Do ALL Domain entities need a `service.py` file?
-
-11. Where and how are we going to collect necessary properties and components from *Aggregate Root*s?
-
-    * Are Services captured from the **Import** line, the `DomainContext.service` property, or the file `service.py`? - **Via `DomainContext.service` &rarr; `DomainManifest` linked *Service Provider* instance**
-    * How is the `LogicEntity` captured from the `logic.py` file? What if there is no *Logic* needed? - **Via `Registrar`**
-
-
-### Follow-up Testing
-
-1. Scanner and Associated entities/objects/classes:
-    * `BaseScanner`, `DomainScanner`
-    * `DiscoveryUnit`, `Package`, `Facade`
-
-2. Scanner Tests:
-
-    * Scanning doesn't go deeper than `domain/{root,leaf}/<package-name>/__init__.py`
-    * Scanner stays within `key` e.g. `domain`
-    * Scanner fails appropriately
-
-### Follow-up Questions
-
-1. Priority 1: Core Orchestration and Data Flow:
-
-    * Should we integrate a `DiscoveryManifest` base-contract as the output type of `BaseScanner` to be at parity with `DiscoveryUnit`? This seems like a logial integration and maintains SRP. Then DomainScanner will implement it's own `DomainManifest` implementation. What would/should a `DiscoveryManifest` have for properties? I assume it should be a frozen-dataclass?
-
-    * Do the `Facade` or `Package` entities need to extract any more information from the `__init__.py` file or use any other `importlib.util` methods? Or do they have sufficient information for the `DomainOrchestrator` and/or `DomainRegistrar` to get the required attributes?
-
-3. Architectural Guarding
-
-    * Service will be called `ArchitecturalPolice`. Will it be a **Static** class? How will it be accessed? Would a facade make sense? I want type-hinting to no relying on just the `ServiceContainer.get(...)` method.
+    * Explain how `LogicEntity` is represented by the `Facade.module`. Does importlib.util allow you to access the `from...import` lines? If so, what is the return type? How can this be utilize?
     
-    * Can it be composed of `BaseGuard` contracts? These would define output format, have rules for Error types and perhaps even facade methods for ease-of-use.
+    * Should we still create a dataclass called `LogicEntity` for ease of use?
+    
+    * Explain how the functions from `domain/{root,leaf}/<package-name>/logic.py` can result in a DX call of `wagon.Logic.calculate_speed(wagon)`?
 
-    * Location of `ArchitecturalPolice` is `src/core/kernel`. Where would `BaseGuard` contract go? Where would implementations of `BaseGuard` go? If we created specific exceptions, where would those be declared?
+4. Project Managment:
 
-4. Logical Entities: 
+    * Should all `domain/{root,leaf}/<package-name>/__init__.py` files have `__all__` declared explicitly or is this value accessible via the module property of Facade?
 
-    * What are the **rules** for *Purity*?
-    * How to check that Logical Entities have no *side-effects* like IO?
-    * Do we need a `LogicEntity` type? What would it represent - each function or all functions within a Package's `logic.py` file?
-    * What DX considerations must we implement to ease-of-use when addressing package-logic-functions?
+5. Unanswered from Previous:
 
-5. Project Management: 
+    * Where and how are we going to collect necessary properties and components from *Aggregate Root*s?
 
-    * Review TODO Tests and the associated classes, types, and objects of Discovery Scanner system. What tests do we need to perform?
-    * Do we need to add any more properties to the `Package` or `Facade` entitites?
-    * We should integrate the `DiscoveryManifest` into the Scanner/Discovery system before closing the branch. How will this be accomplished - should it be a wise decision to do so?
+        * Are Services captured from the **Import** line, the `DomainContext.service` property, or the file `service.py`? - **Via `DomainContext.service` &rarr; `DomainManifest` linked *Service Provider* instance**
+        * How is the `LogicEntity` captured from the `logic.py` file? What if there is no *Logic* needed? - **Via `Registrar`**
+
+    * What would an `AggregateManigest` accomplish? Or is this the `DomainManifest` - `DiscoveryManifest`?
+
+    * Where will the `PriorityGraph` be declared? Should this be a dataclass or a service? Will we have different types of Graph structures i.e. should we create a `BaseGraph` contract?
 
 ### Follow-up TODOs
 
@@ -189,18 +135,24 @@ This specification defines the "Conductor-Based" initialization of the Domain La
     * Base Contract
     * Integrated into `BaseScanner`
     * Implemented `DomainManifest` should link `Package` to instantiated `ServiceProvider`
+    * Properties for `DiscoveryManifest` (Frozen Dataclass):
+        * `unit`: The original DiscoveryUnit (e.g., the Package).
+        * `facade`: The hydrated Facade (containing the module and __CONTEXT__).
+        * `status`: An Enum (VALID, MALFORMED, IGNORED).
 
 2. Aggregate Composition & SOPs
 
     * **Only `ROOT` Packages** need `service.py` file
     * Update `DomainContext` validation to reflect
 
-3. ArchitecturalGuard Service
+3. `ArchitecturalPolice` Service
 
     * Create `ArchitecturalPolice` Service in `src/core/kernel`
     * Not a *Global* Service. *Runtime* Service
-    * **Static** Analysis Tool AND **Boot-time** Validator
-    * Target **Implementation Sections:** 
+    * Analysis Tool AND **Boot-time** Validator; A **Service** and NOT a *Static* class
+    * `ArchitectureGuard` contract `src/core/kernel/contracts/guard.py`
+    * Associated Exceptions in `src/core/kernel/exceptions.py`
+    * Target **Implementation Sections:** in `src/core/engine/kernel/police/guards/`
         - `HorizontalGuard` e.g. Roots cannit import Roots
         - `VerticalGuard` e.g. 
         - `AnatomyGuard` e.g. Records CANNOT have IDs
@@ -210,4 +162,23 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 
     * They are **Stateless Functions**
     * Use python `inspect` module to verify functions in `logic.py` are *Pure* e.g. argument Record and return a record
-    * 
+    * *Purity* means **Same output as input**
+    * *Side-Effects* are checked via **Abstract Syntax Tree** looking for prohibited keywords, e.g. `open`, `with`, `print`, `requests`, `import os`
+    * `LogicEntity` will be represented by `Facade.module` via use of `from . import logic as logic` 
+
+5. Finalizing branch `feat/52-domain-scanner`:
+
+**TODOs:**
+* To `Facade` add `exports: List[str]` = captured from `module.__all__`
+* To `Package` add `is_root:bool`, `is_leaf:bool`
+* Refactor: `DomainScanner.scan()` to return `DomainManifest`
+
+**Testing:**
+* *Scanner and Associated entities/objects/classes:
+    * `BaseScanner`, `DomainScanner`
+    * `DiscoveryUnit`, `Package`, `Facade`
+* Scanning doesn't go deeper than `domain/{root,leaf}/<package-name>/__init__.py`
+* Scanner stays within `key` e.g. `domain`
+* Scanner fails appropriately
+* Failure modes (`__init__.py` is empty)
+* Verify `DomainManifest`
