@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 from core.kernel.contracts.discovery import DiscoveryUnit
 from core.domain.entities.facade import Facade
 
@@ -10,9 +10,10 @@ from core.domain.entities.facade import Facade
 class Package(DiscoveryUnit):
     """A discovery unit specifically for Python Packages."""
     # properties for post-init
-    module_name: str = field(init=False)
-    package_name: str = field(init=False)
-    facade: Optional[Facade] = None
+    module_name: str = field(init=False)    # import notation
+    package_name: str = field(init=False)   # single_word for DX
+    facade: Optional[Facade] = None         # importlib.util content
+    exports: List[str] = field(default_factory=list) # captures __all__
 
     def __post_init__(self):
         """Calculates all derived metadata once during instantiation."""

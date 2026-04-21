@@ -90,6 +90,7 @@ def domain_init_configs(domain_roots):
             f"    priority=10,\n"
             f"    service=object  # Mock service\n"
             f")\n"
+            f""
         )
         configs[species] = content
     return configs

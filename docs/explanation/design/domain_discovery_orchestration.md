@@ -94,3 +94,20 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 
     * `BaseScanner.scan()` SHOULD return `List[DiscoveryUnit]` - i.e. raw findings
     * An `Orchestrator` takes list, passes them to the `loader` to produce `DiscoveryManifest`
+## 6. Facade Enforcement & Aggregate Composition
+
+### 6.1 The Public Facade (__all__)
+To maintain the "Screaming" nature of the architecture and prevent leakage of internal metabolism (logic), every domain package must explicitly define `__all__`. This array serves as the "Public API" for the Engine.
+
+**Mandatory Exports:**
+*   `__CONTEXT__`: The metadata manifest (The Passport).
+*   **Entity Class**: The actual `DomainRoot` or `DomainRecord` dataclass (The Noun).
+*   **Service Class**: The `BaseDomainService` implementation (The Verb).
+*   **Blueprint Class**: The `DomainBlueprint` implementation (The DNA).
+
+**Prohibited Exports:**
+*   `logic.py`: Must remain internal. Logic is the private metabolism of the package.
+*   **Internal Helpers**: Any transient DTOs or loading utilities.
+
+### 6.2 Context vs. Entity Relationship
+The `DomainContext` provides the *Intent* (Blueprint), while `__all__` provides the *Implementation* (Entity and Service). The Orchestrator uses the Context to decide "If/When" to boot, and uses the Facade exports to perform the "How" (instantiation and injection).
