@@ -113,6 +113,9 @@ This specification defines the "Conductor-Based" initialization of the Domain La
     * *Vertical* Violations
     * *Compositional* Violations: e.g. does filepath `domain/root/<package-name>` have `DomainRoot` entity, do `DomainContext` properties align? Is the *Aggregate Root* composed of all necessary components/files?
     * **Goal:** Get list of *Composition* rules together by entity and start checking them off
+    * Should we identify where existing `[X VIOLATIONS]` take place to enroll them into an `ArchitectureGuard` Service?
+    * Should we document *SOP*s for an `SOPGuard` sub-Service of the `ArchitectureGuard`? e.g raise `TypreError` if `ROOT` package has no `Service`.
+    * How can we separate *Service Flow* from *Logic* [[ADR-004] Domain Package Anatomy](https://github.com/mnaatjes/oregon-trail-clone/issues/4)
 
 7. What are the output types/Objects **FROM** `DomainOrchestrator`?
 
@@ -120,11 +123,23 @@ This specification defines the "Conductor-Based" initialization of the Domain La
     * From `Package.facade.context.priority` &rarr; `PriorityGraph`
     * From `Package.facade.context.requirements` &rarr; `KernelSubsystem` Services (`EventBus`, `AssetsManager`, ...)
     * What would an `AggregateManigest` accomplish?
-    * 
 
 8. How to turn `Package` entity into:
     * `PriorityGraph`
     * Accessible Domain Entities
+
+9. Determine when to close-out branch `feat/52-domain-scanner` and move on to `DomainOrchestrator`:
+
+    * Do we need to add any properties to `Package` or `Facade`?
+    * Do we need to perform follow-up testing on *Discovery* system? **YES**
+
+10. Github Issue [[ADR-004] Domain Package Anatomy](https://github.com/mnaatjes/oregon-trail-clone/issues/4) refers to `domain package contains the mandatory 4-file set` - Do ALL Domain entities need a `service.py` file?
+
+11. Where and how are we going to collect necessary properties and components from *Aggregate Root*s?
+
+    * Are Services captured from the **Import** line, the `DomainContext.service` property, or the file `service.py`?
+    * How is the `LogicEntity` captured from the `logic.py` file? What if there is no *Logic* needed?
+
 
 ### Follow-up Testing
 
@@ -132,4 +147,8 @@ This specification defines the "Conductor-Based" initialization of the Domain La
     * `BaseScanner`, `DomainScanner`
     * `DiscoveryUnit`, `Package`, `Facade`
 
-3. 
+2. Scanner Tests:
+
+    * Scanning doesn't go deeper than `domain/{root,leaf}/<package-name>/__init__.py`
+    * Scanner stays within `key` e.g. `domain`
+    * Scanner fails appropriately
