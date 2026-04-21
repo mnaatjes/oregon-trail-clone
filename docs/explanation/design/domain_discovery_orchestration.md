@@ -137,8 +137,8 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 
 11. Where and how are we going to collect necessary properties and components from *Aggregate Root*s?
 
-    * Are Services captured from the **Import** line, the `DomainContext.service` property, or the file `service.py`?
-    * How is the `LogicEntity` captured from the `logic.py` file? What if there is no *Logic* needed?
+    * Are Services captured from the **Import** line, the `DomainContext.service` property, or the file `service.py`? - **Via `DomainContext.service` &rarr; `DomainManifest` linked *Service Provider* instance**
+    * How is the `LogicEntity` captured from the `logic.py` file? What if there is no *Logic* needed? - **Via `Registrar`**
 
 
 ### Follow-up Testing
@@ -152,3 +152,62 @@ This specification defines the "Conductor-Based" initialization of the Domain La
     * Scanning doesn't go deeper than `domain/{root,leaf}/<package-name>/__init__.py`
     * Scanner stays within `key` e.g. `domain`
     * Scanner fails appropriately
+
+### Follow-up Questions
+
+1. Priority 1: Core Orchestration and Data Flow:
+
+    * Should we integrate a `DiscoveryManifest` base-contract as the output type of `BaseScanner` to be at parity with `DiscoveryUnit`? This seems like a logial integration and maintains SRP. Then DomainScanner will implement it's own `DomainManifest` implementation. What would/should a `DiscoveryManifest` have for properties? I assume it should be a frozen-dataclass?
+
+    * Do the `Facade` or `Package` entities need to extract any more information from the `__init__.py` file or use any other `importlib.util` methods? Or do they have sufficient information for the `DomainOrchestrator` and/or `DomainRegistrar` to get the required attributes?
+
+3. Architectural Guarding
+
+    * Service will be called `ArchitecturalPolice`. Will it be a **Static** class? How will it be accessed? Would a facade make sense? I want type-hinting to no relying on just the `ServiceContainer.get(...)` method.
+    
+    * Can it be composed of `BaseGuard` contracts? These would define output format, have rules for Error types and perhaps even facade methods for ease-of-use.
+
+    * Location of `ArchitecturalPolice` is `src/core/kernel`. Where would `BaseGuard` contract go? Where would implementations of `BaseGuard` go? If we created specific exceptions, where would those be declared?
+
+4. Logical Entities: 
+
+    * What are the **rules** for *Purity*?
+    * How to check that Logical Entities have no *side-effects* like IO?
+    * Do we need a `LogicEntity` type? What would it represent - each function or all functions within a Package's `logic.py` file?
+    * What DX considerations must we implement to ease-of-use when addressing package-logic-functions?
+
+5. Project Management: 
+
+    * Review TODO Tests and the associated classes, types, and objects of Discovery Scanner system. What tests do we need to perform?
+    * Do we need to add any more properties to the `Package` or `Facade` entitites?
+    * We should integrate the `DiscoveryManifest` into the Scanner/Discovery system before closing the branch. How will this be accomplished - should it be a wise decision to do so?
+
+### Follow-up TODOs
+
+1. Spec out the `DiscoveryManifest`
+
+    * Base Contract
+    * Integrated into `BaseScanner`
+    * Implemented `DomainManifest` should link `Package` to instantiated `ServiceProvider`
+
+2. Aggregate Composition & SOPs
+
+    * **Only `ROOT` Packages** need `service.py` file
+    * Update `DomainContext` validation to reflect
+
+3. ArchitecturalGuard Service
+
+    * Create `ArchitecturalPolice` Service in `src/core/kernel`
+    * Not a *Global* Service. *Runtime* Service
+    * **Static** Analysis Tool AND **Boot-time** Validator
+    * Target **Implementation Sections:** 
+        - `HorizontalGuard` e.g. Roots cannit import Roots
+        - `VerticalGuard` e.g. 
+        - `AnatomyGuard` e.g. Records CANNOT have IDs
+        - `CompositionGuard` e.g. verify all the 4-file set for Roots, 3 for others with 1 optional
+
+4. Logical Entities
+
+    * They are **Stateless Functions**
+    * Use python `inspect` module to verify functions in `logic.py` are *Pure* e.g. argument Record and return a record
+    * 
