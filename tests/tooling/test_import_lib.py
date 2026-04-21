@@ -127,27 +127,6 @@ def test_run(tmp_path, domain_init_configs):
     results = scanner.scan(tmp_path / key)
     for r in results:
         package = scanner.load_facade(r)
-        inspect(package.module_name)
-
-def __test_run_load_module(tmp_path):
-    """"""
-    # Find Domain
-    dir_domain = tmp_path / "domain"
-    dir_root = dir_domain / "root"
-    dir_package = dir_root / "test_package"
-    dir_package.mkdir(parents=True, exist_ok=True)
-    target_path = dir_package / "__init__.py"
-
-    target_path.write_text(
-        "from core.domain.contracts.context import DomainContext\n"
-        "from tests.tooling.test_import_lib import MockSpore\n"
-        "__CONTEXT__ = DomainContext(intent=MockSpore,priority=1)"
-    )
-
-
-    module = load_module(target_path)
-    inspect(module, all=True)
-    print(type(module.__file__))
-    spec = getattr(module, "__spec__", None)
+        inspect(package.facade.context) #type:ignore
 
 

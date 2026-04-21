@@ -10,6 +10,7 @@ from dataclasses import replace
 from core.kernel.contracts.scanner import BaseScanner
 from core.domain.entities.package import Package
 from core.domain.entities.facade import Facade
+from core.domain.contracts.context import DomainContext
 
 class DomainScanner(BaseScanner[Package]):
     
@@ -56,12 +57,23 @@ class DomainScanner(BaseScanner[Package]):
         module = util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
+        # Architectural Guard
+        # Every package MUST have a DomainContext
+        context = getattr(module, "__CONTEXT__", None)
+        if not isinstance(context, DomainContext):
+            raise AttributeError(
+                f"[PACKAGE VIOLATION] in '{package.module_name}' "
+                f"Domain package '{package.package_name}' is missing valid __CONTEXT__ attribute "
+                f"See file {str(package.path)}"
+            )
+
         # Hydrate Facade
         facade = Facade(
             name=package.module_name,
             spec=spec,
             module=module,
-            file=str(package.path)
+            file=str(package.path),
+            context=getattr(module, "__CONTEXT__")
         )
 
         return replace(package, facade=facade)

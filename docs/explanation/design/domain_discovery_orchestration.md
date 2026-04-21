@@ -72,3 +72,64 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 - [ ] **SOP Guard:** Raise `TypeError` if a `ROOT` package fails to provide a `service`.
 - [ ] **Sequence Integrity:** Ensure `Phase 2 (Boot)` only starts after `Phase 1 (Register)` is complete for the entire priority graph.
 - [ ] **Facade Verification:** Ensure `BaseServiceProvider` facades correctly resolve from the `ServiceContainer`.
+
+## 5. Plan of Execution
+
+### Questions
+
+1. Where to implement `ArchitecuralGuard` for Domain?
+
+    * Should `ArchitectureGuard` be a contract with a `DomainGuard` implementation?
+    * Should `ArchitectureGuard` be a Global Service?
+
+2. What types of `ArchitectureGuard` methods are needed?
+
+    * `LogicEntity` existance and composititon
+
+3. What type/Object definitions are needed?
+
+    * `LogicEntity`?
+    * `DomainService` - Started
+    * `PriorityGraph` - Where? What (Global Service)?
+
+4. What is left todo for *Facade Enforcement*?
+
+    * Is it still necessary to prevent leakage using `__all__` (See [Facade Enforcement](../reports/adr/004_domain_package_anatomy.md#3-facade-enforcement-__all__))?
+
+5. What todos for `LogicEntity` enforcement and validation (See [Domain Logic Entities](./domain_logic_entities.md#2-goals--non-goals))?
+
+    * Enforce purity of all logic functions
+    * Enforce composition and type as *functions*
+    * Where are these functions going and how will they be accessed/addressed? i.e. `module_name.<function-name>` e.g. `domain.root.wagon.apply_damage`
+    * What is *Side-Effect Isolation*? How is it enforced? Why at the `LogicEntity` level and not package as whole? Part of *Zero Leaf Dependency* Architecture Guards
+    * What are *Atomic Transformations*?
+
+6. What are the `Package` and `Facade` level **Architecture Guards**?
+
+    * `LogicEntity` composition and enforcement
+    * `DomainService` composition and encapsulation
+    * *Zero Dependency Leaf* isolation
+    * *Horizontal* Violations
+    * *Vertical* Violations
+    * *Compositional* Violations: e.g. does filepath `domain/root/<package-name>` have `DomainRoot` entity, do `DomainContext` properties align? Is the *Aggregate Root* composed of all necessary components/files?
+    * **Goal:** Get list of *Composition* rules together by entity and start checking them off
+
+7. What are the output types/Objects **FROM** `DomainOrchestrator`?
+
+    * `DomainScanner` &rarr; `Package` containing: `Facade`, `DomainContext`
+    * From `Package.facade.context.priority` &rarr; `PriorityGraph`
+    * From `Package.facade.context.requirements` &rarr; `KernelSubsystem` Services (`EventBus`, `AssetsManager`, ...)
+    * What would an `AggregateManigest` accomplish?
+    * 
+
+8. How to turn `Package` entity into:
+    * `PriorityGraph`
+    * Accessible Domain Entities
+
+### Follow-up Testing
+
+1. Scanner and Associated entities/objects/classes:
+    * `BaseScanner`, `DomainScanner`
+    * `DiscoveryUnit`, `Package`, `Facade`
+
+3. 

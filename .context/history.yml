@@ -6,12 +6,12 @@ metadata:
   created_at: "2026-04-19"
   updated_at: "2026-04-20 16:30:00"
   permissions: "read, write"
-  last_gemini_cli_session_id: "778b1fd0-2a03-4073-80b5-d8c3b42b9d21"
+  last_gemini_cli_session_id: "b1f0f6fd-4630-409b-bcc4-0ba1058eed96"
 
 status_summary:
   phase: "Core Foundation"
   health: "Stable"
-  focus: "Implementing Type-Safe Discovery and Vertical Composition Logic."
+  focus: "Implementing Domain Discovery and Orchestration Infrastructure."
 
 architectural_milestones:
   screaming_mvc: "Fully codified. Pillar boundaries (Domain, Engine, UI) enforced via TDD and ADR."
@@ -20,6 +20,7 @@ architectural_milestones:
   type_safe_manifests: "Transitioned from string-based intents to Class-based intents in DomainContext for auto-bubbling and validation."
   facade_sop: "ADR-016 established to enforce strict __init__.py encapsulation using __all__."
   pillar_mirroring: "Codified the 'Pillar Mirroring' pattern (src/{layer}/{pillar}/{role}) in README.md to ensure parallel scalability."
+  universal_discovery: "Established 'Discovery Physics' in Kernel (DiscoveryUnit) to provide universal anchor/relative-path logic across all pillars."
 
 active_design_epics:
   - id: "ADR-014"
@@ -39,6 +40,9 @@ active_design_epics:
     issue: "#46"
 
 critical_conflicts_resolved:
+  - date: "2026-04-21"
+    issue: "Active vs. Passive Discovery"
+    resolution: "Decoupled DiscoveryUnit (Passive/Core) from importlib logic (Active/Engine) to maintain Pillar Mirroring integrity."
   - date: "2026-04-20"
     issue: "Pillar vs. Role Priority"
     resolution: "Adopted 'Pillar-First' organization (src/core/domain/contracts) to improve cohesion and mirroring."
@@ -50,6 +54,27 @@ critical_conflicts_resolved:
     resolution: "Consolidated into a single Source of Truth (TDD-002)."
 
 sessions:
+  - session_id: "2026-04-21-01"
+    metadata:
+      timestamp: "2026-04-21 14:00:00"
+      version: "0.1.0"
+    tasks:
+      accomplished:
+        - "Implemented DiscoveryUnit abstract contract in src/core/kernel/contracts/discovery.py for universal anchor/relative-path logic."
+        - "Implemented Package and Facade entities in src/core/domain/entities/ as passive data containers."
+        - "Refactored DomainScanner (engine/domain/scanner.py) with two-phase discovery: scan() (inventory) and load_facade() (ignition)."
+        - "Verified type-safe module loading using importlib.util with robust loader guards."
+        - "Developed comprehensive pytest fixtures (display_blueprints, domain_roots, domain_init_configs) for realistic domain simulation."
+        - "Documented technical rationale for Facade-Constructor and Package-Identity relationship."
+      todo:
+        - "Phase 1: Implement DomainOrchestrator to manage the discovery and boot lifecycle."
+        - "Phase 1: Implement Bootable protocol (kernel/contracts/kernel.py) and BaseDomainService."
+        - "Phase 2: Implement DomainRegistrar for static DNA hydration."
+        - "Phase 3: Implement priority-graph logic in DomainOrchestrator for ordered booting."
+    git:
+      branches_affected: ["feat/42-discovery-system"]
+      commit_uuids: ["current_session"]
+
   - session_id: "2026-04-20-02"
     metadata:
       timestamp: "2026-04-20 16:30:00"

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from types import ModuleType
 from importlib.machinery import ModuleSpec
 from pathlib import Path
+from core.domain.contracts.context import DomainContext
 
 @dataclass(frozen=True)
 class Facade:
@@ -11,3 +12,4 @@ class Facade:
     spec: ModuleSpec
     module: ModuleType
     file: str
+    context: DomainContext
