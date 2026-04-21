@@ -59,3 +59,14 @@ graph LR
 *   **Purity Check:** Linter-style scanning to ensure no imports from `core/events`, `core/assets`, or `storage/` exist in `logic.py`.
 *   **Reference Integrity:** Ensure logic never modifies an object in-place.
 *   **Test Coverage:** Mandatory 100% path coverage for all logic functions due to their stateless nature.
+
+## 4. Design Description
+
+* They are **Stateless Functions**
+* Use python `inspect` module to verify functions in `logic.py` are *Pure* e.g. argument Record and return a record
+* *Purity* means **Same output as input**
+* *Side-Effects* are checked via **Abstract Syntax Tree** looking for prohibited keywords, e.g. `open`, `with`, `print`, `requests`, `import os`
+* `LogicEntity` will be represented by `Facade.module` via use of `from . import logic as logic` 
+* **NO Dataclass** needed
+* Use tooling `ast.parse` for inspect and access `from..import` lines
+

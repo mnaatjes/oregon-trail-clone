@@ -21,11 +21,10 @@ architectural_milestones:
   facade_sop: "ADR-016 established to enforce strict __init__.py encapsulation using __all__."
   pillar_mirroring: "Codified the 'Pillar Mirroring' pattern (src/{layer}/{pillar}/{role}) in README.md to ensure parallel scalability."
   universal_discovery: "Established 'Discovery Physics' in Kernel (DiscoveryUnit) to provide universal anchor/relative-path logic across all pillars."
-
 active_design_epics:
   - id: "ADR-014"
     title: "Automated Domain Discovery System"
-    issue: "#42"
+    issue: "#53"
   - id: "ADR-015"
     title: "Lazy-Loading Spore (Type) Registry"
     issue: "#43"
@@ -41,10 +40,32 @@ active_design_epics:
 
 critical_conflicts_resolved:
   - date: "2026-04-21"
+    issue: "BaseOrchestrator vs Scanner SRP"
+    resolution: "Adopted a compositional pattern where Orchestrator 'has-a' Scanner/Loader to maintain generic Kernel lifecycle."
+  - date: "2026-04-21"
     issue: "Active vs. Passive Discovery"
-    resolution: "Decoupled DiscoveryUnit (Passive/Core) from importlib logic (Active/Engine) to maintain Pillar Mirroring integrity."
-  - date: "2026-04-20"
-    issue: "Pillar vs. Role Priority"
+
+sessions:
+  - session_id: "2026-04-21-02"
+    metadata:
+      timestamp: "2026-04-21 16:30:00"
+      version: "0.1.0"
+    tasks:
+      accomplished:
+        - "Refined the Discovery Subsystem architecture: Decoupled Scanner (Identification) from Loader (Interrogation) and Orchestrator (Sequencing)."
+        - "Generalised ADR-014 with a Kernel Addendum to support Pillar Mirroring across Domain, UI, and Storage."
+        - "Authored TDD-018: Kernel Discovery System, defining the base contracts (BaseScanner, BaseLoader, BaseOrchestrator) and DiscoveryManifest."
+        - "Synchronized GitHub Project: Created Issue #53 for the Implementation of the generalized Discovery System."
+      todo:
+        - "Phase 1: Implement Core Contracts in src/core/kernel/ (BaseScanner, BaseLoader, DiscoveryManifest)."
+        - "Phase 1: Implement BaseOrchestrator in src/core/kernel/contracts/orchestration.py."
+        - "Phase 2: Refactor DomainScanner and DomainOrchestrator to implement these kernel-level interfaces."
+    git:
+      branches_affected: ["feat/42-discovery-system"]
+      commit_uuids: ["current_session"]
+
+  - session_id: "2026-04-21-01"
+
     resolution: "Adopted 'Pillar-First' organization (src/core/domain/contracts) to improve cohesion and mirroring."
   - date: "2026-04-20"
     issue: "Import Chaos after Refactor"

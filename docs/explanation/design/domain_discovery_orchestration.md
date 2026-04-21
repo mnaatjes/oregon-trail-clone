@@ -77,41 +77,13 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 
 ### Refinement Questions
 
-1. `DiscoveryManifest`
+Given `BaseScanner` &rarr; `.scan()` &rarr; `List[DiscoveryUnit]` &rarr; `Orchestrator` &rarr; `Loader` &rarr; `DiscoveryManifest`
 
-Given 
-```py
-# Declare Typevar
-T = TypeVar("T", bound=DiscoveryUnit)
+It seems we have a small ecosystem/sub-system of `Discovery` which include a Scanner component, an Orchestrator/Manager, a Loader, and an output Manifest. Should this all be contained and rationalized into a kernel service with base contracts (some of which - `BaseScanner` and `DiscoveryUnit` - already exist)? This service would then be a component of the larger `DomainOrchestrator`? 
 
-class BaseScanner(ABC, Generic[T]):
-    @abstractmethod
-    def scan(self, path:str) -> List[T]:
-        """Find all units of type T in the given path."""
-        pass
-```
+Because not all `Orchestrators` should be required to include a scanner. The `BaseOrchestrator` should be lean but useful and scalable. 
 
-How do we properly introduce the `DiscoveryManifest` and enforce its usage?
-
-2. `ArchitecturalPolice`
-
-    * Name recomendations: change `PoliceUnit` to `GuardUnit`? Recommend other intuitive names
-
-    * Recommended `The Facade: Access it via self.police on the BaseServiceProvider. This gives you full IDE type-hinting.` Does this mean a ServiceProvider registers the PoliceService for use elsewhere? I assumed this as a given. Or do you mean something else?
-
-    * Should we identify where existing `[X VIOLATIONS]` take place to enroll them into an `ArchitectureGuard` Service?
-
-    * Should we document *SOP*s for an `SOPGuard` sub-Service of the `ArchitectureGuard`? e.g raise `TypreError` if `ROOT` package has no `Service`.
-    
-    * How can we separate *Service Flow* from *Logic* [[ADR-004] Domain Package Anatomy](https://github.com/mnaatjes/oregon-trail-clone/issues/4)
-
-3. Logical Entities:
-
-    * Explain how `LogicEntity` is represented by the `Facade.module`. Does importlib.util allow you to access the `from...import` lines? If so, what is the return type? How can this be utilize?
-    
-    * Should we still create a dataclass called `LogicEntity` for ease of use?
-    
-    * Explain how the functions from `domain/{root,leaf}/<package-name>/logic.py` can result in a DX call of `wagon.Logic.calculate_speed(wagon)`?
+Thoughts?
 
 4. Project Managment:
 
@@ -140,45 +112,36 @@ How do we properly introduce the `DiscoveryManifest` and enforce its usage?
         * `facade`: The hydrated Facade (containing the module and __CONTEXT__).
         * `status`: An Enum (VALID, MALFORMED, IGNORED).
 
+    * `BaseScanner.scan()` SHOULD return `List[DiscoveryUnit]` - i.e. raw findings
+    * An `Orchestrator` takes list, passes them to the `loader` to produce `DiscoveryManifest`
+
 2. Aggregate Composition & SOPs
 
     * **Only `ROOT` Packages** need `service.py` file
     * Update `DomainContext` validation to reflect
 
-3. `ArchitecturalPolice` Service
+3. `ArchitecturalGuard` Service
 
-    * Create `ArchitecturalPolice` Service in `src/core/kernel`
+    * Create `ArchitecturalGuard` Service in `src/core/kernel`
     * Not a *Global* Service. *Runtime* Service
     * Analysis Tool AND **Boot-time** Validator; A **Service** and NOT a *Static* class
-    * `ArchitectureGuard` contract `src/core/kernel/contracts/guard.py`
+    * `GuardUnit` contract `src/core/kernel/contracts/guard.py`
     * Associated Exceptions in `src/core/kernel/exceptions.py`
     * Target **Implementation Sections:** in `src/core/engine/kernel/police/guards/`
         - `HorizontalGuard` e.g. Roots cannit import Roots
         - `VerticalGuard` e.g. 
         - `AnatomyGuard` e.g. Records CANNOT have IDs
         - `CompositionGuard` e.g. verify all the 4-file set for Roots, 3 for others with 1 optional
+        - `SOPGuard` e.g. check and enforce *Screaming* rules
+    * Find **Every** `[X VIOLATION]` and enroll it in the Service
 
-4. Logical Entities
+5. Facade and Package:
+    * **Explicit `__all__` declaration MANDATORY** in every `__init__.py`
+    * `DomainContext.service` is the *Cannonical Source* of a `DomainService`
+    * Ensure lineage for `BaseService` &rarr; `DomainService` &rarr; {`RootService`, `RecordService`}
+    * `PriorityGraph` should be a Dataclass produced by `DomainOrchestrator` from `List[DomainManifest]` with a `BaseGraph` contract. Research *Directed Acyclic Graphs* (DAGs)
 
-    * They are **Stateless Functions**
-    * Use python `inspect` module to verify functions in `logic.py` are *Pure* e.g. argument Record and return a record
-    * *Purity* means **Same output as input**
-    * *Side-Effects* are checked via **Abstract Syntax Tree** looking for prohibited keywords, e.g. `open`, `with`, `print`, `requests`, `import os`
-    * `LogicEntity` will be represented by `Facade.module` via use of `from . import logic as logic` 
+6. Interim Branch Goals:
 
-5. Finalizing branch `feat/52-domain-scanner`:
-
-**TODOs:**
-* To `Facade` add `exports: List[str]` = captured from `module.__all__`
-* To `Package` add `is_root:bool`, `is_leaf:bool`
-* Refactor: `DomainScanner.scan()` to return `DomainManifest`
-
-**Testing:**
-* *Scanner and Associated entities/objects/classes:
-    * `BaseScanner`, `DomainScanner`
-    * `DiscoveryUnit`, `Package`, `Facade`
-* Scanning doesn't go deeper than `domain/{root,leaf}/<package-name>/__init__.py`
-* Scanner stays within `key` e.g. `domain`
-* Scanner fails appropriately
-* Failure modes (`__init__.py` is empty)
-* Verify `DomainManifest`
+    * Consolidate Github Issues
+    * Create Github Issues AND TDDs for major sub-components of `DomainOrchestration`: `ArchitectureGuard`, `BaseService` &rarr; `{Root,Record}Service`, `PriorityGraph`
