@@ -115,27 +115,12 @@ Thoughts?
     * `BaseScanner.scan()` SHOULD return `List[DiscoveryUnit]` - i.e. raw findings
     * An `Orchestrator` takes list, passes them to the `loader` to produce `DiscoveryManifest`
 
-2. Aggregate Composition & SOPs
+Aggregate Composition & SOPs
 
     * **Only `ROOT` Packages** need `service.py` file
     * Update `DomainContext` validation to reflect
 
-3. `ArchitecturalGuard` Service
-
-    * Create `ArchitecturalGuard` Service in `src/core/kernel`
-    * Not a *Global* Service. *Runtime* Service
-    * Analysis Tool AND **Boot-time** Validator; A **Service** and NOT a *Static* class
-    * `GuardUnit` contract `src/core/kernel/contracts/guard.py`
-    * Associated Exceptions in `src/core/kernel/exceptions.py`
-    * Target **Implementation Sections:** in `src/core/engine/kernel/police/guards/`
-        - `HorizontalGuard` e.g. Roots cannit import Roots
-        - `VerticalGuard` e.g. 
-        - `AnatomyGuard` e.g. Records CANNOT have IDs
-        - `CompositionGuard` e.g. verify all the 4-file set for Roots, 3 for others with 1 optional
-        - `SOPGuard` e.g. check and enforce *Screaming* rules
-    * Find **Every** `[X VIOLATION]` and enroll it in the Service
-
-5. Facade and Package:
+Facade and Package:
     * **Explicit `__all__` declaration MANDATORY** in every `__init__.py`
     * `DomainContext.service` is the *Cannonical Source* of a `DomainService`
     * Ensure lineage for `BaseService` &rarr; `DomainService` &rarr; {`RootService`, `RecordService`}
