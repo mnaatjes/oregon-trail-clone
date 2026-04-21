@@ -69,4 +69,3 @@ graph LR
 * `LogicEntity` will be represented by `Facade.module` via use of `from . import logic as logic` 
 * **NO Dataclass** needed
 * Use tooling `ast.parse` for inspect and access `from..import` lines
-
