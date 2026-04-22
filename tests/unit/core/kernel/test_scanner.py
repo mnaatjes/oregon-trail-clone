@@ -1,7 +1,7 @@
 import pytest
 from typing import List
-from core.kernel.contracts.scanner import BaseScanner
-from core.kernel.contracts.discovery import DiscoveryUnit
+from core.kernel.contracts.discovery.scanner import BaseScanner
+from core.kernel.contracts.discovery.unit import DiscoveryUnit
 from dataclasses import dataclass
 
 @dataclass(frozen=True)

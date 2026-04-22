@@ -3,7 +3,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, List
-from core.kernel.contracts.discovery import DiscoveryUnit
+from core.kernel.contracts.discovery.unit import DiscoveryUnit
 from core.domain.entities.facade import Facade
 
 @dataclass(frozen=True)

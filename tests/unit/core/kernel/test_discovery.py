@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 from dataclasses import dataclass
-from core.kernel.contracts.discovery import DiscoveryUnit
+from core.kernel.contracts.discovery.unit import DiscoveryUnit
 
 @dataclass(frozen=True)
 class MockDiscoveryUnit(DiscoveryUnit):

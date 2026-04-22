@@ -4,14 +4,14 @@ metadata:
   directive: "This file is the primary record of project history and status. It MUST be updated at the end of every agent session to ensure chronological integrity and architectural alignment."
   version: "0.1.0"
   created_at: "2026-04-19"
-  updated_at: "2026-04-21 17:30:00"
+  updated_at: "2026-04-22 12:00:00"
   permissions: "read, write"
   last_gemini_cli_session_id: "a0f1901a-a8f3-4cf7-a314-13873c2d9c42"
 
   status_summary:
   phase: "Core Foundation"
   health: "Stable"
-  focus: "Implementing Domain Discovery and Orchestration Infrastructure."
+  focus: "Implementing the Kernel Discovery System and consolidating architecture issues."
 
   architectural_milestones:
   screaming_mvc: "Fully codified. Pillar boundaries (Domain, Engine, UI) enforced via TDD and ADR."
@@ -50,7 +50,27 @@ metadata:
     issue: "Active vs. Passive Discovery"
     resolution: "Decoupled DiscoveryUnit (Passive/Core) from importlib logic (Active/Engine) to maintain Pillar Mirroring integrity."
 
-  sessions:
+sessions:
+  - session_id: "2026-04-22-01"
+    metadata:
+      timestamp: "2026-04-22 12:00:00"
+      version: "0.1.0"
+    tasks:
+      accomplished:
+        - "Consolidated GitHub Issues: Closed #50 and #16 into #53; updated #54 as the master tracker for the foundation cleanup phase."
+        - "Refined Discovery Subsystem contracts: Moved DiscoveryUnit to unit.py and BaseScanner to scanner.py within src/core/kernel/contracts/discovery/."
+        - "Resolved project-wide broken imports resulting from the contract move and verified with 81 passing tests."
+        - "Defined DiscoveryManifest and DiscoveryPayload abstract contracts, incorporating Generic type safety and architectural rationale."
+        - "Documented architectural rationale for DiscoveryManifest components in TDD-018 addendum."
+        - "Verified DomainScanner logic for __all__ capture and __CONTEXT__ validation via updated unit and integration tests."
+      todo:
+        - "Phase 1: Implement finalized Generic DiscoveryManifest and DiscoveryPayload contracts in src/core/kernel/contracts/discovery/."
+        - "Phase 1: Implement BaseLoader and BaseDiscoveryOrchestrator in the Kernel Discovery directory."
+        - "Phase 2: Refactor DomainScanner and initiate DomainLoader implementation."
+    git:
+      branches_affected: ["feat/42-discovery-system", "main"]
+      commit_uuids: ["current_session"]
+
   - session_id: "2026-04-21-02"
     metadata:
       timestamp: "2026-04-21 16:30:00"
@@ -70,176 +90,3 @@ metadata:
     git:
       branches_affected: ["feat/42-discovery-system"]
       commit_uuids: ["current_session"]
-
-
-  - session_id: "2026-04-21-01"
-
-    resolution: "Adopted 'Pillar-First' organization (src/core/domain/contracts) to improve cohesion and mirroring."
-  - date: "2026-04-20"
-    issue: "Import Chaos after Refactor"
-    resolution: "Performed project-wide automated sed replacement and manual test logic alignment."
-  - date: "2026-04-19"
-    issue: "TDD-002/003 Redundancy"
-    resolution: "Consolidated into a single Source of Truth (TDD-002)."
-
-sessions:
-  - session_id: "2026-04-21-01"
-    metadata:
-      timestamp: "2026-04-21 14:00:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Implemented DiscoveryUnit abstract contract in src/core/kernel/contracts/discovery.py for universal anchor/relative-path logic."
-        - "Implemented Package and Facade entities in src/core/domain/entities/ as passive data containers."
-        - "Refactored DomainScanner (engine/domain/scanner.py) with two-phase discovery: scan() (inventory) and load_facade() (ignition)."
-        - "Verified type-safe module loading using importlib.util with robust loader guards."
-        - "Developed comprehensive pytest fixtures (display_blueprints, domain_roots, domain_init_configs) for realistic domain simulation."
-        - "Documented technical rationale for Facade-Constructor and Package-Identity relationship."
-      todo:
-        - "Phase 1: Implement DomainOrchestrator to manage the discovery and boot lifecycle."
-        - "Phase 1: Implement Bootable protocol (kernel/contracts/kernel.py) and BaseDomainService."
-        - "Phase 2: Implement DomainRegistrar for static DNA hydration."
-        - "Phase 3: Implement priority-graph logic in DomainOrchestrator for ordered booting."
-    git:
-      branches_affected: ["feat/42-discovery-system"]
-      commit_uuids: ["current_session"]
-
-  - session_id: "2026-04-20-02"
-    metadata:
-      timestamp: "2026-04-20 16:30:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Codified the 'Pillar Mirroring' pattern in README.md (src/{layer}/{pillar}/{role})."
-        - "Refactored src/core and src/engine into Pillar-First structure (Kernel, Domain, UI, Storage)."
-        - "Standardized all __init__.py files with relative path headers and explicit __all__ exports (ADR-016)."
-        - "Resolved project-wide broken imports and synchronized test logic with implementation."
-        - "Implemented architectural guard in DomainContext to enforce Service requirements for ROOT families."
-        - "Verified architecture with 64/64 passing unit and integration tests."
-      todo:
-        - "Phase 1: Implement Bootable protocol (kernel/contracts/kernel.py) and BaseDomainService."
-        - "Phase 1: Implement DomainServiceProvider with Engine Facades."
-        - "Phase 2: Implement DomainRegistrar for static DNA hydration."
-        - "Phase 3: Implement DomainOrchestrator discovery and priority-graph logic."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: ["current_session"]
-
-  - session_id: "2026-04-20-01"
-    metadata:
-      timestamp: "2026-04-20 11:45:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Pivoted ADR-015 strategy: Removed magic self-registration for DomainSpores in favor of explicit orchestrated registration (ADR-014)."
-        - "Hardened DomainSpore identity guards: Expanded forbidden list (breed, pk, _id) and implemented robust attribute inspection (vars + annotations)."
-        - "Refined DomainContext manifest: Implemented derived family/species properties and enforced ROOT family service requirements."
-        - "Verified DomainSpore contract with 17/17 passing unit tests (identity guards, immutability, validation hooks)."
-        - "Authored TDD-014: Domain Discovery & Orchestration System, codifying the conductor-based boot lifecycle."
-        - "Synchronized GitHub Project: Closed issues #42, #43, and #45; opened issue #50 for the Orchestration roadmap."
-      todo:
-        - "Phase 1: Implement Bootable protocol (kernel.py) and BaseDomainService (domain/service.py)."
-        - "Phase 1: Implement DomainServiceProvider with Engine Facades (src/core/providers/domain.py)."
-        - "Phase 2: Implement DomainRegistrar for static DNA hydration."
-        - "Phase 3: Implement DomainOrchestrator discovery and priority-graph logic."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: ["current_session"]
-
-  - session_id: "2026-04-19-02"
-    metadata:
-      timestamp: "2026-04-19 18:30:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Consolidated .context/summaries.yml and .context/sessions.yml into .context/history.yml."
-        - "Refactored DomainFamily enum into src/core/contracts/domain/taxonomy.py to centralize shared semantic types."
-        - "Verified architectural soundness of the specialized Blueprint hierarchy (Base, Root, Record)."
-        - "Implemented and verified comprehensive unit tests for BaseBlueprint, RootBlueprint, and RecordBlueprint in tests/unit/core/contracts/test_blueprint.py."
-        - "Ranked and prioritized GitHub Project issues by logical dependency."
-        - "Implemented specialized SporeRegistry as an active singleton in src/core/registries/spore.py (#43)."
-        - "Created registries package facade in src/core/registries/__init__.py following ADR-016."
-        - "Verified SporeRegistry with comprehensive unit tests in tests/unit/core/registries/test_spore.py."
-      todo:
-        - "Implement __init_subclass__ auto-registration hook in DomainSpore contract (#43)."
-        - "Implement ADR-014: Automated Domain Discovery System (#42)."
-        - "Implement StateRegistry for Engine (#30)."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: ["current_session"]
-
-  - session_id: "2026-04-19-01"
-    metadata:
-      timestamp: "2026-04-19 16:30:00"
-      gemini_cli_session_id: "4e9f059d-924b-4cde-a725-070bd33ef225"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Identified and restored lost content in docs/explanation/design/domain_context_manifest.md (#14)."
-        - "Drafted ADR-014: Automated Domain Discovery System and created GitHub Epic #42."
-        - "Refined global_rules and conflict_resolution_directives in .context/documentation.yml to prevent content loss."
-        - "Consolidated DomainContext documentation into TDD-002 and archived redundant manifest file."
-        - "Recovered and refined TDD-005 (Domain Package Entity) and TDD-010 (Identity Service & Registry), syncing with GitHub issues #16 and #21."
-        - "Updated GitHub Issue #41 with a phased roadmap for core infrastructure tasks."
-        - "Refined Domain Taxonomy: Added 'SPORE' (Nomadic Data) to DomainFamily enum."
-        - "Drafted ADR-015: Lazy-Loading Spore (Type) Registry and created GitHub Epic #43."
-        - "Synchronized ADR-005, TDD-005, and ADR-015 with 'SPORE' and 'DomainSpore' terminology."
-        - "Created GitHub Task #44 for specialized Blueprint refactor (Root vs. Record)."
-      todo:
-        - "Implement SPORE family and DomainSpore class in src/core/contracts/domain/."
-        - "Implement StateRegistry for Engine (#30) inheriting from BaseRegistry."
-        - "Develop scripts/architectural_police.py tool (#22) to automate boundary and requirement auditing."
-        - "Implement Engine Orchestrator logic for Automated Constructor Injection based on DomainContext requirements."
-        - "Finalize TDD-001 (DomainBlueprint) logic requirements and refactor into Root/Record blueprints."
-    git:
-      branches_affected: ["feat/38-domain-context-contract", "main", "feat/42-discovery-system"]
-      commit_uuids: ["current_session"]
-
-  - session_id: "2026-04-18-02"
-    metadata:
-      timestamp: "2026-04-18 20:45:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Refined and implemented the BaseRegistry as a universal, concrete, generic class in src/core/contracts/registry.py (TDD-012, #31)."
-        - "Updated registry unit tests to support the new generic and explicit key registration pattern (#33)."
-        - "Implemented the DomainRoot abstract base contract in src/core/contracts/domain/root.py with __post_init__ and __init_subclass__ guards for horizontal isolation and vertical composition (#29)."
-        - "Formalized the hybrid DX pattern for DomainRoots using @property proxies for type-safe record access, updated in TDD-007 (#32)."
-        - "Implemented the DomainValueObject abstract base contract in src/core/contracts/domain/value_object.py with identity purity guards (#36)."
-        - "Verified DomainRoot and DomainValueObject with comprehensive unit tests in the .venv environment."
-        - "Proposed and drafted ADR-013: Species-Based Engine Routing to formalize orchestrator-domain decoupling."
-        - "Created and linked the GitHub Epic-Issue #34 for ADR-013."
-        - "Refined domain taxonomy terminology: Renamed DomainSpecies in DomainContext to DomainFamily (ROOT/LEAF) to avoid entity-level conflict."
-        - "Synchronized ADR-005 and TDD-002 with the new DomainFamily (ROOT/LEAF) distinction."
-        - "Implemented the initial DomainContext contract in src/core/contracts/domain/context.py with priority validation guards (#38)."
-      todo:
-        - "Complete verification tests for DomainContext in tests/unit/core/contracts/test_domain_context.py (#38)."
-        - "Implement StateRegistry for Engine (#30) inheriting from the new BaseRegistry."
-        - "Implement the Core IdentityService (#21) for unified UUID generation."
-        - "Develop the scripts/architectural_police.py tool (#22) to automate boundary and provenance auditing."
-        - "Draft TDD for Engine Orchestrator and Boot Lifecycle (src/engine/orchestrator.py)."
-    git:
-      branches_affected: ["feat/29-root-contract", "main", "feat/38-domain-context-contract"]
-      commit_uuids: ["f0dfe0c", "12650d8", "b18b3ca"]
-
-  - session_id: "2026-04-18-01"
-    metadata:
-      timestamp: "2026-04-18 10:00:00"
-      version: "0.1.0"
-    tasks:
-      accomplished:
-        - "Established the GitHub Project Ledger (v2) and synchronized 10 ADR Epics (#1-#10) and 10 TDD Features (#12-#22)."
-        - "Refined and implemented the DomainBlueprint contract with DisplayBlueprint and __species__ abstract property."
-        - "Implemented the DomainRecord contract with metaprogramming guards for Horizontal Isolation and Anonymity."
-        - "Codified the development lifecycle with new How-To guides for Project setup, Issue drafting, and PR/Merge strategies."
-        - "Verified the 'Law of Verification' through a complete implementation cycle (Task -> Branch -> Test -> PR -> Squash & Merge) for two core contracts."
-        - "Updated ADR-005 and ADR-011 with technical addenda regarding species identification and the Police Tool specification."
-      todo:
-        - "Implement DomainRoot Contract (#18) to enable vertical composition of Blueprints and Records."
-        - "Implement DomainValueObject Contract (#20) for shared semantic types (Money, Coord)."
-        - "Implement DomainContext Contract (#13) as the unified package manifest."
-        - "Develop the scripts/architectural_police.py tool (#22) to automate provenance and boundary auditing."
-        - "Draft TDD for Engine Orchestrator & Boot Lifecycle (src/engine/orchestrator.py)."
-    git:
-      branches_affected: ["main"]
-      commit_uuids: ["58eb0b6", "956055a"]

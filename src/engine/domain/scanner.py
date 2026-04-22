@@ -7,7 +7,7 @@ from pathlib import Path
 from rich import inspect
 from dataclasses import replace
 
-from core.kernel.contracts.scanner import BaseScanner
+from core.kernel.contracts.discovery.scanner import BaseScanner
 from core.domain.entities.package import Package
 from core.domain.entities.facade import Facade
 from core.domain.contracts.context import DomainContext

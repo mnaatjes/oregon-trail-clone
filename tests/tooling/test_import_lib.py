@@ -17,7 +17,7 @@ from core.domain.contracts.blueprints.display import DisplayBlueprint
 from core.domain.contracts.taxonomy import DomainFamily
 from core.domain.contracts.root import DomainRoot
 from core.domain.entities.package import Package
-from core.kernel.contracts.discovery import DiscoveryUnit
+from core.kernel.contracts.discovery.unit import DiscoveryUnit
 from engine.domain.scanner import DomainScanner
 
 class MockSpore(DomainSpore):

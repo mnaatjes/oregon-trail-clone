@@ -1,0 +1,1 @@
+# src/core/kernel/contracts/discovery/loader.py
