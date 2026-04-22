@@ -88,10 +88,3 @@ def test_container_bootstrapping(container):
 
     # Verify resolution of the dependent service
     assert container.get('dependent_service') == 'Dependent on: This is a mock service'
-    
-def __test_service_overwrite(container):
-    container.bind('test_service', lambda c: 'First version')
-    assert container.get('test_service') == 'First version'
-
-    container.bind('test_service', lambda c: 'Second version')
-    assert container.get('test_service') == 'Second version'

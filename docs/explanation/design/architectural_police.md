@@ -8,6 +8,7 @@ updated_at: 2026-04-18
 component: core
 type: "explanation/design"
 feature_link: https://github.com/mnaatjes/oregon-trail-clone/issues/22
+---
 
 # TDD: Architectural Police Infrastructure
 
@@ -54,3 +55,18 @@ A Python CLI built with `argparse`.
 ## 4. Diagnostic Goals
 *   **Zero Drift:** The system should report 0 errors when all "Laws" are followed.
 *   **CI Integration:** The tool must return exit code 1 on failure to block PR merges in GitHub Actions.
+
+## 5. `ArchitecturalGuard` Service
+
+* Create `ArchitecturalGuard` Service in `src/core/kernel`
+* Not a *Global* Service. *Runtime* Service
+* Analysis Tool AND **Boot-time** Validator; A **Service** and NOT a *Static* class
+* `GuardUnit` contract `src/core/kernel/contracts/guard.py`
+* Associated Exceptions in `src/core/kernel/exceptions.py`
+* Target **Implementation Sections:** in `src/core/engine/kernel/police/guards/`
+    - `HorizontalGuard` e.g. Roots cannit import Roots
+    - `VerticalGuard` e.g. 
+    - `AnatomyGuard` e.g. Records CANNOT have IDs
+    - `CompositionGuard` e.g. verify all the 4-file set for Roots, 3 for others with 1 optional
+    - `SOPGuard` e.g. check and enforce *Screaming* rules
+* Find **Every** `[X VIOLATION]` and enroll it in the Service

@@ -3,7 +3,7 @@ id: ADR-014
 title: "Automated Domain Discovery System"
 status: proposed
 created_at: 2026-04-19
-updated_at: 2026-04-19
+updated_at: 2026-04-21
 component: engine
 type: "explanation/adr"
 epic_link: https://github.com/mnaatjes/oregon-trail-clone/issues/42
@@ -31,3 +31,6 @@ We will implement an automated **Discovery System** within the Engine. The Engin
 - **Positive:** Strong enforcement of architectural rules (e.g., failing boot if a `ROOT` package lacks a manifest).
 - **Negative:** Minor boot-time overhead due to filesystem scanning (negligible for this project size).
 - **Neutral:** Requires strict adherence to the `__CONTEXT__` naming convention.
+
+## Addendum (2026-04-21): Kernel Generalization
+To maintain Pillar Mirroring and SRP, the "Discovery Physics" (Scanning, Loading, Manifesting) is promoted to a Kernel-level subsystem. This allows other pillars (UI, Storage) to reuse the discovery logic while keeping the Engine Orchestrator lean and focused on sequence control.

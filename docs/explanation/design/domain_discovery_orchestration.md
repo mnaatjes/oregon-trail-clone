@@ -72,3 +72,42 @@ This specification defines the "Conductor-Based" initialization of the Domain La
 - [ ] **SOP Guard:** Raise `TypeError` if a `ROOT` package fails to provide a `service`.
 - [ ] **Sequence Integrity:** Ensure `Phase 2 (Boot)` only starts after `Phase 1 (Register)` is complete for the entire priority graph.
 - [ ] **Facade Verification:** Ensure `BaseServiceProvider` facades correctly resolve from the `ServiceContainer`.
+
+## Clarification Rules
+
+1. Facade and Package:
+    * **Explicit `__all__` declaration MANDATORY** in every `__init__.py`
+    * `DomainContext.service` is the *Cannonical Source* of a `DomainService`
+    * Ensure lineage for `BaseService` &rarr; `DomainService` &rarr; {`RootService`, `RecordService`}
+    * `PriorityGraph` should be a Dataclass produced by `DomainOrchestrator` from `List[DomainManifest]` with a `BaseGraph` contract. Research *Directed Acyclic Graphs* (DAGs)
+    * **Only `ROOT` Packages** need `service.py` file
+    * Update `DomainContext` validation to reflect
+
+2. Spec out the `DiscoveryManifest`
+    * Base Contract
+    * Integrated into `BaseScanner`
+    * Implemented `DomainManifest` should link `Package` to instantiated `ServiceProvider`
+    * Properties for `DiscoveryManifest` (Frozen Dataclass):
+        * `unit`: The original DiscoveryUnit (e.g., the Package).
+        * `facade`: The hydrated Facade (containing the module and __CONTEXT__).
+        * `status`: An Enum (VALID, MALFORMED, IGNORED).
+
+    * `BaseScanner.scan()` SHOULD return `List[DiscoveryUnit]` - i.e. raw findings
+    * An `Orchestrator` takes list, passes them to the `loader` to produce `DiscoveryManifest`
+## 6. Facade Enforcement & Aggregate Composition
+
+### 6.1 The Public Facade (__all__)
+To maintain the "Screaming" nature of the architecture and prevent leakage of internal metabolism (logic), every domain package must explicitly define `__all__`. This array serves as the "Public API" for the Engine.
+
+**Mandatory Exports:**
+*   `__CONTEXT__`: The metadata manifest (The Passport).
+*   **Entity Class**: The actual `DomainRoot` or `DomainRecord` dataclass (The Noun).
+*   **Service Class**: The `BaseDomainService` implementation (The Verb).
+*   **Blueprint Class**: The `DomainBlueprint` implementation (The DNA).
+
+**Prohibited Exports:**
+*   `logic.py`: Must remain internal. Logic is the private metabolism of the package.
+*   **Internal Helpers**: Any transient DTOs or loading utilities.
+
+### 6.2 Context vs. Entity Relationship
+The `DomainContext` provides the *Intent* (Blueprint), while `__all__` provides the *Implementation* (Entity and Service). The Orchestrator uses the Context to decide "If/When" to boot, and uses the Facade exports to perform the "How" (instantiation and injection).
