@@ -59,13 +59,18 @@ class DomainScanner(BaseScanner[Package]):
 
         # Architectural Guard
         # Every package MUST have a DomainContext
-        context = getattr(module, "__CONTEXT__", None)
-        if not isinstance(context, DomainContext):
+        _context = getattr(module, "__CONTEXT__", None)
+        if not isinstance(_context, DomainContext):
             raise AttributeError(
                 f"[PACKAGE VIOLATION] in '{package.module_name}' "
                 f"Domain package '{package.package_name}' is missing valid __CONTEXT__ attribute "
                 f"See file {str(package.path)}"
             )
+
+        # Architectural Guard
+        # Capture __all__ values
+        _exports = getattr(module, "__all__", [])
+        object.__setattr__(package, "exports", _exports)
 
         # Hydrate Facade
         facade = Facade(
@@ -73,7 +78,7 @@ class DomainScanner(BaseScanner[Package]):
             spec=spec,
             module=module,
             file=str(package.path),
-            context=getattr(module, "__CONTEXT__")
+            context=_context
         )
 
         return replace(package, facade=facade)

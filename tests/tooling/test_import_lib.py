@@ -71,26 +71,44 @@ def domain_roots(display_blueprints):
 def domain_init_configs(domain_roots):
     """
     Generates a map of package names to their __init__.py content strings,
-    derived from the domain_roots fixture data.
+    derived from the domain_roots fixture data. Includes mock models,
+    services, and the mandatory __all__ export as per ADR-016.
     """
     configs = {}
     for root in domain_roots:
         species = root.blueprint.species
+        name_cap = species.capitalize()
+        
         content = (
             "from dataclasses import dataclass\n"
             "from core.domain.contracts.context import DomainContext\n"
-            "from core.domain.contracts.blueprints.root import RootBlueprint\n\n"
+            "from core.domain.contracts.blueprints.root import RootBlueprint\n"
+            "from core.domain.contracts.root import DomainRoot\n"
+            "from core.domain.contracts.service import BaseDomainService\n\n"
+            "# Mock Model\n"
             f"@dataclass(frozen=True)\n"
-            f"class {species.capitalize()}Blueprint(RootBlueprint):\n"
+            f"class {name_cap}Root(DomainRoot):\n"
+            "    def clone(self): return self\n\n"
+            "# Mock Blueprint\n"
+            f"@dataclass(frozen=True)\n"
+            f"class {name_cap}Blueprint(RootBlueprint):\n"
             f"    species = '{species}'\n"
             f"    breed = '{root.blueprint.breed}'\n"
             f"    display = None\n\n"
+            "# Mock Service\n"
+            f"class {name_cap}Service(BaseDomainService):\n"
+            "    pass\n\n"
             f"__CONTEXT__ = DomainContext(\n"
-            f"    intent={species.capitalize()}Blueprint,\n"
+            f"    intent={name_cap}Blueprint,\n"
             f"    priority=10,\n"
-            f"    service=object  # Mock service\n"
-            f")\n"
-            f""
+            f"    service={name_cap}Service\n"
+            f")\n\n"
+            f"__all__ = [\n"
+            f"    '__CONTEXT__',\n"
+            f"    '{name_cap}Root',\n"
+            f"    '{name_cap}Service',\n"
+            f"    '{name_cap}Blueprint'\n"
+            f"]\n"
         )
         configs[species] = content
     return configs
@@ -118,7 +136,7 @@ def test_run(tmp_path, domain_init_configs):
     packages = ["wagon", "shop", "ox", "character", "health"]
     scanner = DomainScanner(key)
     for p in packages:
-        target_path = tmp_path / key / "root" / p
+        target_path = tmp_path / key / "roots" / p  # Using 'roots' as per architecture
         content = domain_init_configs[p]
         target_path.mkdir(parents=True, exist_ok=True)
         # Write
@@ -126,8 +144,27 @@ def test_run(tmp_path, domain_init_configs):
         module_path.write_text(content)
 
     results = scanner.scan(tmp_path / key)
+    assert len(results) == len(packages)
+
     for r in results:
         package = scanner.load_facade(r)
-        inspect(package.facade.context) #type:ignore
+        
+        # Verify Context
+        assert package.facade.context is not None #type:ignore
+        assert package.facade.context.priority == 10 # type:ignore
+        
+        # Verify Exports (__all__)
+        assert package.exports is not None
+        assert len(package.exports) == 4
+        assert "__CONTEXT__" in package.exports
+        
+        # Verify specific exports based on package name
+        name_cap = package.package_name.capitalize()
+        assert f"{name_cap}Service" in package.exports
+        assert f"{name_cap}Root" in package.exports
+        assert f"{name_cap}Blueprint" in package.exports
+
+        rprint(f"[green]Verified {package.package_name}: {package.exports}[/green]")
+        # inspect(package.facade.context) #type:ignore
 
 
